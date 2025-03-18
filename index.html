@@ -10,7 +10,7 @@
   </head>
 
   <!-- Body -->
-  <body>
+  <body onload="extractQuestionData()">
     <!-- Nav Bar -->
     <div class="topbar">
       <table style="width: 100%">
@@ -37,11 +37,11 @@
         <!-- Question Header -->
         <div class="questionheadingbox" style="display: flex;">
           <!-- Question Title -->
-          <h2 style="margin-left: 4px;">QuestionTitle</h2>
+          <h2 style="margin-left: 4px;" id="questiontitle">QuestionTitle</h2>
         </div>
 
         <!-- Question Prompt -->
-        <p class="questionprompt">
+        <p class="questionprompt" id="questionprompt">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem harum vitae eius necessitatibus aliquid! Nisi beatae velit excepturi qui ad non temporibus nihil ab, vero nulla rerum, ipsa, in maxime.
         </p>
 
