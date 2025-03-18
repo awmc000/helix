@@ -11,15 +11,55 @@
 
   <!-- Body -->
   <body>
-    <main>
-      <!-- Some basic page contents -->
-      <h1>Helix Quiz Platform 🧬</h1>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo rerum porro at inventore dicta. Voluptatum ullam illo magni inventore nihil porro amet incidunt beatae blanditiis est perspiciatis, culpa, maxime id.
-      </p>
-      <!-- A button that checks that the script file is being pulled in. -->
-      <button onclick="helloWorld()">Hello World (Script tester)</button>
-    </main>
+    <!-- Nav Bar -->
+    <div class="topbar">
+      <table style="width: 100%">
+        <tr>
+          <td class="arrow">
+            <a href="#">⬅️</a>
+          </td>
+          <td><h1>QuizName</h1></td>
+          <td class="arrow">
+            <a href="#">➡️</a>
+          </td>
+        </tr>
+        <!-- <tr>
+          <td></td>
+          <td>O O O O O</td>
+        </tr> -->
+      </table>
+    </div>
+
+    <!-- Question Window -->
+    <div class="questionouter">
+      <div class="question">
+
+        <!-- Question Header -->
+        <div class="questionheadingbox" style="display: flex;">
+          <!-- Question Title -->
+          <h2 style="margin-left: 4px;">QuestionTitle</h2>
+        </div>
+
+        <!-- Question Prompt -->
+        <p class="questionprompt">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem harum vitae eius necessitatibus aliquid! Nisi beatae velit excepturi qui ad non temporibus nihil ab, vero nulla rerum, ipsa, in maxime.
+        </p>
+
+        <!-- Question response area -->
+        <textarea style="margin-left: 10px; width: 274px; height: 100px;"></textarea>
+        <!-- Navigation buttons -->
+        <table style="width: 100%">
+          <td class="arrow">
+            <a href="#">⬅️</a>
+          </td>
+          <td></td>
+          <td class="arrow">
+            <a href="#">➡️</a>
+          </td>
+        </table>
+        <!--  -->
+      </div>
+    </div>
   </body>
 
 </html>
