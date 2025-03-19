@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <title>Helix</title>
     <link rel="stylesheet" href="style.css">
-    <script src="action.js"></script>
+    <script src="viewLayer.js"></script>
   </head>
 
   <!-- Body -->
@@ -41,22 +41,36 @@
         </div>
 
         <!-- Question Prompt -->
-        <p class="questionprompt" id="questionprompt">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem harum vitae eius necessitatibus aliquid! Nisi beatae velit excepturi qui ad non temporibus nihil ab, vero nulla rerum, ipsa, in maxime.
-        </p>
+        <div style="height: 115px;">
+          <p class="questionprompt" id="questionprompt">
+            Loading...
+          </p>
+        </div>
 
-        <!-- Question response area -->
-        <textarea style="margin-left: 10px; width: 274px; height: 100px;"></textarea>
-        <!-- Navigation buttons -->
-        <table style="width: 100%">
-          <td class="arrow">
-            <a href="#">⬅️</a>
-          </td>
-          <td></td>
-          <td class="arrow">
-            <a href="#">➡️</a>
-          </td>
-        </table>
+        <!-- Responses div -->
+        <div style="height: 115px;">
+
+          <!-- Multiple choice response area. -->
+          <div id="multiplechoiceresponse" style="display: none;">
+            <button>A</button>
+            <button>B</button>
+            <button>C</button>
+            <button>D</button>
+          </div>
+
+          <!-- Paragraph response area.-->
+          <textarea id="paragraphresponse" style="display: none; margin-left: 10px; width: 274px; height: 100px;"></textarea>
+          <!-- Navigation buttons -->
+          <table style="width: 100%">
+            <td class="arrow">
+              <a href="#" onclick="prevQuestion();">⬅️</a>
+            </td>
+            <td></td>
+            <td class="arrow">
+              <a href="#"  onclick="nextQuestion();">➡️</a>
+            </td>
+          </table>
+        </div>
         <!--  -->
       </div>
     </div>
