@@ -1,5 +1,7 @@
 CREATE DATABASE csci375team5_quizdb;
 
+USE csci375team5_quizdb
+
 DROP TABLE IF EXISTS csci375team5_quizdb.Answers;
 DROP TABLE IF EXISTS csci375team5_quizdb.AnswerKey;
 DROP TABLE IF EXISTS csci375team5_quizdb.Question;
@@ -7,30 +9,32 @@ DROP TABLE IF EXISTS csci375team5_quizdb.Quiz;
 DROP TABLE IF EXISTS csci375team5_quizdb.Course;
 DROP TABLE IF EXISTS csci375team5_quizdb.Author;
 
+DROP TRIGGER IF EXISTS SetAttemptId;
+
 
 
 
 CREATE TABLE csci375team5_quizdb.Author (
-    authorID int AUTO_INCREMENT,
+    username varchar(32),
     name varchar(128) NOT NULL,
     authorDescription varchar(1024),
     emailAddress varchar(512),
-    PRIMARY KEY (authorID)
+    PRIMARY KEY (username)
 );
 
 CREATE TABLE csci375team5_quizdb.Course (
     courseID int AUTO_INCREMENT,
-    authorID int,
+    username varchar(32),
     courseName varchar(128) NOT NULL,
     courseDescription varchar(1024),
     PRIMARY KEY (courseID),
-    FOREIGN KEY (authorID) REFERENCES Author(authorID)
+    FOREIGN KEY (username) REFERENCES Author(username)
 );
 
 CREATE TABLE csci375team5_quizdb.Quiz (
     courseID int,
     quizID int AUTO_INCREMENT,
-    courseName varchar(128) NOT NULL,
+    quizName varchar(128) NOT NULL,
     availableAsync bit,
     quizDescription varchar(1024),
     label varchar(256),
@@ -60,9 +64,24 @@ CREATE TABLE csci375team5_quizdb.AnswerKey(
 );
 
 CREATE TABLE csci375team5_quizdb.Answers (
-    attemptID int AUTO_INCREMENT,
+    attemptID int,
     questionID int,
     optionNumber integer,
     PRIMARY KEY (questionID, attemptID),
     FOREIGN KEY (questionID, optionNumber) REFERENCES AnswerKey(questionID, optionNumber)
 );
+
+DELIMITER //
+
+CREATE TRIGGER SetAttemptId 
+BEFORE INSERT ON Answers
+FOR EACH ROW
+BEGIN
+    DECLARE attemptCount INT;
+    SELECT COUNT(questionID) into attemptCount FROM Answers WHERE questionID = NEW.questionID;
+    SET NEW.attemptID = attemptCount + 1;
+END;
+
+//
+
+DELIMITER ;
