@@ -1,25 +1,25 @@
 CREATE DATABASE csci375team5_quizdb;
 
-DROP TABLE csci375team5_quizdb.Answer;
-DROP TABLE csci375team5_quizdb.AnswerKey;
-DROP TABLE csci375team5_quizdb.Question;
-DROP TABLE csci375team5_quizdb.Quiz;
-DROP TABLE csci375team5_quizdb.Course;
-DROP TABLE csci375team5_quizdb.Author;
+DROP TABLE IF EXISTS csci375team5_quizdb.Answers;
+DROP TABLE IF EXISTS csci375team5_quizdb.AnswerKey;
+DROP TABLE IF EXISTS csci375team5_quizdb.Question;
+DROP TABLE IF EXISTS csci375team5_quizdb.Quiz;
+DROP TABLE IF EXISTS csci375team5_quizdb.Course;
+DROP TABLE IF EXISTS csci375team5_quizdb.Author;
 
 
 
 
 CREATE TABLE csci375team5_quizdb.Author (
-    authorID int,
+    authorID int AUTO_INCREMENT,
     name varchar(128) NOT NULL,
     authorDescription varchar(1024),
-    emailaddress varchar(512),
+    emailAddress varchar(512),
     PRIMARY KEY (authorID)
 );
 
 CREATE TABLE csci375team5_quizdb.Course (
-    courseID int,
+    courseID int AUTO_INCREMENT,
     authorID int,
     courseName varchar(128) NOT NULL,
     courseDescription varchar(1024),
@@ -29,7 +29,7 @@ CREATE TABLE csci375team5_quizdb.Course (
 
 CREATE TABLE csci375team5_quizdb.Quiz (
     courseID int,
-    quizID int,
+    quizID int AUTO_INCREMENT,
     courseName varchar(128) NOT NULL,
     availableAsync bit,
     quizDescription varchar(1024),
@@ -40,7 +40,7 @@ CREATE TABLE csci375team5_quizdb.Quiz (
 );
 
 CREATE TABLE csci375team5_quizdb.Question (
-    questionID integer,
+    questionID integer AUTO_INCREMENT,
     quizID integer,
     wasAsked bit,
     prompt varchar(1024) NOT NULL,
@@ -59,8 +59,8 @@ CREATE TABLE csci375team5_quizdb.AnswerKey(
     PRIMARY KEY (questionID, optionNumber)
 );
 
-CREATE TABLE csci375team5_quizdb.Answer (
-    attemptID int,
+CREATE TABLE csci375team5_quizdb.Answers (
+    attemptID int AUTO_INCREMENT,
     questionID int,
     optionNumber integer,
     PRIMARY KEY (questionID, attemptID),
