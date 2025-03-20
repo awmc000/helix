@@ -1,29 +1,10 @@
 /*
- * viewLayer.js
- *
- * Functions used in the frontend / user interface.
- * 
- */
+* viewLayer.js
+*
+* Functions used in the frontend / user interface.
+* 
+*/
 
-// API Access Test
-let apiAddress = "http://192.168.18.42:8000/";
-
-async function fetchData() {
-    const url = apiAddress;
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
-  
-      const json = await response.json();
-      console.log(json);
-      document.getElementById('dataplace').innerText = JSON.stringify(json);
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
-  
 // Global variable: current question
 let question = {
     prompt: 'Hit the next arrow to start the quiz.',
@@ -62,7 +43,7 @@ const extractQuestionData = () => {
     // Set prompt and title
     document.getElementById('questionprompt').innerText = question.prompt;
     document.getElementById('questiontitle').innerText = question.title;
-
+    
     // Disable / enable appropriate response area divs
     if (question.type == 'paragraph') {
         document.getElementById('paragraphresponse').style.display = 'block';
@@ -100,4 +81,24 @@ const handleKeypress = (e) => {
     }
 };
 
+// Add key press event listener to allow keyboard navigation
 document.addEventListener("keydown", handleKeypress);
+
+// API Access Test
+let apiAddress = "http://192.168.18.42:8000/";
+
+async function fetchData() {
+    const url = apiAddress;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        
+        const json = await response.json();
+        console.log(json);
+        document.getElementById('dataplace').innerText = JSON.stringify(json);
+    } catch (error) {
+        console.error(error.message);
+    }
+}
