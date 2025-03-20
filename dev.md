@@ -17,6 +17,8 @@
     - Data Layer
     - Security & Encryption
     - Information Passing Schemas
+    - Timers
+    - Metrics
 
 ## Plan
 
@@ -24,7 +26,7 @@
 |---------------|-------------------|
 | Week 1        | Students can do quizzes, instr can view results. |
 | Week 2        | Instr can create quizzes and view analytics      |
-| Week 3        | Buffer / TBD / Testing
+| Week 3        | Buffer, Testing, other stretch features
 
 ## Development Environment
 ### Setting up the environment
@@ -126,3 +128,23 @@ const answer = {
     'scoreValue': -1,
 };
 ```
+
+### Timers
+- Expiry time is part of the data the frontend gets when retrieving a quiz.
+- Frontend will create a timer based on this information.
+- That a response is on time is checked by API after it is submitted
+- A response is sent back indicating whether it is on time or too late.
+- There must be a significant tolerance to allow for slow connections etc.
+- Client can ping server to see if question is open?
+- Whether a client is allowed to see and respond to a question could also
+be determined by whether the instructor has stepped to that question
+synchronously.
+
+### Metrics
+- Computed mostly (...?) by business layer
+- Mean score
+- Median score
+- Question with fewest correct answers
+- Question with most correct answers
+- Questions with most homogenous answers
+- Questions with most heterogenous answers
