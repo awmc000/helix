@@ -12,7 +12,7 @@ INSERT INTO Quiz (courseID, name, availableAsync, label, quizDescription, durati
 
 -- New Question
 
-INSERT INTO Question (quizID, prompt, wasAsked, durationMinutes, durationSeconds) VALUES (%s, %s, %s, %s, %s);
+INSERT INTO Question (quizID, prompt, wasAsked, durationMinutes, durationSeconds) VALUES (%s, %s, 0, %s, %s);
 
 -- New AnswerKey
 
@@ -33,16 +33,17 @@ SELECT quizID, quizName, availableAsync, label, quizDescription, durationMinutes
 
 -- Show All quizzes in a course
 
-SELECT * FROM Quiz WHERE courseID = %s;
+SELECT quizID, quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE courseID = %s;
 
 -- Show All quizzes a creator made
 
-SELECT * FROM Quiz WHERE courseID = Course.courseID AND Course.username = %s;
+SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE courseID = Course.courseID AND Course.username = %s;
 
--- Show Question Info
+-- Show Question Info | IMPLEMENTED - assembleQuiz
 
-SELECT prompt, wasAsked, durationMinutes, durationSeconds FROM Question WHERE quizID = %s;
+SELECT questionID, prompt, wasAsked, durationMinutes, durationSeconds FROM Question WHERE quizID = %s;
 
--- Show Answers to the questions
+-- Show Answers to the questions | IMPLEMENTED - assembleQuiz
 
 SELECT optionNumber, optionDescription, scoreValue FROM AnswerKey WHERE questionID = %s;
+
