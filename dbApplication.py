@@ -2,13 +2,12 @@ import mysql.connector
 from mysql.connector import Error
 import json
 
+
 # Opens a connection to the database
 # Requires no Parameters
 # Returns the database connection object
 def connectToDatabase (username, password):
-
     loggedIn = False
-
 
     try:
         database = mysql.connector.connect(
@@ -27,6 +26,7 @@ def connectToDatabase (username, password):
 # Returns nothing
 def disconnectFromDatabase (database):
     database.close()
+
 
 # Retrieves data from the database coresponding to the sql query it is fed
 # sqlQuery is the Sql query to be executed
@@ -50,6 +50,7 @@ def retrieveFromDatabase (sqlQuery, params, database):
     finally:
         cursor.close()
 
+
 # Updates the values to the database according to the sqlQuery (added / removed)
 # sqlQuery is the Sql query to be executed
 # values is the list of values to be updated in the database
@@ -67,6 +68,7 @@ def updateDatabase (sqlQuery, values, database):
         
     except Error as e:
         print("Error: {e}")
+
 
 # Creates a quiz dictonary associated with the quizID provided with the following schema:
 #
@@ -119,6 +121,34 @@ def assembleQuiz (quizID, database) :
 
     return Quiz
 
-    
+
+# Converts any python object into a related javascript one
+# someObject is the item to be converted
+# returns the JSON object
+def pythonToJSON(someObject):
+    return json.dumps(someObject)
+
+
+# Converts a JSON object to a python one
+# someObject is the JSON object
+# return the python equivalent to the object
+def jsonToPython(someObject):
+    return json.loads(someObject) 
+
+# Creates a quizList with the follwing schema
+#       "quizID" -> The id of the quiz to retrieve its details
+#       "quizName" -> The name of the quiz
+#
+# database is the database object to connect to
+# Returns a quizList dictonary
+def getQuizList(database):
+    quizList = []
+    results = retrieveFromDatabase("SELECT quizID, quizName FROM Quiz",[], database)
+    for row in results:
+        quizID, quizName = row
+        nameIDPair = dict(id = quizID, name = quizName)
+        quizList.append(nameIDPair)
+    return quizList
+
 
     

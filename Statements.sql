@@ -23,13 +23,21 @@ INSERT INTO AnswerKey (questionID, optionNumber, optionDescription, scoreValue) 
 INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s);
 
 
--- Show Quiz Info
+-- Show Quiz Info | IMPLEMENTED - assembleQuiz
 
 SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE quizID = %s;
+
+-- Show a list of all Quizzes
+
+SELECT quizID, quizName FROM Quiz
 
 -- Search For Quiz By Name
 
 SELECT quizID, quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE quizName SOUNDS LIKE %s;
+
+-- Search For Quiz By Label
+
+SELECT quizID, quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE label SOUNDS LIKE %s;
 
 -- Show All quizzes in a course
 
@@ -46,4 +54,6 @@ SELECT questionID, prompt, wasAsked, durationMinutes, durationSeconds FROM Quest
 -- Show Answers to the questions | IMPLEMENTED - assembleQuiz
 
 SELECT optionNumber, optionDescription, scoreValue FROM AnswerKey WHERE questionID = %s;
+
+
 
