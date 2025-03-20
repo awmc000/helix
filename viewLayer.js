@@ -5,6 +5,25 @@
  * 
  */
 
+// API Access Test
+let apiAddress = "http://192.168.18.42:8000/";
+
+async function fetchData() {
+    const url = apiAddress;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+  
+      const json = await response.json();
+      console.log(json);
+      document.getElementById('dataplace').innerText = JSON.stringify(json);
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+  
 // Global variable: current question
 let question = {
     prompt: 'Hit the next arrow to start the quiz.',
