@@ -16,6 +16,7 @@
     - REST API (Business Layer)
     - Data Layer
     - Security & Encryption
+    - Information Passing Schemas
 
 ## Plan
 
@@ -82,3 +83,43 @@ function `fetch()`.
 - We will backburner password encryption for now
 - **Don't look at me like that, huge corporations store
 passwords in plaintext!!!!**
+### Information Passing Schemas
+
+
+
+#### Javascript and JSON
+
+The following code block outlines how quizzes, questions, and 
+answers are represented in JSON. This is how they are passed
+between the frontend and the API.
+
+```js
+const quiz = {
+    'name': 'Preschool Graduation Exam NO RETAKES',
+    'asynchronous': true,
+    'label': 'quiz1',
+    'description': 'A quiz of some kind',
+    'durationMins': -1,
+    'durationSecs': -1,
+    'questionList': [
+        question,        
+    ]
+};
+
+const question = {
+    'questionID': -1,
+    'prompt': 'What is the first colour in the rainbow?',
+    'wasAsked': true,
+    'durationMins': -1,
+    'durationSecs': -1,
+    'answers': [
+        answer,
+    ],
+};
+
+const answer = {
+    'optionNumber': -1,
+    'optDescription': 'Red',
+    'scoreValue': -1,
+};
+```
