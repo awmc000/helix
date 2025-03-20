@@ -14,6 +14,14 @@ let question = {
 // Current question index
 let currentQuestion = -1;
 
+// Current state
+const TAKING_QUIZ                   = 0;
+const CREATING_QUIZ                 = 1;
+const CREATING_COURSE               = 2;
+const EDITING_INSTRUCTOR_PROFILE    = 3;
+
+let state = TAKING_QUIZ;
+
 // TODO: Retrieve this from the API with the fetch() function!
 const quiz = [
     {
