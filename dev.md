@@ -7,12 +7,23 @@
 
 ## Table of Contents
 
+- Plan
+
 - Development Environment
     - Setting up
 - How things work
     - Frontend HTML + JS (View Layer)
     - REST API (Business Layer)
     - Data Layer
+    - Security & Encryption
+
+## Plan
+
+| Week          | Target            |
+|---------------|-------------------|
+| Week 1        | Students can do quizzes, instr can view results. |
+| Week 2        | Instr can create quizzes and view analytics      |
+| Week 3        | Buffer / TBD / Testing
 
 ## Development Environment
 ### Setting up the environment
@@ -65,3 +76,9 @@ function `fetch()`.
 - todo
 ### Data Layer
 - The data layer is implemented as a Python module which the API can use to encapsulate interactions with the database
+### Security & Encryption
+- Passwords are sent to the API already unreadable.
+- Encrypt with a public key, decrypt with private key
+- We will backburner password encryption for now
+- **Don't look at me like that, huge corporations store
+passwords in plaintext!!!!**
