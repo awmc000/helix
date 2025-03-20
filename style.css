@@ -62,3 +62,11 @@ h1 {
     margin: 10px;
     font-size: 1.2em;
 }
+
+/* Development Area - Hide in prod */
+.developmentarea {
+    background-color: rgb(195, 195, 255);
+    border: 1px dotted black;
+    padding: 5px;
+    max-width: 500px;
+}

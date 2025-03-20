@@ -15,12 +15,17 @@
     <div class="topbar">
       <table style="width: 100%">
         <tr>
+          <!-- Prev arrow -->
           <td class="arrow">
-            <a href="#">⬅️</a>
+            <a href="#" onclick="prevQuestion();">⬅️</a>
           </td>
+
+          <!-- Quiz name -->
           <td><h1>QuizName</h1></td>
+
+          <!-- Next arrow -->
           <td class="arrow">
-            <a href="#">➡️</a>
+            <a href="#" onclick="nextQuestion();">➡️</a>
           </td>
         </tr>
         <!-- <tr>
@@ -52,10 +57,18 @@
 
           <!-- Multiple choice response area. -->
           <div id="multiplechoiceresponse" style="display: none;">
-            <button>A</button>
-            <button>B</button>
-            <button>C</button>
-            <button>D</button>
+            <label for="choiceboxa">A</label>
+            <input type="checkbox" id="choiceboxa">
+
+            <label for="choiceboxa">B</label>
+            <input type="checkbox" id="choiceboxa">
+            
+            <label for="choiceboxa">C</label>
+            <input type="checkbox" id="choiceboxa">
+            
+            <label for="choiceboxa">D</label>
+            <input type="checkbox" id="choiceboxa">
+            
           </div>
 
           <!-- Paragraph response area.-->
@@ -74,9 +87,11 @@
       </div>
     </div>
 
-    <!-- Dev Stuff -->
-    <button onclick="fetchData()">Fetch Data Test!</button>
-    <span id="dataplace">no data yet</span>
+    <!-- Development Area - Hide in Prod -->
+    <div class="developmentarea">
+      <button onclick="fetchData()">Fetch Data Test!</button>
+      <span id="dataplace">no data yet</span>
+    </div>
   </body>
 
 </html>
