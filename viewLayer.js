@@ -22,7 +22,7 @@ const EDITING_INSTRUCTOR_PROFILE    = 3;
 
 let state = TAKING_QUIZ;
 
-// Hardcoded quiz for test purposes
+// Hardcoded dummy objects for test purposes
 let answer = {
     'optionNumber': -1,
     'optDescription': 'Red',
@@ -31,7 +31,7 @@ let answer = {
 
 let question = {
     'questionID': 0,
-    'prompt': 'Press any key to start the quiz',
+    'prompt': 'Press next > to start the quiz.',
     'durationMins': -1,
     'durationSecs': -1,
     'answers': [
