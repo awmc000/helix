@@ -6,10 +6,10 @@
 */
 
 // Global variable: current question
-let question = {
-    prompt: 'Hit the next arrow to start the quiz.',
-    title: 'Quiz',
-};
+// let question = {
+//     prompt: 'Hit the next arrow to start the quiz.',
+//     title: 'Quiz',
+// };
 
 // Current question index
 let currentQuestion = -1;
@@ -22,35 +22,74 @@ const EDITING_INSTRUCTOR_PROFILE    = 3;
 
 let state = TAKING_QUIZ;
 
-// TODO: Retrieve this from the API with the fetch() function!
-const quiz = [
-    {
-        prompt: 'What is the first colour in the rainbow?',
-        title: 'Question 1',
-        type: 'paragraph',
-    },
-    {
-        prompt: 'What is the second colour in the rainbow?',
-        title: 'Question 2',
-        type: 'multipleChoice',
-    },
-    {
-        prompt: 'What is the third colour in the rainbow?',
-        title: 'Question 3',
-        type: 'multipleChoice',
-    },
-    {
-        prompt: 'What is the fourth colour in the rainbow?',
-        title: 'Question 4',
-        type: 'paragraph',
-    },
-];
+// Hardcoded quiz for test purposes
+let answer = {
+    'optionNumber': -1,
+    'optDescription': 'Red',
+    'scoreValue': -1,
+};
+
+let question = {
+    'questionID': 0,
+    'prompt': 'Press any key to start the quiz',
+    'durationMins': -1,
+    'durationSecs': -1,
+    'answers': [
+        answer,
+    ],
+};
+
+
+let question1 = {
+    'questionID': 1,
+    'prompt': 'What is the first colour in the rainbow?',
+    'durationMins': -1,
+    'durationSecs': -1,
+    'answers': [
+        answer,
+    ],
+};
+
+let question2 = {
+    'questionID': 2,
+    'prompt': 'What is the first colour in the rainbow?',
+    'durationMins': -1,
+    'durationSecs': -1,
+    'answers': [
+        answer,
+    ],
+};
+
+let question3 = {
+    'questionID': 3,
+    'prompt': 'What is the first colour in the rainbow?',
+    'durationMins': -1,
+    'durationSecs': -1,
+    'answers': [
+        answer,
+    ],
+};
+
+const quiz = {
+    'name': 'Preschool Graduation Exam NO RETAKES',
+    'asynchronous': true,
+    'label': 'quiz1',
+    'description': 'A quiz of some kind',
+    'durationMins': -1,
+    'durationSecs': -1,
+    'questionList': [
+        question1,
+        question2,
+        question3,
+    ]
+};
+
 
 // Fills in the page with current question's fields.
 const extractQuestionData = () => {
     // Set prompt and title
     document.getElementById('questionprompt').innerText = question.prompt;
-    document.getElementById('questiontitle').innerText = question.title;
+    document.getElementById('questiontitle').innerText = question.questionID;
     
     // Disable / enable appropriate response area divs
     if (question.type == 'paragraph') {
@@ -64,8 +103,8 @@ const extractQuestionData = () => {
 };
 
 const nextQuestion = () => {
-    currentQuestion = (currentQuestion + 1) % quiz.length;
-    question = quiz[currentQuestion];
+    currentQuestion = (currentQuestion + 1) % quiz.questionList.length;
+    question = quiz.questionList[currentQuestion];
     extractQuestionData();
 };
 
