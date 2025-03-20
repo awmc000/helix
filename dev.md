@@ -85,7 +85,11 @@ function `fetch()`.
 passwords in plaintext!!!!**
 ### Information Passing Schemas
 
+#### Python
 
+- Dictionaries in Python are objects in JSON
+- Lists in Python are lists in JSON
+- Notation is very similar
 
 #### Javascript and JSON
 
@@ -109,7 +113,6 @@ const quiz = {
 const question = {
     'questionID': -1,
     'prompt': 'What is the first colour in the rainbow?',
-    'wasAsked': true,
     'durationMins': -1,
     'durationSecs': -1,
     'answers': [
