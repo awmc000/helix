@@ -46,7 +46,6 @@ CREATE TABLE csci375team5_quizdb.Quiz (
 CREATE TABLE csci375team5_quizdb.Question (
     questionID integer AUTO_INCREMENT,
     quizID integer,
-    wasAsked bit,
     prompt varchar(1024) NOT NULL,
     durationMinutes integer,
     durationSeconds integer,

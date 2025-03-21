@@ -12,7 +12,7 @@ INSERT INTO Quiz (courseID, name, availableAsync, label, quizDescription, durati
 
 -- New Question
 
-INSERT INTO Question (quizID, prompt, wasAsked, durationMinutes, durationSeconds) VALUES (%s, %s, 0, %s, %s);
+INSERT INTO Question (quizID, prompt, durationMinutes, durationSeconds) VALUES (%s, %s, 0, %s, %s);
 
 -- New AnswerKey
 
@@ -27,7 +27,7 @@ INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s);
 
 SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE quizID = %s;
 
--- Show a list of all Quizzes
+-- Show a list of all Quizzes | IMPLEMENTED - getQuizList
 
 SELECT quizID, quizName FROM Quiz
 
@@ -39,7 +39,7 @@ SELECT quizID, quizName, availableAsync, label, quizDescription, durationMinutes
 
 SELECT quizID, quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE label SOUNDS LIKE %s;
 
--- Show All quizzes in a course
+-- Show All quizzes in a course | IMPLEMENTED - getQuizListFromCourse
 
 SELECT quizID, quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE courseID = %s;
 
@@ -49,11 +49,14 @@ SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Qu
 
 -- Show Question Info | IMPLEMENTED - assembleQuiz
 
-SELECT questionID, prompt, wasAsked, durationMinutes, durationSeconds FROM Question WHERE quizID = %s;
+SELECT questionID, prompt, durationMinutes, durationSeconds FROM Question WHERE quizID = %s;
 
 -- Show Answers to the questions | IMPLEMENTED - assembleQuiz
 
 SELECT optionNumber, optionDescription, scoreValue FROM AnswerKey WHERE questionID = %s;
+
+
+-- 
 
 
 

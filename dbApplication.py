@@ -83,7 +83,6 @@ def updateDatabase (sqlQuery, values, database):
 # Question Dictonary:
 #       "questionID" -> The identifier of the question
 #       "prompt" -> The actual question being asked
-#       "wasAsked" -> A boolean Value determining if the question was asked. Still unsure why this is in the database
 #       "durationMins" -> An integer with the time limit of the quiz in minutes
 #       "durationSecs" -> An integer with the time limit of the quiz in seconds
 #       "Answers" -> A list of Answer dictonaries associated with this question (described below)
@@ -99,10 +98,10 @@ def updateDatabase (sqlQuery, values, database):
 def assembleQuiz (quizID, database) :
 
     questions = []
-    results = retrieveFromDatabase("SELECT questionID, prompt, wasAsked, durationMinutes, durationSeconds FROM Question WHERE quizID = %s;", quizID, database)
+    results = retrieveFromDatabase("SELECT questionID, prompt, durationMinutes, durationSeconds FROM Question WHERE quizID = %s;", quizID, database)
     for row in results:
         ident, desc, asked, mins, secs = row
-        Question = dict(questionID = ident, prompt = desc, wasAsked = asked, durationMins = mins, durationSecs = secs, answers = [])
+        Question = dict(questionID = ident, prompt = desc, durationMins = mins, durationSecs = secs, answers = [])
         questions.append(Question)
 
 
@@ -151,4 +150,20 @@ def getQuizList(database):
     return quizList
 
 
-    
+# Creates a quizList with the follwing schema
+#       "quizID" -> The id of the quiz to retrieve its details
+#       "quizName" -> The name of the quiz
+#
+# courseID is the course that the resulting quizzes are associated with
+# database is the database object to connect to
+# Returns a quizList dictonary
+def getQuizListFromCourse(courseID, database):
+    quizList = []
+    results = retrieveFromDatabase("SELECT quizID, quizName FROM Quiz WHERE courseID = %s", courseID, database)
+    for row in results:
+        quizID, quizName = row
+        nameIDPair = dict(id = quizID, name = quizName)
+        quizList.append(nameIDPair)
+    return quizList
+
+
