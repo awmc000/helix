@@ -11,14 +11,13 @@
 
 - Development Environment
     - Setting up
-- How things work
-    - Frontend HTML + JS (View Layer)
-    - REST API (Business Layer)
-    - Data Layer
-    - Security & Encryption
-    - Information Passing Schemas
-    - Timers
-    - Metrics
+- Frontend HTML + JS (View Layer)
+- REST API (Business Layer)
+- Data Layer
+- Security & Encryption
+- Information Passing Schemas
+- Timers
+- Metrics
 
 ## Plan
 
@@ -63,8 +62,7 @@ To create a requirements.txt so that anybody can recreate the environment
 ```bash
 pip freeze > requirements.txt
 ```
-## How Things Work
-### Frontend HTML & JS
+## Frontend HTML & JS
 - The frontend is contained a single page and elements are drawn 
 or hidden depending on the **state** of the application.
 - States include:
@@ -75,25 +73,25 @@ or hidden depending on the **state** of the application.
 to the API.
 - They make these requests asynchronously using the Javascript
 function `fetch()`.
-### Rest API
+## Rest API
 - todo
-### Data Layer
+## Data Layer
 - The data layer is implemented as a Python module which the API can use to encapsulate interactions with the database
-### Security & Encryption
+## Security & Encryption
 - Passwords are sent to the API already unreadable.
 - Encrypt with a public key, decrypt with private key
 - We will backburner password encryption for now
 - **Don't look at me like that, huge corporations store
 passwords in plaintext!!!!**
-### Information Passing Schemas
+## Information Passing Schemas
 
-#### Python
+### Python
 
 - Dictionaries in Python are objects in JSON
 - Lists in Python are lists in JSON
 - Notation is very similar
 
-#### Javascript and JSON
+### Javascript and JSON
 
 The following code block outlines how quizzes, questions, and 
 answers are represented in JSON. This is how they are passed
@@ -129,7 +127,7 @@ const answer = {
 };
 ```
 
-### Timers
+## Timers
 - Expiry time is part of the data the frontend gets when retrieving a quiz.
 - Frontend will create a timer based on this information.
 - That a response is on time is checked by API after it is submitted
@@ -140,7 +138,7 @@ const answer = {
 be determined by whether the instructor has stepped to that question
 synchronously.
 
-### Metrics
+## Metrics
 - Computed mostly (...?) by business layer
 - Mean score
 - Median score
