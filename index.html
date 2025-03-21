@@ -88,9 +88,18 @@
     </div>
 
     <!-- Development Area - Hide in Prod -->
-    <div class="developmentarea">
+    <div class="developmentarea" id="developmentarea">
+      <h2>Dev Area - Hidden in Production</h2>
       <button onclick="fetchData()">Fetch Data Test!</button>
       <span id="dataplace">no data yet</span>
+
+      <button onclick="runTests()">Run tests</button>
+      <table id="testtable">
+        <tr>
+          <td>Test</td>
+          <td>Result</td>
+        </tr>
+      </table>
     </div>
   </body>
 

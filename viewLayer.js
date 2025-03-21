@@ -92,13 +92,17 @@ const extractQuestionData = () => {
     document.getElementById('questiontitle').innerText = question.questionID;
     
     // Disable / enable appropriate response area divs
-    if (question.type == 'paragraph') {
-        document.getElementById('paragraphresponse').style.display = 'block';
-        document.getElementById('multiplechoiceresponse').style.display = 'none';
-    }
-    else if (question.type == 'multipleChoice') {
+    // if (question.type == 'paragraph') {
+    //     document.getElementById('paragraphresponse').style.display = 'block';
+    //     document.getElementById('multiplechoiceresponse').style.display = 'none';
+    // }
+    // else if (question.type == 'multipleChoice') {
+    if (question.questionID != 0) {
         document.getElementById('paragraphresponse').style.display = 'none';
         document.getElementById('multiplechoiceresponse').style.display = 'block';
+    } else {
+        document.getElementById('paragraphresponse').style.display = 'none';
+        document.getElementById('multiplechoiceresponse').style.display = 'none';
     }
 };
 
@@ -113,7 +117,7 @@ const prevQuestion = () => {
         return;
     }
     currentQuestion = currentQuestion - 1;
-    question = quiz[currentQuestion];
+    question = quiz.questionList[currentQuestion];
     extractQuestionData();
 };
 
@@ -149,3 +153,36 @@ async function fetchData() {
         console.error(error.message);
     }
 }
+
+/*
+ * View layer unit tests:
+ * List of labels and functions returning true or false.
+ * Results printed to a table in the dev area.
+ */
+const tests = [
+    {
+        'label': 'Question is initially filler text',
+        'func': () => {
+            return document.getElementById('questionprompt').innerText == 'Press next > to start the quiz.';
+        },
+    },
+];
+
+const runTests = () => {
+    for (const test of tests) {
+        let testFunction = test.func;
+        let res = testFunction();
+
+        let tdLabel = document.createElement('td');
+        tdLabel.innerText = test.label;
+
+        let tdRes = document.createElement('td');
+        tdRes.innerText = res ? 'PASS' : 'FAIL';
+
+        let trTest = document.createElement('tr');
+        trTest.appendChild(tdLabel);
+        trTest.appendChild(tdRes);
+
+        document.getElementById('testtable').appendChild(trTest);
+    }
+};
