@@ -21,7 +21,7 @@
         </td>
         
         <!-- Quiz name -->
-        <td><h1 class="title">QuizName</h1></td>
+        <td><h1 class="title">Helix Quiz</h1></td>
         
         <!-- Next arrow -->
         <td class="arrow">
@@ -46,7 +46,7 @@
   </form>
   <!-- Question Window -->
   <div class="questionouter">
-    <div class="question">
+    <div class="question" id="question">
       
       <!-- Question Header -->
       <div class="questionheadingbox" style="display: flex;">
@@ -106,7 +106,64 @@
         </table>
       </div>
     </div>
+    
+    <!-- Create Quiz - Quiz Map Window -->
+    <div class="question" style="width: 120px; height: 180px;" id="quizmap">
+      <!-- Quiz Map Header -->
+      <div class="questionheadingbox" style="display: flex; background-color: rgb(152, 27, 27);">
+        <!-- Quiz Map Title -->
+        <h2 style="margin-left: 4px;" id="quizmaptitle">QuizMap</h2>
+      </div>
+      <ul>
+        <li><a href="#">question1</a></li>
+        <li><a href="#">question2</a></li>
+        <li><a href="#">question3</a></li>
+      </ul>
+    </div>
+    
+    <!-- Create Quiz - Edit Question Window -->
+    <div class="question" style="" id="editquestion">
+      <!-- Question Map Header -->
+      <div class="questionheadingbox" style="display: flex;background-color: rgb(152, 27, 27);">
+        <!-- Question Map Title -->
+        <h2 style="margin-left: 4px;" id="questionedittitle">QuestionEdit</h2>
+      </div>
+    </div>
+
+    <!-- Courses - Course Map -->
+    <div class="question" style="width: 120px; height: 180px;" id="coursemap">
+      <!-- Quiz Map Header -->
+      <div class="questionheadingbox" style="display: flex; background-color: rgb(19, 107, 19);">
+        <!-- Quiz Map Title -->
+        <h2 style="margin-left: 4px;" id="quizmaptitle">CourseMap</h2>
+      </div>
+      <ul>
+        <li><a href="#">course1</a></li>
+        <li><a href="#">course2</a></li>
+        <li><a href="#">course3</a></li>
+      </ul>
+    </div>
+    
+    <!-- Courses - Edit Course -->
+    <div class="question" style="" id="editcourse">
+      <!-- Question Map Header -->
+      <div class="questionheadingbox" style="display: flex; background-color: rgb(19, 107, 19);">
+        <!-- Question Map Title -->
+        <h2 style="margin-left: 4px;" id="courseedittitle">CourseEdit</h2>
+      </div>
+    </div>
+    <!-- Instructor Profile -->
+    <div class="question" style="" id="instructorprofile">
+      <!-- Question Map Header -->
+      <div class="questionheadingbox" style="display: flex; background-color: rgb(107, 19, 85);">
+        <!-- Question Map Title -->
+        <h2 style="margin-left: 4px;" id="courseedittitle">InstructorProfile</h2>
+      </div>
+    </div>
   </div>
+  
+  <br>
+
   
   <!-- Development Area - Hide in Prod -->
   <div class="developmentarea" id="developmentarea">
@@ -121,6 +178,11 @@
         <td><strong>Result</strong></td>
       </tr>
     </table>
+
+    <button onclick="state = TAKING_QUIZ; setStateElements();">Taking quiz state</button>
+    <button onclick="state = CREATING_QUIZ; setStateElements();">Creating quiz state</button>
+    <button onclick="state = CREATING_COURSE; setStateElements();">Creating course state</button>
+    <button onclick="state = EDITING_INSTRUCTOR_PROFILE; setStateElements();">Editing instructor profile state</button>
   </div>
 </body>
 

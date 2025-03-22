@@ -16,6 +16,45 @@ const EDITING_INSTRUCTOR_PROFILE    = 3;
 
 let state = TAKING_QUIZ;
 
+const hideById = (id) => {
+    document.getElementById(id).style.display = 'none';
+};
+
+const hideManyById = (ids) => {
+    for (const id of ids) {
+        hideById(id);
+    }
+}
+
+const showById = (id) => {
+    document.getElementById(id).style.display = 'unset';
+}
+
+const showManyById = (ids) => {
+    for (const id of ids) {
+        showById(id);
+    }
+}
+
+const setStateElements = () => {
+    if (state == TAKING_QUIZ) {
+        showById('question');
+        hideManyById(['quizmap', 'editquestion', 'coursemap', 'editcourse', 'instructorprofile']);
+    }
+    else if (state == CREATING_QUIZ) {
+        showManyById(['quizmap', 'editquestion']);
+        hideManyById(['question', 'coursemap', 'editcourse', 'instructorprofile']);
+    }
+    else if (state == CREATING_COURSE) {
+        showManyById(['coursemap', 'editcourse']);
+        hideManyById(['question', 'quizmap', 'editquestion', 'instructorprofile']);
+    } 
+    else if (state == EDITING_INSTRUCTOR_PROFILE) {
+        showById('instructorprofile');
+        hideManyById(['question', 'quizmap', 'editquestion', 'coursemap', 'editcourse']);
+    }
+}
+
 // Hardcoded dummy objects for test purposes
 let answer = {
     'optionNumber': -1,
