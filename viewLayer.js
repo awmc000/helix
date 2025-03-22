@@ -5,8 +5,13 @@
 * 
 */
 
-// Current question index
-let currentQuestion = -1;
+/* ======================================================================================
+ * Global Variables
+ * ====================================================================================== */
+
+// Current quiz and question index in list
+let currentQuizIndex = -1;
+let currentQuestionIndex = -1;
 
 // Current state
 const TAKING_QUIZ                   = 0;
@@ -14,7 +19,40 @@ const CREATING_QUIZ                 = 1;
 const CREATING_COURSE               = 2;
 const EDITING_INSTRUCTOR_PROFILE    = 3;
 
-let state = TAKING_QUIZ;
+let windowState = TAKING_QUIZ;
+let currentQuiz = undefined;
+let currentQuestion = undefined;
+
+/* ======================================================================================
+ * State-Related Functions, Hiding/Showing Elements, Etc.
+ * ====================================================================================== */
+
+/* 
+ * Entry point called on body load.
+ * Sets up global pointer variables, etc.
+ */
+const setup = () => {
+    extractQuestionData();
+};
+
+const setStateElements = () => {
+    if (windowState == TAKING_QUIZ) {
+        showById('question');
+        hideManyById(['quizmap', 'editquestion', 'coursemap', 'editcourse', 'instructorprofile']);
+    }
+    else if (windowState == CREATING_QUIZ) {
+        showManyById(['quizmap', 'editquestion']);
+        hideManyById(['question', 'coursemap', 'editcourse', 'instructorprofile']);
+    }
+    else if (windowState == CREATING_COURSE) {
+        showManyById(['coursemap', 'editcourse']);
+        hideManyById(['question', 'quizmap', 'editquestion', 'instructorprofile']);
+    } 
+    else if (windowState == EDITING_INSTRUCTOR_PROFILE) {
+        showById('instructorprofile');
+        hideManyById(['question', 'quizmap', 'editquestion', 'coursemap', 'editcourse']);
+    }
+}
 
 const hideById = (id) => {
     document.getElementById(id).style.display = 'none';
@@ -36,24 +74,9 @@ const showManyById = (ids) => {
     }
 }
 
-const setStateElements = () => {
-    if (state == TAKING_QUIZ) {
-        showById('question');
-        hideManyById(['quizmap', 'editquestion', 'coursemap', 'editcourse', 'instructorprofile']);
-    }
-    else if (state == CREATING_QUIZ) {
-        showManyById(['quizmap', 'editquestion']);
-        hideManyById(['question', 'coursemap', 'editcourse', 'instructorprofile']);
-    }
-    else if (state == CREATING_COURSE) {
-        showManyById(['coursemap', 'editcourse']);
-        hideManyById(['question', 'quizmap', 'editquestion', 'instructorprofile']);
-    } 
-    else if (state == EDITING_INSTRUCTOR_PROFILE) {
-        showById('instructorprofile');
-        hideManyById(['question', 'quizmap', 'editquestion', 'coursemap', 'editcourse']);
-    }
-}
+/* ======================================================================================
+ * Hardcoded Test Data, to be removed and fetched from API as soon as possible
+ * ====================================================================================== */
 
 // Hardcoded dummy objects for test purposes
 let answer = {
@@ -103,7 +126,7 @@ let question3 = {
     ],
 };
 
-const quiz = {
+let quiz1 = {
     'name': 'Preschool Graduation Exam NO RETAKES',
     'asynchronous': true,
     'label': 'quiz1',
@@ -117,10 +140,32 @@ const quiz = {
     ]
 };
 
+let quiz2 = {
+    'name': 'Test2',
+    'asynchronous': true,
+    'label': 'quiz1',
+    'description': 'A quiz of some kind',
+    'durationMins': -1,
+    'durationSecs': -1,
+    'questionList': [
+        question1,
+        question2,
+        question3,
+    ]
+};
+
+const quizzes = [
+    quiz1,
+    quiz2,
+];
+
+let quiz = quizzes[0];
+
 
 // Fills in the page with current question's fields.
 const extractQuestionData = () => {
     // Set prompt and title
+    document.getElementById('pagetitle').innerText = quiz.name;
     document.getElementById('questionprompt').innerText = question.prompt;
     document.getElementById('questiontitle').innerText = 'Question #' + question.questionID;
     
@@ -162,21 +207,25 @@ const clearCheckboxes = () => {
 const nextQuestion = () => {
     reportCheckboxes();
     clearCheckboxes();
-    currentQuestion = (currentQuestion + 1) % quiz.questionList.length;
-    question = quiz.questionList[currentQuestion];
+    currentQuestionIndex = (currentQuestionIndex + 1) % quiz.questionList.length;
+    question = quiz.questionList[currentQuestionIndex];
     extractQuestionData();
 };
 
 const prevQuestion = () => {
-    if (currentQuestion <= 0) {
+    if (currentQuestionIndex <= 0) {
         return;
     }
     reportCheckboxes();
     clearCheckboxes();
-    currentQuestion = currentQuestion - 1;
-    question = quiz.questionList[currentQuestion];
+    currentQuestionIndex = currentQuestionIndex - 1;
+    question = quiz.questionList[currentQuestionIndex];
     extractQuestionData();
 };
+
+/* ======================================================================================
+ * Keyboard Controls
+ * ====================================================================================== */
 
 // Go to prev page on left arrow press or next page on right arrow press.
 const handleKeypress = (e) => {
@@ -191,6 +240,10 @@ const handleKeypress = (e) => {
 
 // Add key press event listener to allow keyboard navigation
 document.addEventListener("keydown", handleKeypress);
+
+/* ======================================================================================
+ * API Access Test
+ * ====================================================================================== */
 
 // API Access Test
 let apiAddress = "http://192.168.18.42:8000/";
@@ -210,6 +263,10 @@ async function fetchData() {
         console.error(error.message);
     }
 }
+
+/* ======================================================================================
+ * Unit Testing
+ * ====================================================================================== */
 
 /*
  * View layer unit tests:

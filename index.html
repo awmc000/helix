@@ -10,7 +10,7 @@
 </head>
 
 <!-- Body -->
-<body onload="extractQuestionData()">
+<body onload="setup()">
   <!-- Nav Bar -->
   <div class="topbar">
     <table style="width: 100%">
@@ -21,7 +21,7 @@
         </td>
         
         <!-- Quiz name -->
-        <td><h1 class="title">Helix Quiz</h1></td>
+        <td><h1 class="title" id="pagetitle">Helix Quiz</h1></td>
         
         <!-- Next arrow -->
         <td class="arrow">
@@ -217,10 +217,10 @@
       </tr>
     </table>
 
-    <button onclick="state = TAKING_QUIZ; setStateElements();">Taking quiz state</button>
-    <button onclick="state = CREATING_QUIZ; setStateElements();">Creating quiz state</button>
-    <button onclick="state = CREATING_COURSE; setStateElements();">Creating course state</button>
-    <button onclick="state = EDITING_INSTRUCTOR_PROFILE; setStateElements();">Editing instructor profile state</button>
+    <button onclick="windowState = TAKING_QUIZ; setStateElements();">Taking quiz state</button>
+    <button onclick="windowState = CREATING_QUIZ; setStateElements();">Creating quiz state</button>
+    <button onclick="windowState = CREATING_COURSE; setStateElements();">Creating course state</button>
+    <button onclick="windowState = EDITING_INSTRUCTOR_PROFILE; setStateElements();">Editing instructor profile state</button>
   </div>
 </body>
 
