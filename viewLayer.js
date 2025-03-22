@@ -92,21 +92,41 @@ const extractQuestionData = () => {
     document.getElementById('questiontitle').innerText = question.questionID;
     
     // Disable / enable appropriate response area divs
-    // if (question.type == 'paragraph') {
-    //     document.getElementById('paragraphresponse').style.display = 'block';
-    //     document.getElementById('multiplechoiceresponse').style.display = 'none';
-    // }
-    // else if (question.type == 'multipleChoice') {
     if (question.questionID != 0) {
         document.getElementById('paragraphresponse').style.display = 'none';
-        document.getElementById('multiplechoiceresponse').style.display = 'block';
+        document.getElementById('multiplechoiceresponse').style.display = 'flex';
     } else {
         document.getElementById('paragraphresponse').style.display = 'none';
         document.getElementById('multiplechoiceresponse').style.display = 'none';
     }
 };
 
+const reportCheckboxes = () => {
+    let report = '';
+
+    if (document.getElementById('choicea').checked)
+        report += 'A';
+    if (document.getElementById('choiceb').checked)
+        report += 'B';
+    if (document.getElementById('choicec').checked)
+        report += 'C';
+    if (document.getElementById('choiced').checked)
+        report += 'D';
+
+    console.log(report);
+    return report;
+};
+
+const clearCheckboxes = () => {
+    document.getElementById('choicea').checked = false;
+    document.getElementById('choiceb').checked = false;
+    document.getElementById('choicec').checked = false;
+    document.getElementById('choiced').checked = false;
+};
+
 const nextQuestion = () => {
+    reportCheckboxes();
+    clearCheckboxes();
     currentQuestion = (currentQuestion + 1) % quiz.questionList.length;
     question = quiz.questionList[currentQuestion];
     extractQuestionData();
@@ -116,6 +136,8 @@ const prevQuestion = () => {
     if (currentQuestion <= 0) {
         return;
     }
+    reportCheckboxes();
+    clearCheckboxes();
     currentQuestion = currentQuestion - 1;
     question = quiz.questionList[currentQuestion];
     extractQuestionData();
@@ -185,4 +207,8 @@ const runTests = () => {
 
         document.getElementById('testtable').appendChild(trTest);
     }
+};
+
+const submitQuestionForm = (e) => {
+    console.log('submitQuestionForm:' + e);
 };

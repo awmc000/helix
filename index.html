@@ -57,18 +57,28 @@
 
           <!-- Multiple choice response area. -->
           <div id="multiplechoiceresponse" style="display: none;">
-            <label for="choiceboxa">A</label>
-            <input type="checkbox" id="choiceboxa">
+            <form action="" onsubmit="submitQuestionForm()" method="post" style="display: flex; width: 100%;">
+              
+              <div class="choicebox" style="background-color: rgb(255, 69, 69);">
+                <label for="choiceboxa">Alpha the first answer</label>
+                <input type="checkbox" id="choicea" name="choicea">
+              </div>
 
-            <label for="choiceboxa">B</label>
-            <input type="checkbox" id="choiceboxa">
-            
-            <label for="choiceboxa">C</label>
-            <input type="checkbox" id="choiceboxa">
-            
-            <label for="choiceboxa">D</label>
-            <input type="checkbox" id="choiceboxa">
-            
+              <div class="choicebox" style="background-color: rgb(90, 90, 255);">
+                <label for="choiceboxa">Beta the second answer</label>
+                <input type="checkbox" id="choiceb" name="choiceb">
+              </div>
+
+              <div class="choicebox" style="background-color: rgb(78, 195, 78);">
+                <label for="choiceboxa">C is the third answer</label>
+                <input type="checkbox" id="choicec" name="choicec">
+              </div>
+              
+              <div class="choicebox" style="background-color: orange;">
+                <label for="choiceboxa">D is the fourth answer</label>
+                <input type="checkbox" id="choiced" name="choiced">
+              </div>
+            </form>
           </div>
 
           <!-- Paragraph response area.-->
