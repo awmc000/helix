@@ -1,26 +1,26 @@
--- New User
+-- New User | IMPLEMENTED - createUser
 
 INSERT INTO Author (name, authorDescription, emailaddress) VALUES (%s, %s, %s);
 
--- New Course
+-- New Course | IMPLEMENTED - createCourse
 
 INSERT INTO Course (username, name, courseDescription) VALUES (%s, %s, %s);
 
--- New Quiz
+-- New Quiz | IMPLEMENTED - createQuiz
 
 INSERT INTO Quiz (courseID, name, availableAsync, label, quizDescription, durationMinutes) VALUES (%s, %s, %s, %s, %s, %s);
 
--- New Question
+-- New Question | IMPLEMENTED - createQuestion
 
-INSERT INTO Question (quizID, prompt, durationMinutes, durationSeconds) VALUES (%s, %s, 0, %s, %s);
+INSERT INTO Question (quizID, prompt, durationMinutes, durationSeconds) VALUES (%s, %s, %s, %s);
 
--- New AnswerKey
+-- New AnswerKey | IMPLEMENTED - createAnswerKey
 
 INSERT INTO AnswerKey (questionID, optionNumber, optionDescription, scoreValue) VALUES (%s, %s, %s, %s);
 
--- New Answers
+-- New Answers | IMPLEMENTED - processAnswer
 
-INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s);
+INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s) ON DUPLICATE KEY UPDATE optionNumber = VALUES(optionNumber);
 
 
 -- Show Quiz Info | IMPLEMENTED - assembleQuiz
