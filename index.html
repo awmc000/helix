@@ -81,8 +81,10 @@
             </form>
           </div>
 
+          <!-- Other response types are now a stretch feature! -->
           <!-- Paragraph response area.-->
           <textarea id="paragraphresponse" style="display: none; margin-left: 10px; width: 274px; height: 100px;"></textarea>
+
           <!-- Navigation buttons -->
           <table style="width: 100%">
             <td class="arrow">
@@ -103,11 +105,11 @@
       <button onclick="fetchData()">Fetch Data Test!</button>
       <span id="dataplace">no data yet</span>
 
-      <button onclick="runTests()">Run tests</button>
-      <table id="testtable">
+      <button onclick="runTests()">Run tests <i>(refresh first and don't interact with page)</i></button>
+      <table id="testtable" style="background-color: rgb(255, 255, 255);">
         <tr>
-          <td>Test</td>
-          <td>Result</td>
+          <td><strong>Test</strong></td>
+          <td><strong>Result</strong></td>
         </tr>
       </table>
     </div>

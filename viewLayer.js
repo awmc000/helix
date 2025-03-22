@@ -5,12 +5,6 @@
 * 
 */
 
-// Global variable: current question
-// let question = {
-//     prompt: 'Hit the next arrow to start the quiz.',
-//     title: 'Quiz',
-// };
-
 // Current question index
 let currentQuestion = -1;
 
@@ -89,7 +83,7 @@ const quiz = {
 const extractQuestionData = () => {
     // Set prompt and title
     document.getElementById('questionprompt').innerText = question.prompt;
-    document.getElementById('questiontitle').innerText = question.questionID;
+    document.getElementById('questiontitle').innerText = 'Question #' + question.questionID;
     
     // Disable / enable appropriate response area divs
     if (question.questionID != 0) {
@@ -101,6 +95,7 @@ const extractQuestionData = () => {
     }
 };
 
+// Returns a string containing the checked multi choice options.
 const reportCheckboxes = () => {
     let report = '';
 
@@ -117,6 +112,7 @@ const reportCheckboxes = () => {
     return report;
 };
 
+// Unchecks all multi choice options to prepare for next question.
 const clearCheckboxes = () => {
     document.getElementById('choicea').checked = false;
     document.getElementById('choiceb').checked = false;
@@ -188,18 +184,73 @@ const tests = [
             return document.getElementById('questionprompt').innerText == 'Press next > to start the quiz.';
         },
     },
+    {
+        'label': 'Checkboxes are cleared when going to next question',
+        'func': () => {
+            nextQuestion();
+            nextQuestion();
+
+            if (document.getElementById('choicea').checked)
+                return false;
+            if (document.getElementById('choiceb').checked)
+                return false;
+            if (document.getElementById('choicec').checked)
+                return false;
+            if (document.getElementById('choiced').checked)
+                return false;
+            return true;
+        },
+    },
+    {
+        'label': 'reportCheckboxes: none case',
+        'func': () => {
+            nextQuestion();
+            nextQuestion();
+
+            clearCheckboxes();
+            return reportCheckboxes() == '';
+        },
+    },
+    {
+        'label': 'reportCheckboxes: one case',
+        'func': () => {
+            nextQuestion();
+            nextQuestion();
+
+            clearCheckboxes();
+            document.getElementById('choicec').checked = true;
+            return reportCheckboxes() == 'C';
+        },
+    },
+    {
+        'label': 'reportCheckboxes: four case',
+        'func': () => {
+            nextQuestion();
+            nextQuestion();
+
+            clearCheckboxes();
+            document.getElementById('choicea').checked = true;
+            document.getElementById('choiceb').checked = true;
+            document.getElementById('choicec').checked = true;
+            document.getElementById('choiced').checked = true;
+            return reportCheckboxes() == 'ABCD';
+        },
+    },
 ];
 
 const runTests = () => {
+    let i = 0;
     for (const test of tests) {
         let testFunction = test.func;
         let res = testFunction();
 
         let tdLabel = document.createElement('td');
-        tdLabel.innerText = test.label;
+        tdLabel.innerText = i++ + '. ' + test.label;
+        tdLabel.style.fontStyle = 'italic';
 
         let tdRes = document.createElement('td');
         tdRes.innerText = res ? 'PASS' : 'FAIL';
+        tdRes.style.backgroundColor = res ? 'lightgreen' : 'red';
 
         let trTest = document.createElement('tr');
         trTest.appendChild(tdLabel);
