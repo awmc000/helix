@@ -1,118 +1,127 @@
 <!DOCTYPE html>
 <html>
 
-  <!-- Head -->
-  <head>
-    <meta charset="utf-8">
-    <title>Helix</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="viewLayer.js"></script>
-  </head>
+<!-- Head -->
+<head>
+  <meta charset="utf-8">
+  <title>Helix</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="viewLayer.js"></script>
+</head>
 
-  <!-- Body -->
-  <body onload="extractQuestionData()">
-    <!-- Nav Bar -->
-    <div class="topbar">
-      <table style="width: 100%">
-        <tr>
-          <!-- Prev arrow -->
+<!-- Body -->
+<body onload="extractQuestionData()">
+  <!-- Nav Bar -->
+  <div class="topbar">
+    <table style="width: 100%">
+      <tr>
+        <!-- Prev arrow -->
+        <td class="arrow">
+          <a href="#" onclick="prevQuestion();">⬅️</a>
+        </td>
+        
+        <!-- Quiz name -->
+        <td><h1 class="title">QuizName</h1></td>
+        
+        <!-- Next arrow -->
+        <td class="arrow">
+          <a href="#" onclick="nextQuestion();">➡️</a>
+        </td>
+      </tr>
+      <!-- <tr>
+        <td></td>
+        <td>O O O O O</td>
+      </tr> -->
+    </table>
+  </div>
+  
+  <!-- Select quiz -->
+  <form action="">
+    <select style="margin: 5px;">
+      <option value="quiz1">Quiz 1</option>
+      <option value="quiz2">Quiz 2</option>
+      <option value="quiz3">Quiz 3</option>
+    </select>
+    <input type="submit" value="Go">
+  </form>
+  <!-- Question Window -->
+  <div class="questionouter">
+    <div class="question">
+      
+      <!-- Question Header -->
+      <div class="questionheadingbox" style="display: flex;">
+        <!-- Question Title -->
+        <h2 style="margin-left: 4px;" id="questiontitle">QuestionTitle</h2>
+      </div>
+      
+      <!-- Question Prompt -->
+      <div style="height: 115px;">
+        <p class="questionprompt" id="questionprompt">
+          Loading...
+        </p>
+      </div>
+      
+      <!-- Responses div -->
+      <div style="height: 115px;">
+        
+        <!-- Multiple choice response area. -->
+        <div id="multiplechoiceresponse" style="display: none;">
+          <form action="" onsubmit="submitQuestionForm()" method="post" style="display: flex; width: 100%;">
+            
+            <div class="choicebox" style="background-color: rgb(255, 69, 69);">
+              <label for="choiceboxa">Alpha the first answer</label>
+              <input type="checkbox" id="choicea" name="choicea">
+            </div>
+            
+            <div class="choicebox" style="background-color: rgb(90, 90, 255);">
+              <label for="choiceboxa">Beta the second answer</label>
+              <input type="checkbox" id="choiceb" name="choiceb">
+            </div>
+            
+            <div class="choicebox" style="background-color: rgb(78, 195, 78);">
+              <label for="choiceboxa">C is the third answer</label>
+              <input type="checkbox" id="choicec" name="choicec">
+            </div>
+            
+            <div class="choicebox" style="background-color: orange;">
+              <label for="choiceboxa">D is the fourth answer</label>
+              <input type="checkbox" id="choiced" name="choiced">
+            </div>
+          </form>
+        </div>
+        
+        <!-- Other response types are now a stretch feature! -->
+        <!-- Paragraph response area.-->
+        <textarea id="paragraphresponse" style="display: none; margin-left: 10px; width: 274px; height: 100px;"></textarea>
+        
+        <!-- Navigation buttons -->
+        <table style="width: 100%">
           <td class="arrow">
             <a href="#" onclick="prevQuestion();">⬅️</a>
           </td>
-
-          <!-- Quiz name -->
-          <td><h1>QuizName</h1></td>
-
-          <!-- Next arrow -->
-          <td class="arrow">
-            <a href="#" onclick="nextQuestion();">➡️</a>
-          </td>
-        </tr>
-        <!-- <tr>
           <td></td>
-          <td>O O O O O</td>
-        </tr> -->
-      </table>
-    </div>
-
-    <!-- Question Window -->
-    <div class="questionouter">
-      <div class="question">
-
-        <!-- Question Header -->
-        <div class="questionheadingbox" style="display: flex;">
-          <!-- Question Title -->
-          <h2 style="margin-left: 4px;" id="questiontitle">QuestionTitle</h2>
-        </div>
-
-        <!-- Question Prompt -->
-        <div style="height: 115px;">
-          <p class="questionprompt" id="questionprompt">
-            Loading...
-          </p>
-        </div>
-
-        <!-- Responses div -->
-        <div style="height: 115px;">
-
-          <!-- Multiple choice response area. -->
-          <div id="multiplechoiceresponse" style="display: none;">
-            <form action="" onsubmit="submitQuestionForm()" method="post" style="display: flex; width: 100%;">
-              
-              <div class="choicebox" style="background-color: rgb(255, 69, 69);">
-                <label for="choiceboxa">Alpha the first answer</label>
-                <input type="checkbox" id="choicea" name="choicea">
-              </div>
-
-              <div class="choicebox" style="background-color: rgb(90, 90, 255);">
-                <label for="choiceboxa">Beta the second answer</label>
-                <input type="checkbox" id="choiceb" name="choiceb">
-              </div>
-
-              <div class="choicebox" style="background-color: rgb(78, 195, 78);">
-                <label for="choiceboxa">C is the third answer</label>
-                <input type="checkbox" id="choicec" name="choicec">
-              </div>
-              
-              <div class="choicebox" style="background-color: orange;">
-                <label for="choiceboxa">D is the fourth answer</label>
-                <input type="checkbox" id="choiced" name="choiced">
-              </div>
-            </form>
-          </div>
-
-          <!-- Other response types are now a stretch feature! -->
-          <!-- Paragraph response area.-->
-          <textarea id="paragraphresponse" style="display: none; margin-left: 10px; width: 274px; height: 100px;"></textarea>
-
-          <!-- Navigation buttons -->
-          <table style="width: 100%">
-            <td class="arrow">
-              <a href="#" onclick="prevQuestion();">⬅️</a>
-            </td>
-            <td></td>
-            <td class="arrow">
-              <a href="#"  onclick="nextQuestion();">➡️</a>
-            </td>
-          </table>
-        </div>
+          <td class="arrow">
+            <a href="#"  onclick="nextQuestion();">➡️</a>
+          </td>
+        </table>
       </div>
     </div>
-
-    <!-- Development Area - Hide in Prod -->
-    <div class="developmentarea" id="developmentarea">
-      <h2>Dev Area - Hidden in Production</h2>
-      <button onclick="fetchData()">Fetch Data Test!</button>
-      <span id="dataplace">no data yet</span>
-
-      <button onclick="runTests()">Run tests <i>(refresh first and don't interact with page)</i></button>
-      <table id="testtable" style="background-color: rgb(255, 255, 255);">
-        <tr>
-          <td><strong>Test</strong></td>
-          <td><strong>Result</strong></td>
-        </tr>
-      </table>
-    </div>
-  </body>
+  </div>
+  
+  <!-- Development Area - Hide in Prod -->
+  <div class="developmentarea" id="developmentarea">
+    <h2>Dev Area - Hidden in Production</h2>
+    <button onclick="fetchData()">Fetch Data Test!</button>
+    <span id="dataplace">no data yet</span>
+    
+    <button onclick="runTests()">Run tests <i>(refresh first and don't interact with page)</i></button>
+    <table id="testtable" style="background-color: rgb(255, 255, 255);">
+      <tr>
+        <td><strong>Test</strong></td>
+        <td><strong>Result</strong></td>
+      </tr>
+    </table>
+  </div>
+</body>
 
 </html>

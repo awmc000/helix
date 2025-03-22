@@ -11,10 +11,13 @@ h1 {
 .topbar {
     background-color: blue;
     color: white;
-    text-align: center;
     padding: 5px;
+}
+
+.title {
     -webkit-text-stroke: 3px black;
     paint-order: stroke fill;
+    text-align: center;
 }
 
 .arrow {
