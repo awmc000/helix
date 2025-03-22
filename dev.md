@@ -91,6 +91,32 @@ passwords in plaintext!!!!**
 - Lists in Python are lists in JSON
 - Notation is very similar
 
+```python
+answer = {
+    'optionNumber': -1,
+    'optDescription': 'Red',
+    'scoreValue': -1,
+}
+
+question = {
+    'questionID': -1,
+    'prompt': 'What is the first colour in the rainbow?',
+    'durationMins': -1,
+    'durationSecs': -1,
+    'answers': [answer],
+}
+
+quiz = {
+    'name': 'Preschool Graduation Exam NO RETAKES',
+    'asynchronous': True,
+    'label': 'quiz1',
+    'description': 'A quiz of some kind',
+    'durationMins': -1,
+    'durationSecs': -1,
+    'questionList': [question],
+}
+```
+
 ### Javascript and JSON
 
 The following code block outlines how quizzes, questions, and 
