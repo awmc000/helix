@@ -74,6 +74,18 @@ const showManyById = (ids) => {
     }
 }
 
+const getAvailableQuizzes = () => {
+
+};
+
+const drawQuizMap = () => {
+
+};
+
+const drawCourseMap = () => {
+
+};
+
 /* ======================================================================================
  * Hardcoded Test Data, to be removed and fetched from API as soon as possible
  * ====================================================================================== */
