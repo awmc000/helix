@@ -87,7 +87,14 @@ function `fetch()`.
 - Each time the user hits next or prev, their answer is updated by a POST request
 to the API.
 ## Rest API
-- todo
+- wishlist from frontend dev:
+    - `GET` request to `/available`: an endpoint that returns all the quizzes that are currently 
+    available to take, as a list of quiz objects like in the python schema below.
+    - `GET` request to `/quiz`: an endpoint that takes a quiz label and returns the entire quiz object.
+    - `POST` request to `/answer`: an endpoint that takes a JSON object having 3 keys: a quiz label, a questionID,
+    and a string of choices, of the form '' for selecting nothing and 'ABC' if user selected A, B,  and C, etc.
+    Let me know if you think a list like [] and ['A', 'B', 'C'] would be better?
+
 ## Data Layer
 - The data layer is implemented as a Python module which the API can use to encapsulate interactions with the database
 ## Security & Encryption
