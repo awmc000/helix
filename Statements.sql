@@ -60,6 +60,10 @@ SELECT optionNumber, optionDescription, scoreValue FROM AnswerKey WHERE question
 
 SELECT COUNT(*) FROM Answers WHERE questionID = %s;
 
+-- Get each score in each question
+
+SELECT scoreValue FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;
+
 -- Get the sum of the scores per question
 
 SELECT SUM(scoreValue) FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;

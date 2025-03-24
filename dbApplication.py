@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
+import statistics
 import json
 
 
@@ -216,6 +217,43 @@ def createAuthor(author, database):
     return updateDatabase("INSERT INTO Author (name, authorDescription, emailaddress) VALUES (%s, %s, %s)", list(author.values()), database)
 
 
+# Processes specific analytics for the quiz specifed by quizID in the following format:
+#
+# Returns the results as a ptython dictonary in the following format:
+#       "numOfResponses" -> A list showing the number of people who responded to each question
+#       "meanScore" -> A list containing the mean score for each question
+#       "medianScore" -> A list containing the median score for each question
+#       "leastCorrect" -> A 2 element list where the first element is the number of people who got the question correct, the 2nd element is the question prompt
+#       "mostCorrect" -> A 2 element list where the first element is the number of people who got the question correct, the 2nd element is the question prompt
+#       "homogenous" -> A 2 element list where the first element is the question prompt, and the 2nd element is the Variance in the results 
+#       "heterogenous" -> A 2 element list where the first element is the question prompt, and the 2nd element is the Variance in the results 
+#
+# quizID is the identifier for the quiz you want aggregate results for
+# database is the database connection
+# Returns The results in the above format if sucessful, otherwise None
 def createAnalytics(quizID, database):
-    return None
-    # Will do later. I dont have much motivation at the time of writing
+    quiz = assembleQuiz(quizID, database)
+
+    count = []
+    scorePerQuestion = []
+    scorePerResponse = []
+
+    for question in quiz["questionList"]:
+        count.append(retrieveFromDatabase("SELECT COUNT(*) FROM Answers WHERE questionID = %s;", question["questionID"], database))
+        scorePerQuestion.append(retrieveFromDatabase("SELECT SUM(scoreValue) FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", question["questionID"], database))
+        scorePerResponse.append(retrieveFromDatabase("SELECT scoreValue FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", question["questionID"], database))
+
+    mean = []
+    median = []
+
+    for i in quiz["questionList"]:
+        mean.append(scorePerQuestion[i] // count[i])
+        median.append(statistics.median(scorePerResponse[i]))
+
+    minCorrect = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID) SELECT MIN(correct) AS minCorrect, prompt FROM (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question JOIN correctAnswers ON Answers.attemptID = correctAnswers.attemptID JOIN Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) AS counts GROUP BY prompt;", quizID, database)
+    maxCorrect = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID) SELECT MAX(correct) AS maxCorrect, prompt FROM (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question JOIN correctAnswers ON Answers.attemptID = correctAnswers.attemptID JOIN Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) AS counts GROUP BY prompt;", quizID, database)
+    leastVariance = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID), attemptCount AS (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question JOIN correctAnswers ON Answers.attemptID = correctAnswers.attemptID Join Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) SELECT prompt, VARIANCE(correct) AS variance FROM attemptCount GROUP BY prompt ORDER BY variance ASC LIMIT 1;", quizID, database)
+    mostVariance = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID), attemptCount AS (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question JOIN correctAnswers ON Answers.attemptID = correctAnswers.attemptID Join Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) SELECT prompt, VARIANCE(correct) AS variance FROM attemptCount GROUP BY prompt ORDER BY variance DESC LIMIT 1;", quizID, database)
+
+    result = dict(numOfResponses = count, meanScore = mean, medianScore = median, leastCorrect = minCorrect, mostCorrect = maxCorrect, homogenous = leastVariance, heterogenous = mostVariance)
+    return result
