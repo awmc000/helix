@@ -36,13 +36,10 @@
   </div>
   
   <!-- Select quiz -->
-  <form action="">
-    <select style="margin: 5px;">
-      <option value="quiz1">Quiz 1</option>
-      <option value="quiz2">Quiz 2</option>
-      <option value="quiz3">Quiz 3</option>
+  <form>
+    <select style="margin: 5px; width: 100px;" id="quizselect" onchange="fetchQuiz()">
+      <option value="filler">Select a quiz here</option>
     </select>
-    <input type="submit" value="Go">
   </form>
   <!-- Question Window -->
   <div class="questionouter">

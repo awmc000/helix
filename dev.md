@@ -69,10 +69,23 @@ or hidden depending on the **state** of the application.
     - Responding to a quiz
     - Creating a quiz
     - Creating a course
+    - Editing instructor profile (for instructors only, naturally)
 - The frontend functions get data by POST and GET requests
 to the API.
 - They make these requests asynchronously using the Javascript
 function `fetch()`.
+### Responding to Quizzes
+- Information stored as global state includes:
+    - List of available quizzes, only the info needed to fetch them.
+    - A copy of the current quiz.
+    - A variable tracking current question index, used for creating, editing
+    and responding to quizzes.
+- When the page is loaded, `setup()` is run.
+- `setup()` fetches a list of available quizzes.
+- Until a quiz is selected, filler text is shown.
+- Once a quiz is selected and fetched, it is loaded in to be completed.
+- Each time the user hits next or prev, their answer is updated by a POST request
+to the API.
 ## Rest API
 - todo
 ## Data Layer

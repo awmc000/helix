@@ -9,8 +9,7 @@
  * Global Variables
  * ====================================================================================== */
 
-// Current quiz and question index in list
-let currentQuizIndex = -1;
+// Current question index in list
 let currentQuestionIndex = -1;
 
 // Current state
@@ -20,8 +19,11 @@ const CREATING_COURSE               = 2;
 const EDITING_INSTRUCTOR_PROFILE    = 3;
 
 let windowState = TAKING_QUIZ;
-let currentQuiz = undefined;
-let currentQuestion = undefined;
+
+let currentQuizIndex = -1;
+
+var quiz;
+var availableQuizzes;
 
 /* ======================================================================================
  * State-Related Functions, Hiding/Showing Elements, Etc.
@@ -32,7 +34,20 @@ let currentQuestion = undefined;
  * Sets up global pointer variables, etc.
  */
 const setup = () => {
+    // Load available quizzes
+    availableQuizzes = getAvailableQuizzes();
+
+    // Create quiz map from the quizzes loaded
+    drawQuizMap();
+
+    // Set current quiz to first of them
+    quiz = loadFullQuiz(availableQuizzes[0]);
+
+    // Draw question answer screen from first quiz loaded?
     extractQuestionData();
+
+    // Set elements according to initial state
+    setStateElements();
 };
 
 const setStateElements = () => {
@@ -73,18 +88,6 @@ const showManyById = (ids) => {
         showById(id);
     }
 }
-
-const getAvailableQuizzes = () => {
-
-};
-
-const drawQuizMap = () => {
-
-};
-
-const drawCourseMap = () => {
-
-};
 
 /* ======================================================================================
  * Hardcoded Test Data, to be removed and fetched from API as soon as possible
@@ -155,7 +158,7 @@ let quiz1 = {
 let quiz2 = {
     'name': 'Test2',
     'asynchronous': true,
-    'label': 'quiz1',
+    'label': 'quiz2',
     'description': 'A quiz of some kind',
     'durationMins': -1,
     'durationSecs': -1,
@@ -171,7 +174,44 @@ const quizzes = [
     quiz2,
 ];
 
-let quiz = quizzes[0];
+const loadFullQuiz = (label) => {
+    return quizzes[0];
+};
+
+const getAvailableQuizzes = () => {
+    // TODO: Retrieve from API
+    // Currently stubbed out to use test data!
+    console.log('(getAvailableQuizzes) TODO: GET request for available quizzes')
+    let re = [];
+
+    for (quiz of quizzes) {
+        re.push({
+            'name': quiz.name,
+            'label': quiz.label,
+            'description': quiz.description,
+        });
+    }
+
+    return re;
+};
+
+/*
+ * Assuming availableQuizzes have already been fetched,
+ * draws the drop down list of them. 
+ */
+const drawQuizMap = () => {
+    for (const quizInfo of availableQuizzes) {
+        // option tag, value=quizInfo.label, inner text = name + desc.
+        let optionTag = document.createElement('option');
+        optionTag.value = quizInfo.label;
+        optionTag.innerText = quizInfo.name + ': ' + quizInfo.description;
+        document.getElementById('quizselect').appendChild(optionTag);
+    }
+};
+
+const drawCourseMap = () => {
+
+};
 
 
 // Fills in the page with current question's fields.
@@ -204,7 +244,8 @@ const reportCheckboxes = () => {
     if (document.getElementById('choiced').checked)
         report += 'D';
 
-    console.log(report);
+    report = { 'quiz': quiz.label, 'questionID': question.questionID, choices: report}
+
     return report;
 };
 
@@ -218,6 +259,7 @@ const clearCheckboxes = () => {
 
 const nextQuestion = () => {
     reportCheckboxes();
+    submitQuestionAnswer();
     clearCheckboxes();
     currentQuestionIndex = (currentQuestionIndex + 1) % quiz.questionList.length;
     question = quiz.questionList[currentQuestionIndex];
@@ -316,7 +358,7 @@ const tests = [
             nextQuestion();
 
             clearCheckboxes();
-            return reportCheckboxes() == '';
+            return reportCheckboxes().choices == '';
         },
     },
     {
@@ -327,7 +369,7 @@ const tests = [
 
             clearCheckboxes();
             document.getElementById('choicec').checked = true;
-            return reportCheckboxes() == 'C';
+            return reportCheckboxes().choices == 'C';
         },
     },
     {
@@ -341,7 +383,7 @@ const tests = [
             document.getElementById('choiceb').checked = true;
             document.getElementById('choicec').checked = true;
             document.getElementById('choiced').checked = true;
-            return reportCheckboxes() == 'ABCD';
+            return reportCheckboxes().choices == 'ABCD';
         },
     },
 ];
@@ -370,4 +412,16 @@ const runTests = () => {
 
 const submitQuestionForm = (e) => {
     console.log('submitQuestionForm:' + e);
+};
+
+const fetchQuiz = () => {
+    let targetQuiz = document.getElementById('quizselect').value;
+    console.log('(fetchQuiz) TODO: GET request to get quiz ' + targetQuiz);
+    loadFullQuiz(targetQuiz);
+};
+
+const submitQuestionAnswer = () => {
+    let report = reportCheckboxes();
+    console.log('(submitQuestionAnswer) TODO: POST request with answer "' 
+    + report.choices + '" on "' + report.questionID + '"');
 };
