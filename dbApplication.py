@@ -8,7 +8,6 @@ import json
 # Requires no Parameters
 # Returns the database connection object
 def connectToDatabase (username, password):
-    loggedIn = False
 
     try:
         database = mysql.connector.connect(
@@ -19,8 +18,10 @@ def connectToDatabase (username, password):
         )
     except Error as e:
         print("Error: {e}")
+        return None
+
+    return database
         
-    loggedIn = True
 
 # Closes the connection from the database
 # Requires a database object as a paramater
@@ -69,6 +70,7 @@ def updateDatabase (sqlQuery, values, database):
         
     except Error as e:
         print("Error: {e}")
+        return None
 
 
 # Creates a quiz dictonary associated with the quizID provided with the following schema:
@@ -95,11 +97,14 @@ def updateDatabase (sqlQuery, values, database):
 #
 # quizID is the Idnetifier of the quiz you want to retrieve form the database
 # database is the database object you want to get the quiz from
-# Returns a Quiz dictonary
+# Returns a Quiz dictonary if sucessful, None otherwise
 def assembleQuiz (quizID, database) :
 
     questions = []
     results = retrieveFromDatabase("SELECT questionID, prompt, durationMinutes, durationSeconds FROM Question WHERE quizID = %s;", quizID, database)
+    if(not results):
+        return None
+    
     for row in results:
         ident, desc, asked, mins, secs = row
         Question = dict(questionID = ident, prompt = desc, durationMins = mins, durationSecs = secs, answers = [])
@@ -117,6 +122,9 @@ def assembleQuiz (quizID, database) :
         questions[i]["answers"] = answer[i]
 
     quizName, availableAsync, quizLabel, quizDescription, minutes = retrieveFromDatabase("SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE quizID = %s;", quizID, database)
+    if(not quizName):
+        return None
+
     Quiz = dict(name = quizName, asynchronous = availableAsync, label = quizLabel, description = quizDescription, durationMins = minutes, questionList = questions)
 
     return Quiz
@@ -143,7 +151,10 @@ def jsonToPython(someObject):
 # Returns a quizList dictonary
 def getQuizList(database):
     quizList = []
-    results = retrieveFromDatabase("SELECT quizID, quizName FROM Quiz",[], database)
+    results = retrieveFromDatabase("SELECT quizID, quizName FROM Quiz", None, database)
+    if(not results):
+        return None
+    
     for row in results:
         quizID, quizName = row
         nameIDPair = dict(id = quizID, name = quizName)
@@ -161,6 +172,9 @@ def getQuizList(database):
 def getQuizListFromCourse(courseID, database):
     quizList = []
     results = retrieveFromDatabase("SELECT quizID, quizName FROM Quiz WHERE courseID = %s", courseID, database)
+    if(not results):
+        return None
+    
     for row in results:
         quizID, quizName = row
         nameIDPair = dict(id = quizID, name = quizName)
@@ -233,6 +247,9 @@ def createAuthor(author, database):
 # Returns The results in the above format if sucessful, otherwise None
 def createAnalytics(quizID, database):
     quiz = assembleQuiz(quizID, database)
+    if(not quiz):
+        return None
+    
 
     count = []
     scorePerQuestion = []
