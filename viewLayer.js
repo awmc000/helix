@@ -205,16 +205,15 @@ let quiz1 = {
 };
 
 let quiz2 = {
-    'name': 'Space and Science Quiz',
+    'name': 'Periodic Table Quiz',
     'asynchronous': true,
     'label': 'quiz2',
     'description': 'A quiz about space and science.',
     'durationMins': 4,
     'durationSecs': 30,
     'questionList': [
-        question3,
         {
-            'questionID': 4,
+            'questionID': 1,
             'prompt': 'What is the chemical symbol for water?',
             'durationMins': 1,
             'durationSecs': 15,
@@ -237,6 +236,34 @@ let quiz2 = {
                 {
                     'optionNumber': 4,
                     'optDescription': 'NaCl',
+                    'scoreValue': 0,
+                }
+            ]
+        },
+        {
+            'questionID': 2,
+            'prompt': 'What is the chemical symbol for gold?',
+            'durationMins': 1,
+            'durationSecs': 15,
+            'answers': [
+                {
+                    'optionNumber': 1,
+                    'optDescription': 'AU',
+                    'scoreValue': 1,
+                },
+                {
+                    'optionNumber': 2,
+                    'optDescription': 'K',
+                    'scoreValue': 0,
+                },
+                {
+                    'optionNumber': 3,
+                    'optDescription': 'Go',
+                    'scoreValue': 0,
+                },
+                {
+                    'optionNumber': 4,
+                    'optDescription': 'Cl',
                     'scoreValue': 0,
                 }
             ]
