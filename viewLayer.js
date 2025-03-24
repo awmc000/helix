@@ -10,7 +10,7 @@
  * ====================================================================================== */
 
 // Current question index in list
-let currentQuestionIndex = -1;
+let currentQuestionIndex = 0;
 
 // Current state
 const TAKING_QUIZ                   = 0;
@@ -23,6 +23,7 @@ let windowState = TAKING_QUIZ;
 let currentQuizIndex = -1;
 
 var quiz;
+var question;
 var availableQuizzes;
 
 /* ======================================================================================
@@ -41,7 +42,9 @@ const setup = () => {
     drawQuizMap();
 
     // Set current quiz to first of them
-    quiz = loadFullQuiz(availableQuizzes[0]);
+    quiz = loadFullQuiz('quiz1');
+
+    question = quiz.questionList[0];
 
     // Draw question answer screen from first quiz loaded?
     extractQuestionData();
@@ -94,60 +97,106 @@ const showManyById = (ids) => {
  * ====================================================================================== */
 
 // Hardcoded dummy objects for test purposes
-let answer = {
-    'optionNumber': -1,
+// More interesting dummy data generated with ChatGPT
+let answer1 = {
+    'optionNumber': 1,
     'optDescription': 'Red',
-    'scoreValue': -1,
+    'scoreValue': 1,
 };
 
-let question = {
-    'questionID': 0,
-    'prompt': 'Press next > to start the quiz.',
-    'durationMins': -1,
-    'durationSecs': -1,
-    'answers': [
-        answer,
-    ],
+let answer2 = {
+    'optionNumber': 2,
+    'optDescription': 'Blue',
+    'scoreValue': 0,
 };
 
+let answer3 = {
+    'optionNumber': 3,
+    'optDescription': 'Green',
+    'scoreValue': 0,
+};
+
+let answer4 = {
+    'optionNumber': 4,
+    'optDescription': 'Yellow',
+    'scoreValue': 0,
+};
 
 let question1 = {
     'questionID': 1,
-    'prompt': 'What is the first colour in the rainbow?',
-    'durationMins': -1,
-    'durationSecs': -1,
+    'prompt': 'What is the first color in the rainbow?',
+    'durationMins': 1,
+    'durationSecs': 30,
     'answers': [
-        answer,
+        answer1, answer2, answer3, answer4
     ],
 };
 
 let question2 = {
     'questionID': 2,
-    'prompt': 'What is the first colour in the rainbow?',
-    'durationMins': -1,
-    'durationSecs': -1,
+    'prompt': 'What is the capital of France?',
+    'durationMins': 1,
+    'durationSecs': 30,
     'answers': [
-        answer,
+        {
+            'optionNumber': 1,
+            'optDescription': 'Berlin',
+            'scoreValue': 0,
+        },
+        {
+            'optionNumber': 2,
+            'optDescription': 'Madrid',
+            'scoreValue': 0,
+        },
+        {
+            'optionNumber': 3,
+            'optDescription': 'Paris',
+            'scoreValue': 1,
+        },
+        // {
+        //     'optionNumber': 4,
+        //     'optDescription': 'Rome',
+        //     'scoreValue': 0,
+        // }
     ],
 };
 
 let question3 = {
     'questionID': 3,
-    'prompt': 'What is the first colour in the rainbow?',
-    'durationMins': -1,
-    'durationSecs': -1,
+    'prompt': 'Which planet is known as the Red Planet?',
+    'durationMins': 1,
+    'durationSecs': 0,
     'answers': [
-        answer,
+        {
+            'optionNumber': 1,
+            'optDescription': 'Earth',
+            'scoreValue': 0,
+        },
+        {
+            'optionNumber': 2,
+            'optDescription': 'Mars',
+            'scoreValue': 1,
+        },
+        {
+            'optionNumber': 3,
+            'optDescription': 'Jupiter',
+            'scoreValue': 0,
+        },
+        {
+            'optionNumber': 4,
+            'optDescription': 'Venus',
+            'scoreValue': 0,
+        }
     ],
 };
 
 let quiz1 = {
-    'name': 'Preschool Graduation Exam NO RETAKES',
+    'name': 'General Knowledge Quiz',
     'asynchronous': true,
     'label': 'quiz1',
-    'description': 'A quiz of some kind',
-    'durationMins': -1,
-    'durationSecs': -1,
+    'description': 'A simple general knowledge quiz.',
+    'durationMins': 5,
+    'durationSecs': 0,
     'questionList': [
         question1,
         question2,
@@ -156,16 +205,42 @@ let quiz1 = {
 };
 
 let quiz2 = {
-    'name': 'Test2',
+    'name': 'Space and Science Quiz',
     'asynchronous': true,
     'label': 'quiz2',
-    'description': 'A quiz of some kind',
-    'durationMins': -1,
-    'durationSecs': -1,
+    'description': 'A quiz about space and science.',
+    'durationMins': 4,
+    'durationSecs': 30,
     'questionList': [
-        question1,
-        question2,
         question3,
+        {
+            'questionID': 4,
+            'prompt': 'What is the chemical symbol for water?',
+            'durationMins': 1,
+            'durationSecs': 15,
+            'answers': [
+                {
+                    'optionNumber': 1,
+                    'optDescription': 'H2O',
+                    'scoreValue': 1,
+                },
+                {
+                    'optionNumber': 2,
+                    'optDescription': 'CO2',
+                    'scoreValue': 0,
+                },
+                {
+                    'optionNumber': 3,
+                    'optDescription': 'O2',
+                    'scoreValue': 0,
+                },
+                {
+                    'optionNumber': 4,
+                    'optDescription': 'NaCl',
+                    'scoreValue': 0,
+                }
+            ]
+        }
     ]
 };
 
@@ -175,7 +250,14 @@ const quizzes = [
 ];
 
 const loadFullQuiz = (label) => {
-    return quizzes[0];
+    currentQuestionIndex = 0;
+    if (label == 'quiz1') {
+        quiz = quiz1;
+        return quiz1;
+    } else {
+        quiz = quiz2;
+        return quiz2;
+    }
 };
 
 const getAvailableQuizzes = () => {
@@ -228,6 +310,16 @@ const extractQuestionData = () => {
     } else {
         document.getElementById('paragraphresponse').style.display = 'none';
         document.getElementById('multiplechoiceresponse').style.display = 'none';
+    }
+
+    // Hide all the buttons
+    let buttons = ['choicediva', 'choicedivb', 'choicedivc', 'choicedivd']; 
+    hideManyById(buttons);
+
+    // Show the ones for which there is an answer
+    for (let i = 0; i < question.answers.length; i++) {
+        showById(buttons[i]);
+        document.getElementById(buttons[i]).getElementsByTagName('label')[0].innerText = question.answers[i].optDescription;
     }
 };
 
@@ -417,7 +509,9 @@ const submitQuestionForm = (e) => {
 const fetchQuiz = () => {
     let targetQuiz = document.getElementById('quizselect').value;
     console.log('(fetchQuiz) TODO: GET request to get quiz ' + targetQuiz);
-    loadFullQuiz(targetQuiz);
+    quiz = loadFullQuiz(targetQuiz);
+    question = quiz.questionList[0];
+    extractQuestionData();
 };
 
 const submitQuestionAnswer = () => {
