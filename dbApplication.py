@@ -8,7 +8,7 @@ import json
 # Requires no Parameters
 # Returns the database connection object
 def connectToDatabase (username, password):
-
+    database = None
     try:
         database = mysql.connector.connect(
             host= "localhost",
@@ -17,7 +17,7 @@ def connectToDatabase (username, password):
             database= "csci375team5_quizdb"
         )
     except Error as e:
-        print("Error: {e}")
+        print("Error: ", e)
         return None
 
     return database
@@ -38,7 +38,7 @@ def disconnectFromDatabase (database):
 def retrieveFromDatabase (sqlQuery, params, database):
     
     try:
-        if(database.isConnected()):
+        if(database.is_connected()):
             cursor = database.cursor()
             cursor.execute(sqlQuery, params)
             return cursor.fetchall()
@@ -46,7 +46,7 @@ def retrieveFromDatabase (sqlQuery, params, database):
         return None
 
     except Error as e:
-        print("Error: {e}")
+        print("Error: ", e)
         return None
 
     finally:
@@ -60,8 +60,8 @@ def retrieveFromDatabase (sqlQuery, params, database):
 # Returns True if sucessful, otherwise None
 def updateDatabase (sqlQuery, values, database):
     try:
-        if(database.isConnected()):
-            cursor = database.cursor
+        if(database.is_connected()):
+            cursor = database.cursor()
             cursor.execute(sqlQuery, values)
             database.commit()
             cursor.close()
@@ -69,7 +69,7 @@ def updateDatabase (sqlQuery, values, database):
         return None
         
     except Error as e:
-        print("Error: {e}")
+        print("Error: ", e)
         return None
 
 
@@ -228,7 +228,7 @@ def createCourse(course, database):
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def createAuthor(author, database):
-    return updateDatabase("INSERT INTO Author (name, authorDescription, emailaddress) VALUES (%s, %s, %s)", list(author.values()), database)
+    return updateDatabase("INSERT INTO Author (username, name, authorDescription, emailaddress) VALUES (%s, %s, %s %s)", list(author.values()), database)
 
 
 # Processes specific analytics for the quiz specifed by quizID in the following format:

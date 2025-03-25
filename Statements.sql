@@ -1,6 +1,6 @@
 -- New User | IMPLEMENTED - createUser
 
-INSERT INTO Author (name, authorDescription, emailaddress) VALUES (%s, %s, %s);
+INSERT INTO Author (username, name, authorDescription, emailaddress) VALUES (%s, %s, %s, %s);
 
 -- New Course | IMPLEMENTED - createCourse
 
