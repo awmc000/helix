@@ -53,6 +53,9 @@ const setup = () => {
     setStateElements();
 };
 
+/*
+ * Shows and hides elements to match the current windowState.
+ */
 const setStateElements = () => {
     if (windowState == TAKING_QUIZ) {
         showById('question');
@@ -86,6 +89,11 @@ const showById = (id) => {
     document.getElementById(id).style.display = 'unset';
 }
 
+/*
+ * Takes a list of IDs, removes the display property from all.
+ * I believe this would make them show *unless* they had a tag
+ * style to hide..?
+ */
 const showManyById = (ids) => {
     for (const id of ids) {
         showById(id);
@@ -191,6 +199,7 @@ let question3 = {
 };
 
 let quiz1 = {
+    'quizID': 1,
     'name': 'General Knowledge Quiz',
     'asynchronous': true,
     'label': 'quiz1',
@@ -205,6 +214,7 @@ let quiz1 = {
 };
 
 let quiz2 = {
+    'quizID': 2,
     'name': 'Periodic Table Quiz',
     'asynchronous': true,
     'label': 'quiz2',
@@ -287,6 +297,19 @@ const loadFullQuiz = (label) => {
     }
 };
 
+
+/* ======================================================================================
+ * API Interactions - Functions that actually hit endpoints with `fetch()`
+ * ====================================================================================== */
+
+/*
+ * Returns a list of quizzes available to do.
+ * The object fetched from the API is a list of partial/abbreviated
+ * quiz objects. It is of the form:
+ * [
+ *  {'quizID': 1, 'name': 'quiz 1', 'label': 'easy', 'description': 'some kind of quiz'},
+ * ]
+ */
 const getAvailableQuizzes = () => {
     // TODO: Retrieve from API
     // Currently stubbed out to use test data!
@@ -318,12 +341,40 @@ const drawQuizMap = () => {
     }
 };
 
+/*
+ * Draws the nav list of courses. Will probably require a function
+ * to hit the course list endpoint...
+ */
 const drawCourseMap = () => {
 
 };
 
+/*
+ * Sets the global quiz and question variables to point to the quiz
+ * selected in the dropdown menu.
+ */
+const fetchQuiz = () => {
+    let targetQuiz = document.getElementById('quizselect').value;
+    console.log('(fetchQuiz) TODO: GET request to get quiz ' + targetQuiz);
+    quiz = loadFullQuiz(targetQuiz);
+    question = quiz.questionList[0];
+    extractQuestionData();
+};
 
-// Fills in the page with current question's fields.
+/*
+ * Submits the answer to a question with a POST request. Overwrites any
+ * previous submitted answer, allowing changing of responses.
+ */
+const submitQuestionAnswer = () => {
+    let report = reportCheckboxes();
+    console.log('(submitQuestionAnswer) TODO: POST request with answer "' 
+    + report.choices + '" on "' + report.questionID + '"');
+};
+
+/* 
+ * Fills in the page with current question's fields.
+ * Will draw up to 4 choices for question answer.
+ */
 const extractQuestionData = () => {
     // Set prompt and title
     document.getElementById('pagetitle').innerText = quiz.name;
@@ -344,13 +395,16 @@ const extractQuestionData = () => {
     hideManyById(buttons);
 
     // Show the ones for which there is an answer
-    for (let i = 0; i < question.answers.length; i++) {
+    for (let i = 0; i < question.answers.length && i < 4; i++) {
         showById(buttons[i]);
         document.getElementById(buttons[i]).getElementsByTagName('label')[0].innerText = question.answers[i].optDescription;
     }
 };
 
-// Returns a string containing the checked multi choice options.
+/*
+ * Returns an object containing the questionID and checked multi choice options.
+ * Return value is of the form : { 'quiz': quizID, 'questionID': questionID }
+ */
 const reportCheckboxes = () => {
     let report = '';
 
@@ -363,6 +417,7 @@ const reportCheckboxes = () => {
     if (document.getElementById('choiced').checked)
         report += 'D';
 
+    // TODO: Change from quiz.label to quiz.quizID!
     report = { 'quiz': quiz.label, 'questionID': question.questionID, choices: report}
 
     return report;
@@ -376,6 +431,9 @@ const clearCheckboxes = () => {
     document.getElementById('choiced').checked = false;
 };
 
+/*
+ * Move to next question in current quiz, looping back to zero if at end.
+ */
 const nextQuestion = () => {
     reportCheckboxes();
     submitQuestionAnswer();
@@ -385,6 +443,9 @@ const nextQuestion = () => {
     extractQuestionData();
 };
 
+/*
+ * Move to prev question in currnt quiz, staying put if at beginning.
+ */
 const prevQuestion = () => {
     if (currentQuestionIndex <= 0) {
         return;
@@ -415,12 +476,16 @@ const handleKeypress = (e) => {
 document.addEventListener("keydown", handleKeypress);
 
 /* ======================================================================================
- * API Access Test
+ * API Access Test - will only work on campus!
  * ====================================================================================== */
 
-// API Access Test
+// IP address and port of `fastapi run api.py` running on a cub
 let apiAddress = "http://192.168.18.42:8000/";
 
+/*
+ * Fetches some kind of data from API root endpoint and displays it in
+ * dataplace span element.
+ */
 async function fetchData() {
     const url = apiAddress;
     try {
@@ -447,12 +512,6 @@ async function fetchData() {
  * Results printed to a table in the dev area.
  */
 const tests = [
-    {
-        'label': 'Question is initially filler text',
-        'func': () => {
-            return document.getElementById('questionprompt').innerText == 'Press next > to start the quiz.';
-        },
-    },
     {
         'label': 'Checkboxes are cleared when going to next question',
         'func': () => {
@@ -527,22 +586,4 @@ const runTests = () => {
 
         document.getElementById('testtable').appendChild(trTest);
     }
-};
-
-const submitQuestionForm = (e) => {
-    console.log('submitQuestionForm:' + e);
-};
-
-const fetchQuiz = () => {
-    let targetQuiz = document.getElementById('quizselect').value;
-    console.log('(fetchQuiz) TODO: GET request to get quiz ' + targetQuiz);
-    quiz = loadFullQuiz(targetQuiz);
-    question = quiz.questionList[0];
-    extractQuestionData();
-};
-
-const submitQuestionAnswer = () => {
-    let report = reportCheckboxes();
-    console.log('(submitQuestionAnswer) TODO: POST request with answer "' 
-    + report.choices + '" on "' + report.questionID + '"');
 };
