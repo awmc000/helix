@@ -35,26 +35,17 @@
     </table>
   </div>
   
-  <!-- Select quiz -->
-  <form>
-    <select style="margin: 5px; width: 100px;" id="quizselect" onchange="fetchQuiz()">
-      <option value="filler">Select a quiz here</option>
-    </select>
-  </form>
-  
   <!-- Question Window -->
   <div class="questionouter">
     <!-- Select Quiz Window -->
-    <div class="question" style="width: 120px; height: 180px;" id="availableQuizMap">
+    <div class="question" style="width: 120px; height: 180px;" id="availableQuizMapDiv">
       <!-- Quiz Map Header -->
       <div class="questionheadingbox" style="display: flex; background-color: blue;">
         <!-- Quiz Map Title -->
         <h2 style="margin-left: 4px;" id="quizmaptitle">QuizMap</h2>
       </div>
-      <ul>
-        <li><a href="#">Quiz 1</a></li>
-        <li><a href="#">Quiz 2</a></li>
-        <li><a href="#">Quiz 3</a></li>
+      <ul id="availableQuizMapList">
+        <!-- Filled in with <li> tags by markup. -->
       </ul>
     </div>
   

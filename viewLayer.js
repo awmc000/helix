@@ -42,7 +42,7 @@ const setup = () => {
     drawQuizMap();
 
     // Set current quiz to first of them
-    quiz = loadFullQuiz('quiz1');
+    quiz = loadFullQuiz(1);
 
     question = quiz.questionList[0];
 
@@ -286,15 +286,22 @@ const quizzes = [
     quiz2,
 ];
 
-const loadFullQuiz = (label) => {
+const loadFullQuiz = (id) => {
     currentQuestionIndex = 0;
-    if (label == 'quiz1') {
-        quiz = quiz1;
-        return quiz1;
-    } else {
-        quiz = quiz2;
-        return quiz2;
+    for (const availableQuiz of quizzes) {
+        if (availableQuiz.quizID == id) {
+            // Set global to this quiz, and return it
+            quiz = availableQuiz;
+            return quiz;
+        }
     }
+    // if (label == 'quiz1') {
+    //     quiz = quiz1;
+    //     return quiz1;
+    // } else {
+    //     quiz = quiz2;
+    //     return quiz2;
+    // }
 };
 
 
@@ -318,6 +325,7 @@ const getAvailableQuizzes = () => {
 
     for (quiz of quizzes) {
         re.push({
+            'quizID': quiz.quizID,
             'name': quiz.name,
             'label': quiz.label,
             'description': quiz.description,
@@ -332,13 +340,20 @@ const getAvailableQuizzes = () => {
  * draws the drop down list of them. 
  */
 const drawQuizMap = () => {
-    for (const quizInfo of availableQuizzes) {
-        // option tag, value=quizInfo.label, inner text = name + desc.
-        let optionTag = document.createElement('option');
-        optionTag.value = quizInfo.label;
-        optionTag.innerText = quizInfo.name + ': ' + quizInfo.description;
-        document.getElementById('quizselect').appendChild(optionTag);
-    }
+    availableQuizzes.forEach((quizInfo) => {
+        // li tag, with <a> inside
+        let listItemTag = document.createElement('li');
+        let anchorTag = document.createElement('a');
+        anchorTag.href = '#';
+        anchorTag.innerText = quizInfo.name;
+        anchorTag.title = quizInfo.description;
+
+        // On click function for each list item is a fetch function for that quizid
+        console.log('Attaching closer to li with id ' + quizInfo.quizID);
+        anchorTag.onclick = () => fetchQuizById(quizInfo.quizID);
+        listItemTag.appendChild(anchorTag);
+        document.getElementById('availableQuizMapList').appendChild(listItemTag);
+    });
 };
 
 /*
@@ -353,14 +368,12 @@ const drawCourseMap = () => {
  * Sets the global quiz and question variables to point to the quiz
  * selected in the dropdown menu.
  */
-const fetchQuiz = () => {
-    let targetQuiz = document.getElementById('quizselect').value;
-    console.log('(fetchQuiz) TODO: GET request to get quiz ' + targetQuiz);
+const fetchQuizById = (targetQuiz) => {
+    console.log('(fetchQuizById) TODO: GET request to get quiz ' + targetQuiz);
     quiz = loadFullQuiz(targetQuiz);
     question = quiz.questionList[0];
     extractQuestionData();
 };
-
 /*
  * Submits the answer to a question with a POST request. Overwrites any
  * previous submitted answer, allowing changing of responses.
