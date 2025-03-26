@@ -106,26 +106,37 @@ def assembleQuiz (quizID, database) :
         return None
     
     for row in results:
-        ident, desc, asked, mins, secs = row
+        ident, desc, mins, secs = row
         Question = dict(questionID = ident, prompt = desc, durationMins = mins, durationSecs = secs, answers = [])
         questions.append(Question)
 
 
     answer = []
-    for i in questions:
-        questionID = questions[i]["questionID"]
+    for question in questions:
+        questionID = [question["questionID"]]
         results2 = retrieveFromDatabase("SELECT optionNumber, optionDescription, scoreValue FROM AnswerKey WHERE questionID = %s;", questionID, database)
-        for row in results2:
-            number, optDescription, value = row
-            Answer = dict(optionNumber = number, description = optDescription, scoreValue = value)
-            answer.append(Answer)
-        questions[i]["answers"] = answer[i]
+        if(results2):
+            for row in results2:
+                number, optDescription, value = row
+                Answer = dict(optionNumber = number, description = optDescription, scoreValue = value)
+                answer.append(Answer)
+            if(not answer):
+                print("Error:  Every question must have at least one answer!")
+                return None
+            question["answers"] = answer
+            answer = []
 
-    quizName, availableAsync, quizLabel, quizDescription, minutes = retrieveFromDatabase("SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE quizID = %s;", quizID, database)
-    if(not quizName):
+        else: return None
+        
+    results3 = retrieveFromDatabase("SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE quizID = %s;", quizID, database)
+    if(not results3):
+        print(results3)
         return None
+    
+    for row in results3:
+        quizName, availableAsync, quizLabel, quizDescription, minutes = row
 
-    Quiz = dict(name = quizName, asynchronous = availableAsync, label = quizLabel, description = quizDescription, durationMins = minutes, questionList = questions)
+    Quiz = dict(quizName = quizName, availableAsync = availableAsync, label = quizLabel, quizDescription = quizDescription, durationMins = minutes, questionList = questions)
 
     return Quiz
 
@@ -157,7 +168,7 @@ def getQuizList(database):
     
     for row in results:
         quizID, quizName = row
-        nameIDPair = dict(id = quizID, name = quizName)
+        nameIDPair = dict(quizID = quizID, quizName = quizName)
         quizList.append(nameIDPair)
     return quizList
 
@@ -177,12 +188,35 @@ def getQuizListFromCourse(courseID, database):
     
     for row in results:
         quizID, quizName = row
-        nameIDPair = dict(id = quizID, name = quizName)
+        nameIDPair = dict(quizID = quizID, quizName = quizName)
         quizList.append(nameIDPair)
     return quizList
 
 
-# Takes the answer dictonary and updates the database with the corresponding key/value pairs:
+# Creates a quizList with the follwing schema
+#       "quizName" -> The name of the quiz
+#       "availableAsync" -> a boolean value determining if the quiz is Asynchronous
+#       "label" -> A keyword to search the quiz by
+#       "quizDescription" -> A description on what the quiz covers, or in reality whatever the author feels like
+#       "durationMins" -> The length of the quiz in minutes
+#
+# username is the quiz creators username
+# database is the database object to connect to
+# Returns a quizList dictonary
+def getQuizListFromAuthor(username, database):
+    quizList = []
+    results = retrieveFromDatabase("SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz NATURAL JOIN Course WHERE courseID = Course.courseID AND Course.username = %s;", username, database)
+    if(not results):
+        return None
+    
+    for row in results:
+        quizName, availableAsync, label, quizDescription, durationMinutes = row
+        nameIDPair = dict(quizName = quizName, availableAsync = availableAsync, label = label, quizDescription =  quizDescription, durationMinutes = durationMinutes)
+        quizList.append(nameIDPair)
+    return quizList
+
+
+# Takes the answer dictonary from the users response to a quiz question, and adds it to the database
 # answer is the answers python object that contains the answers you want to upload to the db
 # database is the database connection
 # Returns True if sucessful, otherwise None
@@ -195,8 +229,7 @@ def processAnswer(answer, database):
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def createAnswerKey(answerKey, database):
-    newList = list(answerKey.values())
-    return updateDatabase("INSERT INTO AnswerKey (questionID, optionNumber, optionDescription, scoreValue) VALUES (%s, %s, %s, %s);", newList, database)
+    return updateDatabase("INSERT INTO AnswerKey (questionID, optionNumber, optionDescription, scoreValue) VALUES (%s, %s, %s, %s);", list(answerKey.values()), database)
 
 
 # Takes the question object and adds the values of it to the database
@@ -212,7 +245,7 @@ def createQuestion(question, database):
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def createQuiz(quiz, database):
-    return updateDatabase("INSERT INTO Quiz (courseID, name, availableAsync, label, quizDescription, durationMinutes) VALUES (%s, %s, %s, %s, %s, %s)", list(quiz.values()), database)
+    return updateDatabase("INSERT INTO Quiz (courseID, quizName, availableAsync, label, quizDescription, durationMinutes) VALUES (%s, %s, %s, %s, %s, %s)", list(quiz.values()), database)
 
 
 # Takes the course object and adds the values of it to the database
@@ -220,7 +253,7 @@ def createQuiz(quiz, database):
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def createCourse(course, database):
-    return updateDatabase("INSERT INTO Course (username, name, courseDescription) VALUES (%s, %s, %s)", list(course.values()), database)
+    return updateDatabase("INSERT INTO Course (username, courseName, courseDescription) VALUES (%s, %s, %s)", list(course.values()), database)
 
 
 # Takes the author object and adds the values of it to the database
@@ -228,7 +261,7 @@ def createCourse(course, database):
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def createAuthor(author, database):
-    return updateDatabase("INSERT INTO Author (username, name, authorDescription, emailaddress) VALUES (%s, %s, %s %s)", list(author.values()), database)
+    return updateDatabase("INSERT INTO Author (username, name, authorDescription, emailAddress) VALUES (%s, %s, %s, %s)", list(author.values()), database)
 
 
 # Processes specific analytics for the quiz specifed by quizID in the following format:

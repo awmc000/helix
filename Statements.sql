@@ -43,9 +43,9 @@ SELECT quizID, quizName, availableAsync, label, quizDescription, durationMinutes
 
 SELECT quizID, quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE courseID = %s;
 
--- Show All quizzes a creator made
+-- Show All quizzes a creator made | IMPLEMENTED - getQuizListFromAuthor
 
-SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE courseID = Course.courseID AND Course.username = %s;
+SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz NATURAL JOIN Course WHERE courseID = Course.courseID AND Course.username = %s;
 
 -- Show Question Info | IMPLEMENTED - assembleQuiz
 
