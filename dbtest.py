@@ -12,8 +12,8 @@ if(database):
 else: print("\n\nTest1 Passed\n\n")
 
 #valid
-username = "you"
-password = "wish"
+username = "username"
+password = "plaintextpassword"
 
 database = db.connectToDatabase(username, password)
 
@@ -25,32 +25,192 @@ if(database):
     print("\n\nTest2 Passed\n\n")
 
 # updateDatabase tests
-
+#       createAuthor tests
 database = db.connectToDatabase(username, password)
 
 # Invalid Data
-values = []
-if(not db.updateDatabase("INSERT INTO Author (username, name, authorDescription, emailaddress) VALUES (%s, %s, %s, %s);", values, database)):
+values = {}
+if(not db.createAuthor(values, database)):
     print("\n\nTest3 Passed\n\n")
 
 # Valid Data
-values = ["user", "name", "desc", "email"]
-if(db.updateDatabase("INSERT INTO Author (username, name, authorDescription, emailaddress) VALUES (%s, %s, %s, %s);", values, database)):
+values = {"username": "user", "name": "name", "authorDescription": "desc",  "emailAddress": "email"}
+if(db.createAuthor(values, database)):
     print("\n\nTest4 Passed\n\n")
 
 # Duplicate Data
-if(not db.updateDatabase("INSERT INTO Author (username, name, authorDescription, emailaddress) VALUES (%s, %s, %s, %s);", values, database)):
+if(not db.createAuthor(values, database)):
     print("\n\nTest5 Passed\n\n")
 
+#       createCourse Tests
 # Invalid FK reference
-values = ["username", "name", "desc"]
-if(not db.updateDatabase("INSERT INTO Course (username, courseName, courseDescription) VALUES (%s, %s, %s);", values, database)):
+values = {"username": "username","courseName": "name","courseDescription": "desc"}
+if(not db.createCourse(values, database)):
     print("\n\nTest6 Passed\n\n")
 
 # Valid FK reference
-values = ["user", "name", "desc"]
-if(db.updateDatabase("INSERT INTO Course (username, courseName, courseDescription) VALUES (%s, %s, %s);", values, database)):
+values = {"username": "user","courseName": "name","courseDescription": "desc"}
+if(db.createCourse(values, database)):
     print("\n\nTest7 Passed\n\n")
 
+# Since Create _____ uses the same undelying code (updateDatabase) These are just testing the Sql statements
+#       createQuiz Tests
+values = {"courseID": 2,"quizName": "name","availableAsync": 1,"label": "label","quizDescription": "desc","durationMinutes": 9}
+if(db.createQuiz(values, database)):
+    print("\n\nTest8 Passed\n\n")
+
 # retrieveFromDB tests
-# TO DO
+#       getQuizList Test
+
+# Query With No Parameters
+result = db.getQuizList(database)
+if(result):
+    print(result)
+    print("\n\nTest9 Passed\n\n")
+
+#       getQuizListFromAuthor Test
+# Query With Parameters
+values = ["user"]
+result = db.getQuizListFromAuthor(values, database)
+if(result):
+    print(result)
+    print("\n\nTest10 Passed\n\n")
+
+# Invalid data
+values = ["user", "idk"]
+result = db.getQuizListFromAuthor(values, database)
+if(not result):
+    print("\n\nTest11 Passed\n\n")
+
+#       getQuizListFromCourse Test
+
+values = [2]
+result = db.getQuizListFromCourse(values, database)
+if(result):
+    print(result)
+    print("\n\nTest12 Passed\n\n")
+
+
+# assembleQuiz Tests
+
+# Assemble quiz with no questions
+values = [1]
+quiz = db.assembleQuiz(values, database)
+if(not quiz):
+    print("\n\nTest13 Passed\n\n")
+
+#       createQuestion Tests
+values = {"quizID": 1,"prompt": "Is SelfNotAccept accepted by SelfNotAccept?","durationMinutes": 1,"durationSeconds": 0}
+if(db.createQuestion(values, database)):
+    print("\n\nTest14 Passed\n\n")
+
+# Assemble quiz with a question but no answers
+values = [1]
+quiz = db.assembleQuiz(values, database)
+if(not quiz):
+    print("\n\nTest15 Passed\n\n")
+
+#       CreateAnswerKey tests
+values = {"questionID": 1,"optionNumber": 1,"optionDescription": "Yes","scoreValue": 0}
+if(db.createAnswerKey(values, database)):
+    print("\n\nTest16 Passed\n\n")
+
+# Assemble a valid quiz (Albeit a stupid one as there is only one option)
+values = [1]
+quiz = db.assembleQuiz(values, database)
+if(quiz):
+    print(quiz)
+    print("\n\nTest17 Passed\n\n")
+
+# Quiz with question with multiple options
+values = {"questionID": 1,"optionNumber": 2,"optionDescription": "No","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 1,"optionNumber": 3,"optionDescription": "undecidable","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 1,"optionNumber": 4,"optionDescription": "unrecognizable","scoreValue": 1}
+db.createAnswerKey(values, database)
+
+values = [1]
+quiz = db.assembleQuiz(values, database)
+if(quiz):
+    print(quiz)
+    print("\n\nTest18 Passed\n\n")
+
+# Quiz with multiple questions with mutliple options
+values = {"quizID": 1,"prompt": "Is SelfNotAccept accepted by SelfNotAccept?","durationMinutes": 1,"durationSeconds": 0}
+db.createQuestion(values, database)
+db.createQuestion(values, database)
+db.createQuestion(values, database)
+db.createQuestion(values, database)
+
+#   Q2
+values = {"questionID": 2,"optionNumber": 1,"optionDescription": "Yes","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 2,"optionNumber": 2,"optionDescription": "No","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 2,"optionNumber": 3,"optionDescription": "undecidable","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 2,"optionNumber": 4,"optionDescription": "unrecognizable","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+#   Q3
+values = {"questionID": 3,"optionNumber": 1,"optionDescription": "Yes","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 3,"optionNumber": 2,"optionDescription": "No","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 3,"optionNumber": 3,"optionDescription": "undecidable","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 3,"optionNumber": 4,"optionDescription": "unrecognizable","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+#   Q4
+values = {"questionID": 4,"optionNumber": 1,"optionDescription": "Yes","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 4,"optionNumber": 2,"optionDescription": "No","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 4,"optionNumber": 3,"optionDescription": "undecidable","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 4,"optionNumber": 4,"optionDescription": "unrecognizable","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+#   Q5
+values = {"questionID": 5,"optionNumber": 1,"optionDescription": "Yes","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 5,"optionNumber": 2,"optionDescription": "No","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 5,"optionNumber": 3,"optionDescription": "undecidable","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = {"questionID": 5,"optionNumber": 4,"optionDescription": "unrecognizable","scoreValue": 0}
+db.createAnswerKey(values, database)
+
+values = [1]
+quiz = db.assembleQuiz(values, database)
+if(quiz):
+    print(quiz)
+    print("\n\nTest19 Passed\n\n")
+
+# Python to JSON
+json = db.pythonToJSON(quiz)
+if(json):
+    print(quiz)
+    print("\n\nTest20 Passed\n\n")
+
+# JSON to Python
+python = db.jsonToPython(json)
+if(python):
+    print(quiz)
+    print("\n\nTest21 Passed\n\n")
