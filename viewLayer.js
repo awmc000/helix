@@ -58,20 +58,21 @@ const setup = () => {
  */
 const setStateElements = () => {
     if (windowState == TAKING_QUIZ) {
-        showById('question');
+        showManyById(['availableQuizMapDiv', 'question']);
         hideManyById(['quizmap', 'editquestion', 'coursemap', 'editcourse', 'instructorprofile']);
     }
     else if (windowState == CREATING_QUIZ) {
-        showManyById(['quizmap', 'editquestion']);
+        showManyById(['availableQuizMapDiv', 'quizmap', 'editquestion']);
         hideManyById(['question', 'coursemap', 'editcourse', 'instructorprofile']);
+        drawQuestionMap();
     }
     else if (windowState == CREATING_COURSE) {
         showManyById(['coursemap', 'editcourse']);
-        hideManyById(['question', 'quizmap', 'editquestion', 'instructorprofile']);
+        hideManyById(['availableQuizMapDiv', 'question', 'quizmap', 'editquestion', 'instructorprofile']);
     } 
     else if (windowState == EDITING_INSTRUCTOR_PROFILE) {
         showById('instructorprofile');
-        hideManyById(['question', 'quizmap', 'editquestion', 'coursemap', 'editcourse']);
+        hideManyById(['availableQuizMapDiv', 'question', 'quizmap', 'editquestion', 'coursemap', 'editcourse']);
     }
 }
 
@@ -295,13 +296,6 @@ const loadFullQuiz = (id) => {
             return quiz;
         }
     }
-    // if (label == 'quiz1') {
-    //     quiz = quiz1;
-    //     return quiz1;
-    // } else {
-    //     quiz = quiz2;
-    //     return quiz2;
-    // }
 };
 
 
@@ -348,12 +342,106 @@ const drawQuizMap = () => {
         anchorTag.innerText = quizInfo.name;
         anchorTag.title = quizInfo.description;
 
-        // On click function for each list item is a fetch function for that quizid
-        console.log('Attaching closer to li with id ' + quizInfo.quizID);
+        // Onclick function for each li is a fetch function for the corresponding quizID
         anchorTag.onclick = () => fetchQuizById(quizInfo.quizID);
         listItemTag.appendChild(anchorTag);
         document.getElementById('availableQuizMapList').appendChild(listItemTag);
     });
+};
+
+const attachQuizAnalyticsOption = () => {
+    let listItemTag = document.createElement('li');
+    let anchorTag = document.createElement('a');
+    anchorTag.href = '#';
+    anchorTag.innerText = 'View analytics for quiz';
+    anchorTag.onclick = () => {console.log('(attachQuizAnalyticsOption) TODO: Implement analytics!')};
+    listItemTag.appendChild(anchorTag);
+    document.getElementById('questionMapList').appendChild(listItemTag);
+};
+
+/*
+ * Draws the list of items in a quiz for quiz editing screen.
+ */
+const drawQuestionMap = () => {
+    // Destroy any existing children of .questionMapList
+    document.getElementById('questionMapList').innerHTML = '';
+
+    quiz.questionList.forEach((question) => {
+        let listItemTag = document.createElement('li');
+        let anchorTag = document.createElement('a');
+        anchorTag.href = '#';
+        anchorTag.innerText = question.questionID;
+
+        console.log('(drawQuestionMap) attaching go-to-question closure with ID ' + question.questionID);
+        let gotoFunction = () => goToEditQuestion(question.questionID); 
+        anchorTag.onclick = gotoFunction;
+        listItemTag.appendChild(anchorTag);
+
+        document.getElementById('questionMapList').appendChild(listItemTag);
+    });
+    attachQuizAnalyticsOption();
+};
+
+/*
+ * Populates the forum in the quiz editing screen with current values.
+ */
+const fillQuestionEditingForm = () => {
+    document.getElementById("editQuestionID").value = question.questionID;
+    document.getElementById("editQuestionPrompt").value = question.prompt;
+
+    let letters = ['A', 'B', 'C', 'D'];
+    for (let i = 0; i < question.answers.length && i < 4; i++) {
+        document.getElementById('choice' + letters[i] + 'Prompt').value = question.answers[i].optDescription;
+        document.getElementById('choice' + letters[i] + 'Value').value = question.answers[i].scoreValue;
+    }
+};
+
+const updateQuestionEdit = () => {
+    console.log('(updateQuestionEdit) TODO: Send POST request with updated question ' + question.questionID);
+    let editedID = document.getElementById('editQuestionID').innerText;
+    let editedPrompt = document.getElementById('editQuestionPrompt').innerText;
+    
+    let editedChoiceA = document.getElementById('choiceAPrompt').innerText;
+    let editedChoiceB = document.getElementById('choiceBPrompt').innerText;
+    let editedChoiceC = document.getElementById('choiceCPrompt').innerText;
+    let editedChoiceD = document.getElementById('choiceDPrompt').innerText;
+
+    let editedValueA = document.getElementById('choiceAValue').innerText;
+    let editedValueB = document.getElementById('choiceBValue').innerText;
+    let editedValueC = document.getElementById('choiceCValue').innerText;
+    let editedValueD = document.getElementById('choiceDValue').innerText;
+
+    // TODO: Fudging the duration for now!
+
+    let newQuestion = {
+        'quizID': editedID,
+        'prompt': editedPrompt,
+        'durationMins': 999,
+        'durationSecs': 0,
+        'answers': [
+            {
+                'optionNumber': 1,
+                'optDescription': editedChoiceA,
+                'scoreValue': editedValueA,
+            },
+            {
+                'optionNumber': 2,
+                'optDescription': editedChoiceB,
+                'scoreValue': editedValueB,
+            },
+            {
+                'optionNumber': 3,
+                'optDescription': editedChoiceC,
+                'scoreValue': editedValueC,
+            },
+            {
+                'optionNumber': 4,
+                'optDescription': editedChoiceD,
+                'scoreValue': editedValueD,
+            },
+        ],
+    }
+
 };
 
 /*
@@ -365,6 +453,18 @@ const drawCourseMap = () => {
 };
 
 /*
+ *
+ */
+const goToEditQuestion = (id) => {
+    for (const q of quiz.questionList) {
+        if (q.questionID == id) {
+            question = q;
+        }
+    }
+    fillQuestionEditingForm();
+};
+
+/*
  * Sets the global quiz and question variables to point to the quiz
  * selected in the dropdown menu.
  */
@@ -372,6 +472,7 @@ const fetchQuizById = (targetQuiz) => {
     console.log('(fetchQuizById) TODO: GET request to get quiz ' + targetQuiz);
     quiz = loadFullQuiz(targetQuiz);
     question = quiz.questionList[0];
+    drawQuestionMap();
     extractQuestionData();
 };
 /*
@@ -381,7 +482,7 @@ const fetchQuizById = (targetQuiz) => {
 const submitQuestionAnswer = () => {
     let report = reportCheckboxes();
     console.log('(submitQuestionAnswer) TODO: POST request with answer "' 
-    + report.choices + '" on "' + report.questionID + '"');
+    + report.choices + '" on "' + report.questionID + '" on quiz ' + quiz.quizID);
 };
 
 /* 

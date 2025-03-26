@@ -37,18 +37,20 @@
   
   <!-- Question Window -->
   <div class="questionouter">
+    
     <!-- Select Quiz Window -->
     <div class="question" style="width: 120px; height: 180px;" id="availableQuizMapDiv">
       <!-- Quiz Map Header -->
       <div class="questionheadingbox" style="display: flex; background-color: blue;">
         <!-- Quiz Map Title -->
-        <h2 style="margin-left: 4px;" id="quizmaptitle">QuizMap</h2>
+        <h2 style="margin-left: 4px;" id="quizmaptitle">Quizzes</h2>
       </div>
       <ul id="availableQuizMapList">
         <!-- Filled in with <li> tags by markup. -->
       </ul>
     </div>
   
+    <!-- Respond to Question Window -->
     <div class="question" id="question">
       
       <!-- Question Header -->
@@ -110,18 +112,15 @@
       </div>
     </div>
     
-    <!-- Create Quiz - Quiz Map Window -->
+    <!-- Create Quiz - Question Map Window -->
     <div class="question" style="width: 120px; height: 180px;" id="quizmap">
-      <!-- Quiz Map Header -->
+      <!-- Question Map Header -->
       <div class="questionheadingbox" style="display: flex; background-color: rgb(152, 27, 27);">
-        <!-- Quiz Map Title -->
-        <h2 style="margin-left: 4px;" id="quizmaptitle">QuizMap</h2>
+        <!-- Question Map Title -->
+        <h2 style="margin-left: 4px;" id="quizmaptitle">Questions</h2>
       </div>
-      <ul>
-        <li><a href="#">question1</a></li>
-        <li><a href="#">question2</a></li>
-        <li><a href="#">question3</a></li>
-        <li><a href="#">View analytics for this quiz</a></li>
+      <ul id="questionMapList">
+        <!-- Filled in by script -->
       </ul>
     </div>
     
@@ -135,38 +134,43 @@
       <form>
         <p>
           <label for="questionid">Question ID</label>
-          <input type="text" name="questionid">
+          <input type="text" name="questionid" id="editQuestionID">
         </p>
         
         <!-- Prompt -->
         <p>
           <label for="questionprompt">Prompt</label>
-          <input type="text" name="questionprompt">
+          <input type="text" name="questionprompt" id="editQuestionPrompt">
         </p>
         
         <!-- Choice A -->
         <p>
           <label for="textchoicea">Choice A</label>
-          <input type="text" name="questionprompt">
-          <input type="number" name="questionvalue" style="width: 30px;">
+          <input type="text" name="questionprompt" id="choiceAPrompt">
+          <input type="number" name="questionvalue" style="width: 30px;" id="choiceAValue">
         </p>
         <!-- Choice B -->
         <p>
           <label for="textchoicea">Choice B</label>
-          <input type="text" name="questionprompt">
-          <input type="number" name="questionvalue" style="width: 30px;">
+          <input type="text" name="questionprompt" id="choiceBPrompt">
+          <input type="number" name="questionvalue" style="width: 30px;" id="choiceBValue">
         </p>
         <!-- Choice C -->
         <p>
           <label for="textchoicea">Choice C</label>
-          <input type="text" name="questionprompt">
-          <input type="number" name="questionvalue" style="width: 30px;">
+          <input type="text" name="questionprompt" id="choiceCPrompt">
+          <input type="number" name="questionvalue" style="width: 30px;" id="choiceCValue">
         </p>
         <!-- Choice D -->
         <p>
           <label for="textchoicea">Choice D</label>
-          <input type="text" name="questionprompt">
-          <input type="number" name="questionvalue" style="width: 30px;">
+          <input type="text" name="questionprompt" id="choiceDPrompt">
+          <input type="number" name="questionvalue" style="width: 30px;" id="choiceDValue">
+        </p>
+
+        <!-- Update -->
+        <p>
+          <a href="#" onclick="updateQuestionEdit();">Update Question</a>
         </p>
       </form>
       
@@ -240,6 +244,12 @@
         <p>
           <label for="instructorPassword">Password</label>
           <input type="password" name="instructorPassword">
+        </p>
+
+        <!-- Confirm password -->
+        <p>
+          <label for="instructorConfirmPassword">Confirm Password</label>
+          <input type="password" name="instructorConfirmPassword">
         </p>
         
         <!-- Quizzes in course - this is one place where a new course can be created -->
