@@ -41,8 +41,23 @@
       <option value="filler">Select a quiz here</option>
     </select>
   </form>
+  
   <!-- Question Window -->
   <div class="questionouter">
+    <!-- Select Quiz Window -->
+    <div class="question" style="width: 120px; height: 180px;" id="availableQuizMap">
+      <!-- Quiz Map Header -->
+      <div class="questionheadingbox" style="display: flex; background-color: blue;">
+        <!-- Quiz Map Title -->
+        <h2 style="margin-left: 4px;" id="quizmaptitle">QuizMap</h2>
+      </div>
+      <ul>
+        <li><a href="#">Quiz 1</a></li>
+        <li><a href="#">Quiz 2</a></li>
+        <li><a href="#">Quiz 3</a></li>
+      </ul>
+    </div>
+  
     <div class="question" id="question">
       
       <!-- Question Header -->
@@ -66,22 +81,22 @@
           <form action="" method="post" style="display: flex; width: 100%;">
             
             <div class="choicebox" id="choicediva" style="background-color: rgb(255, 69, 69);">
-              <label for="choicea" id="choicelabela">Alpha the first answer</label>
+              <label for="choicea" id="choicelabela">Loading choice...</label>
               <input type="checkbox" id="choicea" name="choicea">
             </div>
             
             <div class="choicebox" id="choicedivb" style="background-color: rgb(90, 90, 255);">
-              <label for="choiceb" id="choicelabelb">Beta the second answer</label>
+              <label for="choiceb" id="choicelabelb">Loading choice...</label>
               <input type="checkbox" id="choiceb" name="choiceb">
             </div>
             
             <div class="choicebox" id="choicedivc" style="background-color: rgb(78, 195, 78);">
-              <label for="choicec" id="choicelabelc">C is the third answer</label>
+              <label for="choicec" id="choicelabelc">Loading choice...</label>
               <input type="checkbox" id="choicec" name="choicec">
             </div>
             
             <div class="choicebox" id="choicedivd" style="background-color: orange;">
-              <label for="choiced" id="choicelabeld">D is the fourth answer</label>
+              <label for="choiced" id="choicelabeld">Loading choice...</label>
               <input type="checkbox" id="choiced" name="choiced">
             </div>
           </form>
@@ -115,6 +130,7 @@
         <li><a href="#">question1</a></li>
         <li><a href="#">question2</a></li>
         <li><a href="#">question3</a></li>
+        <li><a href="#">View analytics for this quiz</a></li>
       </ul>
     </div>
     
@@ -130,13 +146,13 @@
           <label for="questionid">Question ID</label>
           <input type="text" name="questionid">
         </p>
-
+        
         <!-- Prompt -->
         <p>
           <label for="questionprompt">Prompt</label>
           <input type="text" name="questionprompt">
         </p>
-
+        
         <!-- Choice A -->
         <p>
           <label for="textchoicea">Choice A</label>
@@ -162,17 +178,17 @@
           <input type="number" name="questionvalue" style="width: 30px;">
         </p>
       </form>
-
+      
     </div>
-
+    
     <!-- Courses - Course Map -->
     <div class="question" style="width: 120px; height: 180px;" id="coursemap">
-      <!-- Quiz Map Header -->
+      <!-- Course Map Header -->
       <div class="questionheadingbox" style="display: flex; background-color: rgb(19, 107, 19);">
-        <!-- Quiz Map Title -->
+        <!-- Course Map Title -->
         <h2 style="margin-left: 4px;" id="quizmaptitle">CourseMap</h2>
       </div>
-      <ul>
+      <ul id="courseMapList">
         <li><a href="#">course1</a></li>
         <li><a href="#">course2</a></li>
         <li><a href="#">course3</a></li>
@@ -186,6 +202,28 @@
         <!-- Question Map Title -->
         <h2 style="margin-left: 4px;" id="courseedittitle">CourseEdit</h2>
       </div>
+      <form>
+        
+        <!-- Course name -->
+        <p>
+          <label for="courseName">Course Name</label>
+          <input type="text" name="courseName">
+        </p>
+        
+        <!-- Course description -->
+        <p>
+          <label for="courseName">Course Description</label>
+          <input type="text" name="courseName">
+        </p>
+        
+        <!-- Quizzes in course - this is one place where a new quiz can be created -->
+        <p>
+          <label>Quizzes in this course</label>
+          <ul id="createQuizList">
+            <li><a href="#">Create a new quiz</a></li>
+          </ul>
+        </p>
+      </form>
     </div>
     <!-- Instructor Profile -->
     <div class="question" style="" id="instructorprofile">
@@ -194,11 +232,38 @@
         <!-- Question Map Title -->
         <h2 style="margin-left: 4px;" id="courseedittitle">InstructorProfile</h2>
       </div>
+      <form>
+        <!-- Instructor name -->
+        <p>
+          <label for="instructorName">Instructor Name</label>
+          <input type="text" name="instructorName">
+        </p>
+        
+        <!-- Username -->
+        <p>
+          <label for="instructorUsername">Username</label>
+          <input type="text" name="instructorUsername">
+        </p>
+        
+        <!-- Password -->
+        <p>
+          <label for="instructorPassword">Password</label>
+          <input type="password" name="instructorPassword">
+        </p>
+        
+        <!-- Quizzes in course - this is one place where a new course can be created -->
+        <p>
+          <label>Courses you are running</label>
+          <ul id="instructorCourseList">
+            <li><a href="#">Create a new course</a></li>
+          </ul>
+        </p>
+      </form>
     </div>
   </div>
   
   <br>
-
+  
   
   <!-- Development Area - Hide in Prod -->
   <div class="developmentarea" id="developmentarea">
@@ -213,7 +278,7 @@
         <td><strong>Result</strong></td>
       </tr>
     </table>
-
+    
     <button onclick="windowState = TAKING_QUIZ; setStateElements();">Taking quiz state</button>
     <button onclick="windowState = CREATING_QUIZ; setStateElements();">Creating quiz state</button>
     <button onclick="windowState = CREATING_COURSE; setStateElements();">Creating course state</button>
