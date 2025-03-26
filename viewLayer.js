@@ -25,6 +25,16 @@ let currentQuizIndex = -1;
 var quiz;
 var question;
 var availableQuizzes;
+var availableCourses = [
+    {
+        'courseID': 1,
+        'name': '(Placeholder Course)',
+        'description': 'A course for quizzes to be part of until creation of courses' +
+        ' is implemented.',
+    }
+]
+
+let course = availableCourses[0];
 
 /* ======================================================================================
  * State-Related Functions, Hiding/Showing Elements, Etc.
@@ -69,6 +79,8 @@ const setStateElements = () => {
     else if (windowState == CREATING_COURSE) {
         showManyById(['coursemap', 'editcourse']);
         hideManyById(['availableQuizMapDiv', 'question', 'quizmap', 'editquestion', 'instructorprofile']);
+        drawCourseMap();
+        fillCourseEditingForm();
     } 
     else if (windowState == EDITING_INSTRUCTOR_PROFILE) {
         showById('instructorprofile');
@@ -349,14 +361,24 @@ const drawQuizMap = () => {
     });
 };
 
-const attachQuizAnalyticsOption = () => {
+const attachQuizActions = () => {
+    
     let listItemTag = document.createElement('li');
     let anchorTag = document.createElement('a');
     anchorTag.href = '#';
     anchorTag.innerText = 'View analytics for quiz';
-    anchorTag.onclick = () => {console.log('(attachQuizAnalyticsOption) TODO: Implement analytics!')};
+    anchorTag.onclick = () => {console.log('(attachQuizActions) TODO: Implement analytics!')};
     listItemTag.appendChild(anchorTag);
     document.getElementById('questionMapList').appendChild(listItemTag);
+
+    listItemTag = document.createElement('li');
+    anchorTag = document.createElement('a');
+    anchorTag.href = '#';
+    anchorTag.innerText = 'Add question';
+    anchorTag.onclick = () => {console.log('(attachQuizActions) TODO: Add a question')};
+    listItemTag.appendChild(anchorTag);
+    document.getElementById('questionMapList').appendChild(listItemTag);
+
 };
 
 /*
@@ -379,7 +401,7 @@ const drawQuestionMap = () => {
 
         document.getElementById('questionMapList').appendChild(listItemTag);
     });
-    attachQuizAnalyticsOption();
+    attachQuizActions();
 };
 
 /*
@@ -394,6 +416,31 @@ const fillQuestionEditingForm = () => {
         document.getElementById('choice' + letters[i] + 'Prompt').value = question.answers[i].optDescription;
         document.getElementById('choice' + letters[i] + 'Value').value = question.answers[i].scoreValue;
     }
+};
+
+const fillCourseQuizzes = () => {
+    document.getElementById('courseQuizList').innerHTML = '';
+    
+    availableQuizzes.forEach((quizInfo) => {
+        // li tag, with <a> inside
+        let listItemTag = document.createElement('li');
+        let anchorTag = document.createElement('a');
+        anchorTag.href = '#';
+        anchorTag.innerText = quizInfo.name;
+        anchorTag.title = quizInfo.description;
+
+        // Onclick function for each li is a fetch function for the corresponding quizID
+        anchorTag.onclick = () => fetchQuizById(quizInfo.quizID);
+        listItemTag.appendChild(anchorTag);
+        document.getElementById('courseQuizList').appendChild(listItemTag);
+    });
+};
+
+const fillCourseEditingForm = () => {
+    document.getElementById('editCourseName').value = course.name;
+    document.getElementById('editCourseDescription').value = course.description;
+
+    fillCourseQuizzes();
 };
 
 const updateQuestionEdit = () => {
@@ -449,7 +496,15 @@ const updateQuestionEdit = () => {
  * to hit the course list endpoint...
  */
 const drawCourseMap = () => {
-
+    document.getElementById('courseMapList').innerHTML = '';
+    availableCourses.forEach((course) => {
+        let listItemTag = document.createElement('li');
+        let anchorTag = document.createElement('a');
+        anchorTag.href = '#';
+        anchorTag.innerText = course.name;
+        listItemTag.appendChild(anchorTag);
+        document.getElementById('courseMapList').appendChild(listItemTag);
+    });
 };
 
 /*
