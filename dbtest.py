@@ -18,8 +18,8 @@ if(database):
 else: print("\n\nTest1 Passed\n\n")
 
 #valid
-username = "4treess"
-password = "MySqlPassword"
+username = ""
+password = ""
 
 database = db.connectToDatabase(username, password)
 
