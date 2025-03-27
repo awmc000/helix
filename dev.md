@@ -64,8 +64,8 @@ pip freeze > requirements.txt
 ```
 ## Frontend HTML & JS
 - The frontend is contained a single page and elements are drawn 
-or hidden depending on the **state** of the application.
-- States include:
+or hidden depending on the **screen state** of the application.
+- Screen states represent:
     - Responding to a quiz
     - Creating a quiz
     - Creating a course
@@ -74,6 +74,13 @@ or hidden depending on the **state** of the application.
 to the API.
 - They make these requests asynchronously using the Javascript
 function `fetch()`.
+- There is other state information like global variables tracking
+the current quiz and question.
+- These global state variables will live in the `appState` global 
+object to clean things up a bit.
+- Until the endpoints are ready in the API, Http requests have been
+marked as TODO, and interactions implemented with local data (you can
+add questions but they will be gone if you refresh, etc.)
 ### Responding to Quizzes
 - Information stored as global state includes:
     - List of available quizzes, only the info needed to fetch them.
