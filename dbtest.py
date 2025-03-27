@@ -9,17 +9,17 @@ import dbApplication as db
 # Connect/disconnect to database test
 #Invlaid
 
-database = db.connectToDatabase("DNA", "Dude5")
-
-print(database)
-
-if(database):
+try:
+    database = db.connectToDatabase("DNA", "Dude5")
     db.disconnectFromDatabase(database)
-else: print("\n\nTest1 Passed\n\n")
+except:
+    print("\n\nTest1 Passed\n\n")
+
+
 
 #valid
-username = ""
-password = ""
+username = "4treess"
+password = "MySqlPassword"
 
 database = db.connectToDatabase(username, password)
 
@@ -283,3 +283,26 @@ db.processAnswer(values, database)
 db.processAnswer(values, database)
 
 print(db.createAnalytics([1], database))
+print("\n\nTest25 Passed\n\n")
+
+# searchForQuiz tests
+# Not a valid quizname or label
+
+values = ["PinkFluffyUnicorns"]
+quizList = db.searchForQuiz(values, database)
+if(not quizList):
+    print("\n\nTest26 Passed\n\n")
+
+# search by quizname
+values = ["name"]
+quizList = db.searchForQuiz(values, database)
+if(quizList):
+    print(quizList)
+    print("\n\nTest27 Passed\n\n")
+
+# search by quiz label
+values = ["label"]
+quizList = db.searchForQuiz(values, database)
+if(quizList):
+    print(quizList)
+    print("\n\nTest28 Passed\n\n")
