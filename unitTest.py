@@ -94,10 +94,12 @@ class disconnectFromDatabase_UT(unitTest):
         else:
             print("Test failed (expected", expectedSuccessValue," - Result:",unitTestSuccess,")")
 
-        if(verbose and len(errors)>0):  
-                print("\tRaised Errors:")
-                for e in errors:
-                    print("\t-", e)
+        if(verbose):  
+                print("\tCriteria 1: Database disconnected. Result:", disconnectSuccess)
+                if(len(errors>0)):
+                    print("\tRaised Errors:")
+                    for e in errors:
+                        print("\t-", e)
         return unitTestSuccess == expectedSuccessValue
 
             
