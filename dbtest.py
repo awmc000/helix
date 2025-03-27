@@ -18,8 +18,8 @@ if(database):
 else: print("\n\nTest1 Passed\n\n")
 
 #valid
-username = "username"
-password = "plaintextpassword"
+username = "4treess"
+password = "MySqlPassword"
 
 database = db.connectToDatabase(username, password)
 
@@ -106,7 +106,7 @@ if(not quiz):
     print("\n\nTest13 Passed\n\n")
 
 #       createQuestion Tests
-values = {"quizID": 1,"prompt": "Is SelfNotAccept accepted by SelfNotAccept?","durationMinutes": 1,"durationSeconds": 0}
+values = {"quizID": 1,"prompt": "(1) Is SelfNotAccept accepted by SelfNotAccept?","durationMinutes": 1,"durationSeconds": 0}
 if(db.createQuestion(values, database)):
     print("\n\nTest14 Passed\n\n")
 
@@ -145,10 +145,13 @@ if(quiz):
     print("\n\nTest18 Passed\n\n")
 
 # Quiz with multiple questions with mutliple options
-values = {"quizID": 1,"prompt": "Is SelfNotAccept accepted by SelfNotAccept?","durationMinutes": 1,"durationSeconds": 0}
+values = {"quizID": 1,"prompt": "(2) Is SelfNotAccept accepted by SelfNotAccept?","durationMinutes": 1,"durationSeconds": 0}
 db.createQuestion(values, database)
+values = {"quizID": 1,"prompt": "(3) Is SelfNotAccept accepted by SelfNotAccept?","durationMinutes": 1,"durationSeconds": 0}
 db.createQuestion(values, database)
+values = {"quizID": 1,"prompt": "(4) Is SelfNotAccept accepted by SelfNotAccept?","durationMinutes": 1,"durationSeconds": 0}
 db.createQuestion(values, database)
+values = {"quizID": 1,"prompt": "(5) Is SelfNotAccept accepted by SelfNotAccept?","durationMinutes": 1,"durationSeconds": 0}
 db.createQuestion(values, database)
 
 #   Q2
@@ -161,7 +164,7 @@ db.createAnswerKey(values, database)
 values = {"questionID": 2,"optionNumber": 3,"optionDescription": "undecidable","scoreValue": 0}
 db.createAnswerKey(values, database)
 
-values = {"questionID": 2,"optionNumber": 4,"optionDescription": "unrecognizable","scoreValue": 0}
+values = {"questionID": 2,"optionNumber": 4,"optionDescription": "unrecognizable","scoreValue": 1}
 db.createAnswerKey(values, database)
 
 #   Q3
@@ -174,7 +177,7 @@ db.createAnswerKey(values, database)
 values = {"questionID": 3,"optionNumber": 3,"optionDescription": "undecidable","scoreValue": 0}
 db.createAnswerKey(values, database)
 
-values = {"questionID": 3,"optionNumber": 4,"optionDescription": "unrecognizable","scoreValue": 0}
+values = {"questionID": 3,"optionNumber": 4,"optionDescription": "unrecognizable","scoreValue": 1}
 db.createAnswerKey(values, database)
 
 #   Q4
@@ -187,7 +190,7 @@ db.createAnswerKey(values, database)
 values = {"questionID": 4,"optionNumber": 3,"optionDescription": "undecidable","scoreValue": 0}
 db.createAnswerKey(values, database)
 
-values = {"questionID": 4,"optionNumber": 4,"optionDescription": "unrecognizable","scoreValue": 0}
+values = {"questionID": 4,"optionNumber": 4,"optionDescription": "unrecognizable","scoreValue": 1}
 db.createAnswerKey(values, database)
 
 #   Q5
@@ -200,7 +203,7 @@ db.createAnswerKey(values, database)
 values = {"questionID": 5,"optionNumber": 3,"optionDescription": "undecidable","scoreValue": 0}
 db.createAnswerKey(values, database)
 
-values = {"questionID": 5,"optionNumber": 4,"optionDescription": "unrecognizable","scoreValue": 0}
+values = {"questionID": 5,"optionNumber": 4,"optionDescription": "unrecognizable","scoreValue": 1}
 db.createAnswerKey(values, database)
 
 values = [1]
@@ -220,3 +223,63 @@ python = db.jsonToPython(json)
 if(python):
     print(quiz)
     print("\n\nTest21 Passed\n\n")
+
+# Process Answer Tests
+# Valid data
+values = {"questionID": 1, "optionNumber": 1}
+if(db.processAnswer(values, database)):
+    print("\n\nTest22 Passed\n\n")
+
+# Invalid Question num
+values = {"questionID": 8, "optionNumber": 1}
+if(not db.processAnswer(values, database)):
+    print("\n\nTest23 Passed\n\n")
+
+# Invalid Question num
+values = {"questionID": 1, "optionNumber": 9}
+if(not db.processAnswer(values, database)):
+    print("\n\nTest24 Passed\n\n")
+
+# Create Analytics Tests
+# Inserting Data
+# Q1: 50% option 1 50% option 2
+# Q2: 25% each
+# Q3: 25% option 3 75% option 4
+# Q4: 100% option 2
+# Q5: 100% option 4
+
+values = {"questionID": 1, "optionNumber": 1}
+db.processAnswer(values, database)
+values = {"questionID": 1, "optionNumber": 2}
+db.processAnswer(values, database)
+db.processAnswer(values, database)
+
+values = {"questionID": 2, "optionNumber": 1}
+db.processAnswer(values, database)
+values = {"questionID": 2, "optionNumber": 2}
+db.processAnswer(values, database)
+values = {"questionID": 2, "optionNumber": 3}
+db.processAnswer(values, database)
+values = {"questionID": 2, "optionNumber": 4}
+db.processAnswer(values, database)
+
+values = {"questionID": 3, "optionNumber": 3}
+db.processAnswer(values, database)
+values = {"questionID": 3, "optionNumber": 4}
+db.processAnswer(values, database)
+db.processAnswer(values, database)
+db.processAnswer(values, database)
+
+values = {"questionID": 4, "optionNumber": 2}
+db.processAnswer(values, database)
+db.processAnswer(values, database)
+db.processAnswer(values, database)
+db.processAnswer(values, database)
+
+values = {"questionID": 5, "optionNumber": 4}
+db.processAnswer(values, database)
+db.processAnswer(values, database)
+db.processAnswer(values, database)
+db.processAnswer(values, database)
+
+print(db.createAnalytics([1], database))

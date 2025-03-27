@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
+import math
 import statistics
 import json
 
@@ -285,25 +286,61 @@ def createAnalytics(quizID, database):
     
 
     count = []
+    answers = []
     scorePerQuestion = []
     scorePerResponse = []
 
     for question in quiz["questionList"]:
-        count.append(retrieveFromDatabase("SELECT COUNT(*) FROM Answers WHERE questionID = %s;", question["questionID"], database))
-        scorePerQuestion.append(retrieveFromDatabase("SELECT SUM(scoreValue) FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", question["questionID"], database))
-        scorePerResponse.append(retrieveFromDatabase("SELECT scoreValue FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", question["questionID"], database))
+        questionID = [question["questionID"]]
+        count.append(retrieveFromDatabase("SELECT COUNT(*) FROM Answers WHERE questionID = %s;", questionID, database))
+        answers.append(retrieveFromDatabase("SELECT COUNT(optionNumber) FROM Answers WHERE questionID = %s GROUP BY optionNumber;", questionID, database))
+        scorePerQuestion.append(retrieveFromDatabase("SELECT SUM(scoreValue) FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", questionID, database))
+        scorePerResponse.append(retrieveFromDatabase("SELECT scoreValue FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", questionID, database))
 
     mean = []
     median = []
 
-    for i in quiz["questionList"]:
-        mean.append(scorePerQuestion[i] // count[i])
+    i = 0
+    scorePerResponse = fixData(scorePerResponse)
+    answers = fixData(answers)
+    
+    for row in answers:
+        while(len(row) < 4):
+            row.append(0)
+
+    print(answers)
+    i = 0
+    variance = []
+    for question in quiz["questionList"]:
+        # For some reason this is returned as a list of 1 object lists, of tuples where the second value is None
+        mean.append(scorePerQuestion[i][0][0] / count[i][0][0])
         median.append(statistics.median(scorePerResponse[i]))
+        variance.append(statistics.variance(answers[i]))
+        i = i+1
+    
+    count = fixData(count)
+    count = fixData([count])
 
-    minCorrect = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID) SELECT MIN(correct) AS minCorrect, prompt FROM (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question JOIN correctAnswers ON Answers.attemptID = correctAnswers.attemptID JOIN Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) AS counts GROUP BY prompt;", quizID, database)
-    maxCorrect = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID) SELECT MAX(correct) AS maxCorrect, prompt FROM (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question JOIN correctAnswers ON Answers.attemptID = correctAnswers.attemptID JOIN Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) AS counts GROUP BY prompt;", quizID, database)
-    leastVariance = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID), attemptCount AS (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question JOIN correctAnswers ON Answers.attemptID = correctAnswers.attemptID Join Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) SELECT prompt, VARIANCE(correct) AS variance FROM attemptCount GROUP BY prompt ORDER BY variance ASC LIMIT 1;", quizID, database)
-    mostVariance = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID), attemptCount AS (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question JOIN correctAnswers ON Answers.attemptID = correctAnswers.attemptID Join Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) SELECT prompt, VARIANCE(correct) AS variance FROM attemptCount GROUP BY prompt ORDER BY variance DESC LIMIT 1;", quizID, database)
+    minCorrect = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID) SELECT MIN(correct) AS minCorrect, prompt FROM (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question NATURAL JOIN correctAnswers JOIN Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) AS counts GROUP BY prompt ORDER BY correct ASC LIMIT 1;", quizID, database)
+    maxCorrect = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID) SELECT MAX(correct) AS maxCorrect, prompt FROM (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question NATURAL JOIN correctAnswers JOIN Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) AS counts GROUP BY prompt ORDER BY correct DESC LIMIT 1;", quizID, database)
 
-    result = dict(numOfResponses = count, meanScore = mean, medianScore = median, leastCorrect = minCorrect, mostCorrect = maxCorrect, homogenous = leastVariance, heterogenous = mostVariance)
+    minVariance = min(variance)
+    prompt = quiz["questionList"][variance.index(minVariance)]["prompt"]
+    leastVariance = [prompt, minVariance]
+    
+    maxVariance = max(variance)
+    prompt = quiz["questionList"][variance.index(maxVariance)]["prompt"]
+    mostVariance = [prompt, maxVariance]
+
+    result = dict(numOfResponses = count[0], meanScore = mean, medianScore = median, leastCorrect = minCorrect, mostCorrect = maxCorrect, homogenous = leastVariance, heterogenous = mostVariance)
     return result
+
+def fixData (list):
+    i = 0
+    for row in list:
+        j = 0
+        for col in row:
+            list[i][j] = col[0]
+            j += 1
+        i += 1
+    return list
