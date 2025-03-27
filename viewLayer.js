@@ -82,6 +82,7 @@ const setStateElements = () => {
         hideManyById(['availableQuizMapDiv', 'question', 'quizmap', 'editquestion', 'instructorprofile']);
         drawCourseMap();
         fillCourseEditingForm();
+        fillCourseQuizzes();
     } 
     else if (appState.windowState == EDITING_INSTRUCTOR_PROFILE) {
         showById('instructorprofile');
@@ -493,7 +494,6 @@ const fillCourseEditingForm = () => {
     document.getElementById('editCourseName').value = course.name;
     document.getElementById('editCourseDescription').value = course.description;
 
-    fillCourseQuizzes();
 };
 
 const updateQuestionEdit = () => {
