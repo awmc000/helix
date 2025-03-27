@@ -9,8 +9,6 @@
  * Global Variables
  * ====================================================================================== */
 
-// Current question index in list
-let currentQuestionIndex = 0;
 
 // Current state
 const TAKING_QUIZ                   = 0;
@@ -18,9 +16,11 @@ const CREATING_QUIZ                 = 1;
 const CREATING_COURSE               = 2;
 const EDITING_INSTRUCTOR_PROFILE    = 3;
 
-let windowState = TAKING_QUIZ;
+let appState = {
+    windowState: TAKING_QUIZ,
+    currentQuestionIndex: 0,
+};
 
-let currentQuizIndex = -1;
 
 var quiz;
 var question;
@@ -51,8 +51,8 @@ const setup = () => {
     // Create quiz map from the quizzes loaded
     drawQuizMap();
 
-    // Set current quiz to first of them
-    quiz = loadFullQuiz(1);
+    // Set current quiz to first of them: Demo only
+    quiz = loadFullQuiz(availableQuizzes[0].quizID);
 
     question = quiz.questionList[0];
 
@@ -67,23 +67,24 @@ const setup = () => {
  * Shows and hides elements to match the current windowState.
  */
 const setStateElements = () => {
-    if (windowState == TAKING_QUIZ) {
+    if (appState.windowState == TAKING_QUIZ) {
         showManyById(['availableQuizMapDiv', 'question']);
         hideManyById(['quizmap', 'editquestion', 'coursemap', 'editcourse', 'instructorprofile']);
+        loadFullQuiz(quiz.quizID);
         extractQuestionData();
     }
-    else if (windowState == CREATING_QUIZ) {
+    else if (appState.windowState == CREATING_QUIZ) {
         showManyById(['availableQuizMapDiv', 'quizmap', 'editquestion']);
         hideManyById(['question', 'coursemap', 'editcourse', 'instructorprofile']);
         drawQuestionMap();
     }
-    else if (windowState == CREATING_COURSE) {
+    else if (appState.windowState == CREATING_COURSE) {
         showManyById(['coursemap', 'editcourse']);
         hideManyById(['availableQuizMapDiv', 'question', 'quizmap', 'editquestion', 'instructorprofile']);
         drawCourseMap();
         fillCourseEditingForm();
     } 
-    else if (windowState == EDITING_INSTRUCTOR_PROFILE) {
+    else if (appState.windowState == EDITING_INSTRUCTOR_PROFILE) {
         showById('instructorprofile');
         hideManyById(['availableQuizMapDiv', 'question', 'quizmap', 'editquestion', 'coursemap', 'editcourse']);
     }
@@ -301,11 +302,12 @@ const quizzes = [
 ];
 
 const loadFullQuiz = (id) => {
-    currentQuestionIndex = 0;
+    appState.currentQuestionIndex = 0;
     for (const availableQuiz of quizzes) {
         if (availableQuiz.quizID == id) {
             // Set global to this quiz, and return it
             quiz = availableQuiz;
+            question = quiz.questionList[0];
             return quiz;
         }
     }
@@ -411,6 +413,7 @@ const addQuestion = () => {
     quiz.questionList.push(newQuestion);
 
     drawQuestionMap();
+
 };
 
 const attachQuizActions = () => {
@@ -549,8 +552,9 @@ const updateQuestionEdit = () => {
     // console.log('(updateQuestionEdit) Fetching quiz again after making change');
     // fetchQuizById(quiz.quizID);
     drawQuestionMap();
+    loadFullQuiz();    
     extractQuestionData();
-    
+
     console.log(quiz.questionList);
 };
 
@@ -671,8 +675,8 @@ const nextQuestion = () => {
     reportCheckboxes();
     submitQuestionAnswer();
     clearCheckboxes();
-    currentQuestionIndex = (currentQuestionIndex + 1) % quiz.questionList.length;
-    question = quiz.questionList[currentQuestionIndex];
+    appState.currentQuestionIndex = (appState.currentQuestionIndex + 1) % quiz.questionList.length;
+    question = quiz.questionList[appState.currentQuestionIndex];
     extractQuestionData();
 };
 
@@ -680,13 +684,13 @@ const nextQuestion = () => {
  * Move to prev question in currnt quiz, staying put if at beginning.
  */
 const prevQuestion = () => {
-    if (currentQuestionIndex <= 0) {
+    if (appState.currentQuestionIndex <= 0) {
         return;
     }
     reportCheckboxes();
     clearCheckboxes();
-    currentQuestionIndex = currentQuestionIndex - 1;
-    question = quiz.questionList[currentQuestionIndex];
+    appState.currentQuestionIndex = appState.currentQuestionIndex - 1;
+    question = quiz.questionList[appState.currentQuestionIndex];
     extractQuestionData();
 };
 
