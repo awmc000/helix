@@ -70,6 +70,7 @@ const setStateElements = () => {
     if (windowState == TAKING_QUIZ) {
         showManyById(['availableQuizMapDiv', 'question']);
         hideManyById(['quizmap', 'editquestion', 'coursemap', 'editcourse', 'instructorprofile']);
+        extractQuestionData();
     }
     else if (windowState == CREATING_QUIZ) {
         showManyById(['availableQuizMapDiv', 'quizmap', 'editquestion']);
@@ -459,7 +460,6 @@ const drawQuestionMap = () => {
  * Populates the forum in the quiz editing screen with current values.
  */
 const fillQuestionEditingForm = () => {
-    document.getElementById("editQuestionID").value = question.questionID;
     document.getElementById("editQuestionPrompt").value = question.prompt;
 
     let letters = ['A', 'B', 'C', 'D'];
@@ -496,26 +496,23 @@ const fillCourseEditingForm = () => {
 
 const updateQuestionEdit = () => {
     console.log('(updateQuestionEdit) TODO: Send POST request with updated question ' + question.questionID);
-    let editedID = document.getElementById('editQuestionID').innerText;
-    let editedPrompt = document.getElementById('editQuestionPrompt').innerText;
+    let editedPrompt = document.getElementById('editQuestionPrompt').value;
     
-    let editedChoiceA = document.getElementById('choiceAPrompt').innerText;
-    let editedChoiceB = document.getElementById('choiceBPrompt').innerText;
-    let editedChoiceC = document.getElementById('choiceCPrompt').innerText;
-    let editedChoiceD = document.getElementById('choiceDPrompt').innerText;
+    let editedChoiceA = document.getElementById('choiceAPrompt').value;
+    let editedChoiceB = document.getElementById('choiceBPrompt').value;
+    let editedChoiceC = document.getElementById('choiceCPrompt').value;
+    let editedChoiceD = document.getElementById('choiceDPrompt').value;
 
-    let editedValueA = document.getElementById('choiceAValue').innerText;
-    let editedValueB = document.getElementById('choiceBValue').innerText;
-    let editedValueC = document.getElementById('choiceCValue').innerText;
-    let editedValueD = document.getElementById('choiceDValue').innerText;
-
-    // TODO: Fudging the duration for now!
+    let editedValueA = parseInt(document.getElementById('choiceAValue').value);
+    let editedValueB = parseInt(document.getElementById('choiceBValue').value);
+    let editedValueC = parseInt(document.getElementById('choiceCValue').value);
+    let editedValueD = parseInt(document.getElementById('choiceDValue').value);
 
     let newQuestion = {
-        'questionID': editedID,
+        'questionID': question.questionID,
         'prompt': editedPrompt,
-        'durationMins': 999,
-        'durationSecs': 0,
+        'durationMins': question.durationMins,
+        'durationSecs': question.durationSecs,
         'answers': [
             {
                 'optionNumber': 1,
@@ -540,8 +537,19 @@ const updateQuestionEdit = () => {
         ],
     }
 
-    console.log('(updateQuestionEdit) Fetching quiz again after making change');
-    fetchQuizById(quiz.quizID);
+    // TODO: Set global question variable to newQuestion so
+    // that we can create questions locally before implementing API interactions
+    // DeepSeek generated the next two statements 
+    const questionIndex = quiz.questionList.findIndex(q => q.questionID === question.questionID);
+    
+    if (questionIndex !== -1) {
+        quiz.questionList[questionIndex] = newQuestion;
+    }
+
+    // console.log('(updateQuestionEdit) Fetching quiz again after making change');
+    // fetchQuizById(quiz.quizID);
+    drawQuestionMap();
+    extractQuestionData();
     
     console.log(quiz.questionList);
 };
