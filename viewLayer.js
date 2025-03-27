@@ -733,6 +733,116 @@ const tests = [
             return reportCheckboxes().choices == 'ABCD';
         },
     },
+    {
+        'label': 'setup: availableQuizzes not empty',
+        'func': () => {
+            return availableQuizzes.length > 0;
+        },
+    },
+    {
+        'label': 'setup: a question is loaded automtically',
+        'func': () => {
+            return question.prompt;
+        },
+    },
+    {
+        'label': 'drawQuizMap: quiz map is generated (has >0 quizzes)',
+        'func': () => {
+            return document.getElementById('availableQuizMapList').childNodes.length > 0;
+        },
+    },
+    {
+        'label': 'attachQuizActions: works',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'drawQuestionMap: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'fillQuestionEditingForm: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'fillCourseQuizzes: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'fillCourseEditingForm: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'updateQuestionEdit: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'drawCoursemap: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'goToEditQuestion: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'fetchQuizById: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'submitQuestionAnswer: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'extractQuestionData: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'reportCheckboxes: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'clearCheckboxes: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'nextQuestion: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+    {
+        'label': 'prevQuestion: TODO, write test(s)',
+        'func': () => {
+            return false;
+        },
+    },
+
+
 ];
 
 const runTests = () => {
