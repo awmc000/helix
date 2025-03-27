@@ -55,13 +55,29 @@ const setup = () => {
 
     appState.question = appState.quiz.questionList[0];
 
-    // Draw question answer screen from first quiz loaded?
-    extractQuestionData();
+    // Initial state is TAKING_QUIZ
+    goToTakingQuiz(); 
+};
 
-    // Set elements according to initial state
+const goToTakingQuiz = () => {
+    appState.windowState = TAKING_QUIZ;
     setStateElements();
 };
 
+const goToCreatingQuiz = () => {
+    appState.windowState = CREATING_QUIZ;
+    setStateElements();
+};
+
+const goToCreatingCourse = () => {
+    appState.windowState = CREATING_COURSE;
+    setStateElements();
+};
+
+const goToInstructorProfile = () => {
+    appState.windowState = EDITING_INSTRUCTOR_PROFILE;
+    setStateElements();
+};
 /*
  * Shows and hides elements to match the current windowState.
  */
@@ -819,10 +835,7 @@ const tests = [
         },
     },
     {
-        'label': 'attachQuizActions: works',
-        'func': () => {
-            return false;
-        },
+        'label': ''
     },
     {
         'label': 'drawQuestionMap: TODO, write test(s)',

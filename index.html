@@ -20,8 +20,28 @@
           <a href="#" onclick="prevQuestion();">⬅️</a>
         </td>
         
+        <!-- Take quiz -->
+        <td class="screenbuttons">
+          <a class="screenbuttons" href="#" onclick="goToTakingQuiz();">Take Quiz</a>
+        </td>
+
+        <!-- Make quiz -->
+        <td class="screenbuttons">
+          <a class="screenbuttons" href="#" onclick="goToCreatingQuiz();">Create Quiz</a>
+        </td>
+
+        <!-- Make course -->
+        <td class="screenbuttons">
+          <a class="screenbuttons" href="#" onclick="goToCreatingCourse();">Create Course</a>
+        </td>
+
+        <!-- Instr profile -->
+        <td class="screenbuttons">
+          <a class="screenbuttons" href="#" onclick="goToInstructorProfile();">Instructor Profile</a>
+        </td>
+        
         <!-- Quiz name -->
-        <td><h1 class="title" id="pagetitle">Helix Quiz</h1></td>
+        <td><h1 class="title" id="pagetitle" style="position: absolute; left: 50%; transform: translate(-50%, -50%);">Helix Quiz</h1></td>
         
         <!-- Next arrow -->
         <td class="arrow">
@@ -274,10 +294,10 @@
       </tr>
     </table>
     
-    <button onclick="appState.windowState = TAKING_QUIZ; setStateElements();">Taking quiz state</button>
-    <button onclick="appState.windowState = CREATING_QUIZ; setStateElements();">Creating quiz state</button>
-    <button onclick="appState.windowState = CREATING_COURSE; setStateElements();">Creating course state</button>
-    <button onclick="appState.windowState = EDITING_INSTRUCTOR_PROFILE; setStateElements();">Editing instructor profile state</button>
+    <button onclick="goToTakingQuiz();">Taking quiz state</button>
+    <button onclick="goToCreatingQuiz();">Creating quiz state</button>
+    <button onclick="goToCreatingCourse();">Creating course state</button>
+    <button onclick="goToInstructorProfile();">Editing instructor profile state</button>
   </div>
 </body>
 

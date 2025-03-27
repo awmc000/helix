@@ -84,6 +84,18 @@ h1 {
     justify-content: space-evenly;
 }
 
+.screenbuttons {
+    background-color: white;
+    width: 70px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.screenbuttons > a {
+    color: black;
+    text-decoration: none;
+}
+
 /* Development Area - Hide in prod */
 .developmentarea {
     background-color: rgb(195, 195, 255);
