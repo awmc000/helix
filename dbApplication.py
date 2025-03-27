@@ -12,7 +12,8 @@ def connectToDatabase (username, password):
     database = None
     try:
         database = mysql.connector.connect(
-            host= "dolphin.csci.viu.ca",
+            #host= "dolphin.csci.viu.ca",
+            host= "localhost",
             user= username,
             password= password,
             database= "csci375team5_quizdb"
@@ -349,6 +350,9 @@ def createAnalytics(quizID, database):
     result = dict(numOfResponses = count[0], meanScore = mean, medianScore = median, leastCorrect = minCorrect, mostCorrect = maxCorrect, homogenous = leastVariance, heterogenous = mostVariance)
     return result
 
+# Fixes some obscure problem I had where data was coming back from the sql statements in one element tuples
+# list is the list to be fixed
+# returns the fixed list
 def fixData (list):
     i = 0
     for row in list:
@@ -358,3 +362,31 @@ def fixData (list):
             j += 1
         i += 1
     return list
+
+
+# Creates a list of quizzes that all share the same quiz name or label if no quiz names are named that way. Each quiz in the list is in the following format
+#       "quizID" -> the unique identifier of the quiz
+#       "quizName" -> the name of the quiz
+#       "availableAsync" -> a boolean value determining if the quiz can be done asynchronously
+#       "label" -> a search keyword used for looking up quizzes
+#       "quizDescription" -> The description of what the quiz is about
+#       "durationMinutes" -> The maximum duration of the entire quiz
+#
+# string is the search string for the quiz
+# database is the database object where the quiz will be searched for 
+def searchForQuiz (string, database):
+    results = retrieveFromDatabase("SELECT quizID, quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE quizName SOUNDS LIKE %s;", string, database)
+
+    if(not results):
+        results = retrieveFromDatabase("SELECT quizID, quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE label SOUNDS LIKE %s;", string, database)
+    
+    if(not results):
+        return None
+    
+    quizList = []
+    for row in results:
+        ident, name, asyncronous, lab, desc, duration = row
+        quiz = dict(quizID = ident, quizName = name, availableAsync = asyncronous, label = lab, quizDescription = desc, durationMinutes = duration)
+        quizList.append(quiz)
+    
+    return quizList
