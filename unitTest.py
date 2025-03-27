@@ -96,7 +96,7 @@ class disconnectFromDatabase_UT(unitTest):
 
         if(verbose):  
                 print("\tCriteria 1: Database disconnected. Result:", disconnectSuccess)
-                if(len(errors>0)):
+                if(len(errors)>0):
                     print("\tRaised Errors:")
                     for e in errors:
                         print("\t-", e)
