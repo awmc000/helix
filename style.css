@@ -1,5 +1,6 @@
 /* Test rule... although sans serif is probably best fit */
 body {
+    font-size: 0.9em;
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     margin: 0;
 }
