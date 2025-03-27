@@ -512,7 +512,7 @@ const updateQuestionEdit = () => {
     // TODO: Fudging the duration for now!
 
     let newQuestion = {
-        'quizID': editedID,
+        'questionID': editedID,
         'prompt': editedPrompt,
         'durationMins': 999,
         'durationSecs': 0,
@@ -540,6 +540,10 @@ const updateQuestionEdit = () => {
         ],
     }
 
+    console.log('(updateQuestionEdit) Fetching quiz again after making change');
+    fetchQuizById(quiz.quizID);
+    
+    console.log(quiz.questionList);
 };
 
 /*
@@ -562,6 +566,7 @@ const drawCourseMap = () => {
  *
  */
 const goToEditQuestion = (id) => {
+    console.log('(goToEditQuestion): going to question' + id);
     for (const q of quiz.questionList) {
         if (q.questionID == id) {
             question = q;
