@@ -11,13 +11,13 @@ def connectToDatabase (username, password):
     database = None
     try:
         database = mysql.connector.connect(
-            host= "localhost",
+            host= "dolphin.csci.viu.ca",
             user= username,
             password= password,
             database= "csci375team5_quizdb"
         )
     except Error as e:
-        print("Error: ", e)
+        raise Exception (e)
         return None
 
     return database
@@ -27,7 +27,21 @@ def connectToDatabase (username, password):
 # Requires a database object as a paramater
 # Returns nothing
 def disconnectFromDatabase (database):
+    if(database is None):
+        raise Exception ("Error in disconnectFromDatabase in dbApplication.py. Database is None-type.")
+        return False
+
+    if(database.is_connected()==False):
+        raise Exception ("Error in disconnectFromDatabase in dbApplication.py. Database was not connected.")
+        return False
+    
     database.close()
+    if(database.is_connected()):
+        raise Exception ("Error in disconnectFromDatabase in dbApplication.py. Database connection did not close.")
+        return False
+
+    else:
+        return True
 
 
 # Retrieves data from the database coresponding to the sql query it is fed
