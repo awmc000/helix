@@ -18,8 +18,8 @@ except:
 
 
 #valid
-username = "4treess"
-password = "MySqlPassword"
+username = ""
+password = ""
 
 database = db.connectToDatabase(username, password)
 
