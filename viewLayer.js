@@ -19,13 +19,10 @@ const EDITING_INSTRUCTOR_PROFILE    = 3;
 let appState = {
     windowState: TAKING_QUIZ,
     currentQuestionIndex: 0,
-    quiz: undefined,
-    question: undefined,
+    quiz: null,
+    question: null,
 };
 
-
-var quiz;
-var question;
 var availableQuizzes;
 var availableCourses = [
     {
@@ -56,7 +53,7 @@ const setup = () => {
     // Set current quiz to first of them: Demo only
     appState.quiz = loadFullQuiz(availableQuizzes[0].quizID);
 
-    question = appState.quiz.questionList[0];
+    appState.question = appState.quiz.questionList[0];
 
     // Draw question answer screen from first quiz loaded?
     extractQuestionData();
@@ -309,7 +306,7 @@ const loadFullQuiz = (id) => {
         if (availableQuiz.quizID == id) {
             // Set global to this quiz, and return it
             appState.quiz = availableQuiz;
-            question = appState.quiz.questionList[0];
+            appState.question = appState.quiz.questionList[0];
             return appState.quiz;
         }
     }
@@ -465,12 +462,12 @@ const drawQuestionMap = () => {
  * Populates the forum in the quiz editing screen with current values.
  */
 const fillQuestionEditingForm = () => {
-    document.getElementById("editQuestionPrompt").value = question.prompt;
+    document.getElementById("editQuestionPrompt").value = appState.question.prompt;
 
     let letters = ['A', 'B', 'C', 'D'];
-    for (let i = 0; i < question.answers.length && i < 4; i++) {
-        document.getElementById('choice' + letters[i] + 'Prompt').value = question.answers[i].optDescription;
-        document.getElementById('choice' + letters[i] + 'Value').value = question.answers[i].scoreValue;
+    for (let i = 0; i < appState.question.answers.length && i < 4; i++) {
+        document.getElementById('choice' + letters[i] + 'Prompt').value = appState.question.answers[i].optDescription;
+        document.getElementById('choice' + letters[i] + 'Value').value = appState.question.answers[i].scoreValue;
     }
 };
 
@@ -500,7 +497,7 @@ const fillCourseEditingForm = () => {
 };
 
 const updateQuestionEdit = () => {
-    console.log('(updateQuestionEdit) TODO: Send POST request with updated question ' + question.questionID);
+    console.log('(updateQuestionEdit) TODO: Send POST request with updated question ' + appState.question.questionID);
     let editedPrompt = document.getElementById('editQuestionPrompt').value;
     
     let editedChoiceA = document.getElementById('choiceAPrompt').value;
@@ -514,10 +511,10 @@ const updateQuestionEdit = () => {
     let editedValueD = parseInt(document.getElementById('choiceDValue').value);
 
     let newQuestion = {
-        'questionID': question.questionID,
+        'questionID': appState.question.questionID,
         'prompt': editedPrompt,
-        'durationMins': question.durationMins,
-        'durationSecs': question.durationSecs,
+        'durationMins': appState.question.durationMins,
+        'durationSecs': appState.question.durationSecs,
         'answers': [
             {
                 'optionNumber': 1,
@@ -545,7 +542,7 @@ const updateQuestionEdit = () => {
     // TODO: Set global question variable to newQuestion so
     // that we can create questions locally before implementing API interactions
     // DeepSeek generated the next two statements 
-    const questionIndex = appState.quiz.questionList.findIndex(q => q.questionID === question.questionID);
+    const questionIndex = appState.quiz.questionList.findIndex(q => q.questionID === appState.question.questionID);
     
     if (questionIndex !== -1) {
         appState.quiz.questionList[questionIndex] = newQuestion;
@@ -583,7 +580,7 @@ const goToEditQuestion = (id) => {
     console.log('(goToEditQuestion): going to question' + id);
     for (const q of appState.quiz.questionList) {
         if (q.questionID == id) {
-            question = q;
+            appState.question = q;
         }
     }
     fillQuestionEditingForm();
@@ -596,7 +593,7 @@ const goToEditQuestion = (id) => {
 const fetchQuizById = (targetQuiz) => {
     console.log('(fetchQuizById) TODO: GET request to get quiz ' + targetQuiz);
     appState.quiz = loadFullQuiz(targetQuiz);
-    question = appState.quiz.questionList[0];
+    appState.question = appState.quiz.questionList[0];
     drawQuestionMap();
     extractQuestionData();
 };
@@ -617,11 +614,11 @@ const submitQuestionAnswer = () => {
 const extractQuestionData = () => {
     // Set prompt and title
     document.getElementById('pagetitle').innerText = appState.quiz.name;
-    document.getElementById('questionprompt').innerText = question.prompt;
-    document.getElementById('questiontitle').innerText = 'Question #' + question.questionID;
+    document.getElementById('questionprompt').innerText = appState.question.prompt;
+    document.getElementById('questiontitle').innerText = 'Question #' + appState.question.questionID;
     
     // Disable / enable appropriate response area divs
-    if (question.questionID != 0) {
+    if (appState.question.questionID != 0) {
         document.getElementById('paragraphresponse').style.display = 'none';
         document.getElementById('multiplechoiceresponse').style.display = 'flex';
     } else {
@@ -634,9 +631,9 @@ const extractQuestionData = () => {
     hideManyById(buttons);
 
     // Show the ones for which there is an answer
-    for (let i = 0; i < question.answers.length && i < 4; i++) {
+    for (let i = 0; i < appState.question.answers.length && i < 4; i++) {
         showById(buttons[i]);
-        document.getElementById(buttons[i]).getElementsByTagName('label')[0].innerText = question.answers[i].optDescription;
+        document.getElementById(buttons[i]).getElementsByTagName('label')[0].innerText = appState.question.answers[i].optDescription;
     }
 };
 
@@ -657,7 +654,7 @@ const reportCheckboxes = () => {
         report += 'D';
 
     // TODO: Change from quiz.label to quiz.quizID!
-    report = { 'quiz': appState.quiz.label, 'questionID': question.questionID, choices: report}
+    report = { 'quiz': appState.quiz.label, 'questionID': appState.question.questionID, choices: report}
 
     return report;
 };
@@ -678,7 +675,7 @@ const nextQuestion = () => {
     submitQuestionAnswer();
     clearCheckboxes();
     appState.currentQuestionIndex = (appState.currentQuestionIndex + 1) % appState.quiz.questionList.length;
-    question = appState.quiz.questionList[appState.currentQuestionIndex];
+    appState.question = appState.quiz.questionList[appState.currentQuestionIndex];
     extractQuestionData();
 };
 
@@ -692,7 +689,7 @@ const prevQuestion = () => {
     reportCheckboxes();
     clearCheckboxes();
     appState.currentQuestionIndex = appState.currentQuestionIndex - 1;
-    question = appState.quiz.questionList[appState.currentQuestionIndex];
+    appState.question = appState.quiz.questionList[appState.currentQuestionIndex];
     extractQuestionData();
 };
 
@@ -812,7 +809,7 @@ const tests = [
     {
         'label': 'setup: a question is loaded automtically',
         'func': () => {
-            return question.prompt;
+            return appState.question.prompt;
         },
     },
     {
