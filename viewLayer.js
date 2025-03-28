@@ -59,25 +59,38 @@ const setup = () => {
     goToTakingQuiz(); 
 };
 
+/*
+ * Function for changing screen to taking quiz
+ */
 const goToTakingQuiz = () => {
     appState.windowState = TAKING_QUIZ;
     setStateElements();
 };
 
+/*
+ * Function for changing screen to creating quiz
+ */
 const goToCreatingQuiz = () => {
     appState.windowState = CREATING_QUIZ;
     setStateElements();
 };
 
+/*
+ * Function for changing screen to creating course
+ */
 const goToCreatingCourse = () => {
     appState.windowState = CREATING_COURSE;
     setStateElements();
 };
 
+/*
+ * Function for changing screen to instructor profile
+ */
 const goToInstructorProfile = () => {
     appState.windowState = EDITING_INSTRUCTOR_PROFILE;
     setStateElements();
 };
+
 /*
  * Shows and hides elements to match the current windowState.
  */
@@ -110,6 +123,9 @@ const hideById = (id) => {
     document.getElementById(id).style.display = 'none';
 };
 
+/*
+ * Takes a list of IDs, sets the display property to `none` to hide them all.
+ */
 const hideManyById = (ids) => {
     for (const id of ids) {
         hideById(id);
@@ -432,6 +448,10 @@ const addQuestion = () => {
 
 };
 
+/*
+ * Add the buttons to view analytics and create a question to the
+ * buttons shown in the Creating Quiz screen.
+ */
 const attachQuizActions = () => {
     
     let listItemTag = document.createElement('li');
@@ -488,6 +508,10 @@ const fillQuestionEditingForm = () => {
     }
 };
 
+/*
+ * Fills in the list of quizzes that belong to a course.
+ * Part of the course editing screen.
+ */
 const fillCourseQuizzes = () => {
     document.getElementById('courseQuizList').innerHTML = '';
     
@@ -512,6 +536,18 @@ const fillCourseEditingForm = () => {
 
 };
 
+/*
+ * This question created a lot of headaches because of how it has to 
+ * replace global variables.
+ * This pertains to the quiz editing or Create Quiz screen.
+ * Its mission is to execute an update of a question. This is called
+ * by a button press when the user has finished entering new values for
+ * a quiz. Its job is to...
+ * BEFORE API MIGRATION: Modify the quiz and question global variables
+ * AFTER API MIGRATION: Hit an API endpoint to modify the question,
+ * then retrieve the quiz again so the new modified quiz is seen in
+ * the frontend. 
+ */
 const updateQuestionEdit = () => {
     console.log('(updateQuestionEdit) TODO: Send POST request with updated question ' + appState.question.questionID);
     let editedPrompt = document.getElementById('editQuestionPrompt').value;

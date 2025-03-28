@@ -36,6 +36,11 @@ To create a python virtual environment
 python -m venv .venv
 ```
 
+To enter a virtual environment
+```
+source .venv/bin/activate
+```
+
 To install everything that's in a requirements.txt
 
 ```bash
@@ -62,6 +67,7 @@ To create a requirements.txt so that anybody can recreate the environment
 ```bash
 pip freeze > requirements.txt
 ```
+
 ## Frontend HTML & JS
 - The frontend is contained a single page and elements are drawn 
 or hidden depending on the **screen state** of the application.
@@ -81,6 +87,8 @@ object to clean things up a bit.
 - Until the endpoints are ready in the API, Http requests have been
 marked as TODO, and interactions implemented with local data (you can
 add questions but they will be gone if you refresh, etc.)
+- DOM nodes / HTML tags are created, modified, and deleted by scripts, 
+and they are identified by ID.
 ### Responding to Quizzes
 - Information stored as global state includes:
     - List of available quizzes, only the info needed to fetch them.
