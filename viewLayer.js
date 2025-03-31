@@ -16,24 +16,25 @@ const CREATING_QUIZ                 = 1;
 const CREATING_COURSE               = 2;
 const EDITING_INSTRUCTOR_PROFILE    = 3;
 
+
+var availableQuizzes;
+var availableCourses = [{
+    'courseID': 1,
+    'name': '(Placeholder Course)',
+    'description': 'A course for quizzes to be part of until creation of courses' +
+    ' is implemented.',
+}];
+
 let appState = {
     windowState: TAKING_QUIZ,
     currentQuestionIndex: 0,
     quiz: null,
     question: null,
+    course: availableCourses[0],
 };
 
-var availableQuizzes;
-var availableCourses = [
-    {
-        'courseID': 1,
-        'name': '(Placeholder Course)',
-        'description': 'A course for quizzes to be part of until creation of courses' +
-        ' is implemented.',
-    }
-]
 
-let course = availableCourses[0];
+// let course = availableCourses[0];
 
 /* ======================================================================================
  * State-Related Functions, Hiding/Showing Elements, Etc.
@@ -534,8 +535,8 @@ const fillCourseQuizzes = () => {
 };
 
 const fillCourseEditingForm = () => {
-    document.getElementById('editCourseName').value = course.name;
-    document.getElementById('editCourseDescription').value = course.description;
+    document.getElementById('editCourseName').value = appState.course.name;
+    document.getElementById('editCourseDescription').value = appState.course.description;
 
 };
 
@@ -874,42 +875,77 @@ const tests = [
         },
     },
     {
-        'label': ''
-    },
-    {
-        'label': 'drawQuestionMap: TODO, write test(s)',
+        'label': 'drawQuestionMap: Map drawn properly for Create Quiz screen',
         'func': () => {
-            return false;
+            goToCreatingQuiz();
+            return document.getElementById('questionMapList').childNodes.length > 0;
         },
     },
     {
-        'label': 'fillQuestionEditingForm: TODO, write test(s)',
+        'label': 'fillQuestionEditingForm: Form populated when user clicks a question',
         'func': () => {
-            return false;
+            goToCreatingQuiz();
+
+            let firstLi = document.getElementById('questionMapList').childNodes[0];
+            
+            // Only child should be an <a> button. Click it and form should be populated.
+            firstLi.childNodes[0].click();
+            return document.getElementById('editQuestionPrompt').value.length > 0;
         },
     },
     {
-        'label': 'fillCourseQuizzes: TODO, write test(s)',
+        'label': 'fillCourseQuizzes: Quizzes printed in Create Course plus button to make one',
         'func': () => {
-            return false;
+            goToCreatingCourse();
+            return document.getElementById('courseQuizList').childNodes.length == availableQuizzes.length + 1;
         },
     },
     {
-        'label': 'fillCourseEditingForm: TODO, write test(s)',
+        'label': 'fillCourseEditingForm: Course edit form populated',
         'func': () => {
-            return false;
+            goToCreatingCourse();
+            let firstLi = document.getElementById('courseMapList').childNodes[0];
+            firstLi.childNodes[0].click();
+
+            let namePopulated = document.getElementById('editCourseName').value == appState.course.name; 
+            let descPopulated = document.getElementById('editCourseDescription').value == appState.course.description
+            return namePopulated && descPopulated;
         },
     },
     {
-        'label': 'updateQuestionEdit: TODO, write test(s)',
+        'label': 'updateQuestionEdit: Edits can be seen when taking quiz',
         'func': () => {
-            return false;
+            // First, go to Create Quiz screen
+            goToCreatingQuiz();
+
+            // Then click on first question
+            let firstLi = document.getElementById('questionMapList').childNodes[0];
+            
+            // Only child should be an <a> button. Click it and form should be populated.
+            firstLi.childNodes[0].click();
+
+            // Then edit its prompt
+            document.getElementById('editQuestionPrompt').value = "HelloWorld!";
+            document.getElementById('updateQuestionButton').click();
+
+            // Then check that that is reflected in Take Quiz screen
+            goToTakingQuiz();
+            return document.getElementById('questionprompt').innerText == "HelloWorld!";            
         },
     },
     {
-        'label': 'drawCoursemap: TODO, write test(s)',
+        'label': 'drawCoursemap: Select first course',
         'func': () => {
-            return false;
+            let list = document.getElementById('courseMapList');
+            
+            if (list.childNodes.length == 0) {
+                return false;
+            }
+            
+            let link = list.childNodes[0].childNodes[0];
+            link.click();
+
+            return link.innerText == appState.course.name;
         },
     },
     {
