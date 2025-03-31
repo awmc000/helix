@@ -98,6 +98,9 @@ const setStateElements = () => {
     if (appState.windowState == TAKING_QUIZ) {
         showManyById(['availableQuizMapDiv', 'question']);
         hideManyById(['quizmap', 'editquestion', 'coursemap', 'editcourse', 'instructorprofile']);
+        
+        // When entering the state, clear any response from before
+        clearCheckboxes();
         loadFullQuiz(appState.quiz.quizID);
         extractQuestionData();
     }
