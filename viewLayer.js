@@ -710,7 +710,7 @@ const reportCheckboxes = () => {
         report += 'D';
 
     // TODO: Change from quiz.label to quiz.quizID!
-    report = { 'quiz': appState.quiz.label, 'questionID': appState.question.questionID, choices: report}
+    report = { 'quiz': appState.quiz.quizID, 'questionID': appState.question.questionID, choices: report}
 
     return report;
 };
@@ -949,15 +949,24 @@ const tests = [
         },
     },
     {
-        'label': 'goToEditQuestion: TODO, write test(s)',
+        'label': 'goToEditQuestion: Go to edit last question',
         'func': () => {
-            return false;
+            goToCreatingQuiz();
+
+            // Get ID of *last* question in current quiz
+            let lastIndex = appState.quiz.questionList.length - 1;
+
+            goToEditQuestion(lastIndex);
+
+            return document.getElementById('editQuestionPrompt').value == appState.question.prompt;
         },
     },
     {
-        'label': 'fetchQuizById: TODO, write test(s)',
+        'label': 'fetchQuizById: Fetch last quiz of available',
         'func': () => {
-            return false;
+            let lastIndex = availableQuizzes.length - 1;
+            fetchQuizById(availableQuizzes[lastIndex].quizID);
+            return appState.quiz.quizID == availableQuizzes[lastIndex].quizID;
         },
     },
     {
@@ -973,9 +982,17 @@ const tests = [
         },
     },
     {
-        'label': 'reportCheckboxes: TODO, write test(s)',
+        'label': 'reportCheckboxes: reports current choice',
         'func': () => {
-            return false;
+            // BUG: Don't know why this one fails
+            goToTakingQuiz();
+            let res = reportCheckboxes();
+            console.log(res);
+            let exp = { 
+                'quiz': appState.quiz.quizID, 
+                'questionID': appState.question.questionID, 
+                'choices': ""};
+            return res == exp;
         },
     },
     {
