@@ -18,12 +18,19 @@ const EDITING_INSTRUCTOR_PROFILE    = 3;
 
 
 var availableQuizzes;
-var availableCourses = [{
-    'courseID': 1,
-    'name': '(Placeholder Course)',
-    'description': 'A course for quizzes to be part of until creation of courses' +
-    ' is implemented.',
-}];
+var availableCourses = [
+    {
+        'courseID': 1,
+        'name': '(Placeholder Course)',
+        'description': 'A course for quizzes to be part of until creation of courses' +
+        ' is implemented.',
+    },
+    {
+        'courseID': 2,
+        'name': 'Intro to Textile Arts',
+        'description': 'A second placeholder',
+    },
+];
 
 let appState = {
     windowState: TAKING_QUIZ,
