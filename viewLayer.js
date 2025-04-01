@@ -257,6 +257,7 @@ let question3 = {
 };
 
 let quiz1 = {
+    'courseID': 1,
     'quizID': 1,
     'name': 'General Knowledge Quiz',
     'asynchronous': true,
@@ -272,6 +273,7 @@ let quiz1 = {
 };
 
 let quiz2 = {
+    'courseID': 1,
     'quizID': 2,
     'name': 'Periodic Table Quiz',
     'asynchronous': true,
@@ -631,6 +633,7 @@ const drawCourseMap = () => {
         let anchorTag = document.createElement('a');
         anchorTag.href = '#';
         anchorTag.innerText = course.name;
+        anchorTag.onclick = () => { loadCourse(course.courseID); };
         listItemTag.appendChild(anchorTag);
         document.getElementById('courseMapList').appendChild(listItemTag);
     });
@@ -650,6 +653,24 @@ const goToEditQuestion = (id) => {
 };
 
 /*
+ * Set current course to given ID.
+ */
+const loadCourse = (id) => {
+    for (const course of availableCourses) {
+        if (course.courseID == id) {
+            appState.course = course;
+        }
+    }
+    // Set form values
+    document.getElementById('courseedittitle').innerText = 'Editing ' + appState.course.name 
+        + ' (' + appState.course.courseID + ')'; 
+    document.getElementById('editCourseName').value = appState.course.name;
+    document.getElementById('editCourseDescription').value = appState.course.description;
+    // appState.course is now set
+    // Set quiz to some quiz from that course...?
+};
+
+/*
  * Sets the global quiz and question variables to point to the quiz
  * selected in the dropdown menu.
  */
@@ -660,6 +681,7 @@ const fetchQuizById = (targetQuiz) => {
     drawQuestionMap();
     extractQuestionData();
 };
+
 /*
  * Submits the answer to a question with a POST request. Overwrites any
  * previous submitted answer, allowing changing of responses.
