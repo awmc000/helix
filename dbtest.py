@@ -18,8 +18,8 @@ except:
 
 
 #valid
-username = ""
-password = ""
+username = "4treess"
+password = "MySqlPassword"
 
 database = db.connectToDatabase(username, password)
 
@@ -306,3 +306,8 @@ quizList = db.searchForQuiz(values, database)
 if(quizList):
     print(quizList)
     print("\n\nTest28 Passed\n\n")
+
+#
+values = {"courseName": "name","courseDescription": "desc", "courseID": 1}
+if(db.createCourse(values, database)):
+    print("\n\nTest27 Passed\n\n")

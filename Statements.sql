@@ -6,7 +6,7 @@ INSERT INTO Author (username, name, authorDescription, emailaddress) VALUES (%s,
 
 INSERT INTO Course (username, name, courseDescription) VALUES (%s, %s, %s);
 
--- 
+-- Update Course | IMPLEMENTED - updateCourse
 
 UPDATE Course SET (name = %s, courseDescription = %s) WHERE courseID = %s;
 

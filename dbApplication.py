@@ -270,6 +270,13 @@ def createQuiz(quiz, database):
 def createCourse(course, database):
     return updateDatabase("INSERT INTO Course (username, courseName, courseDescription) VALUES (%s, %s, %s)", list(course.values()), database)
 
+# Updates a course row in the database with the specifed courseID
+# course is the course python object that contains the answers you want to upload to the db
+# database is the database connection
+# Returns True if sucessful, otherwise None
+def createCourse(course, database):
+    return updateDatabase("UPDATE Course SET courseName = %s, courseDescription = %s WHERE courseID = %s;", list(course.values()), database)
+
 
 # Takes the author object and adds the values of it to the database
 # author is the author python object that contains the answers you want to upload to the db
