@@ -623,11 +623,26 @@ const updateQuestionEdit = () => {
 };
 
 /*
+ * Create a course with filler data
+ */
+const addCourse = () => {
+    console.log('TODO: Make POST request to create course, getting back ID');
+    let newCourse = {
+        'courseID': availableCourses[availableCourses.length-1].courseID + 1,
+        'name': 'New Course',
+        'description': 'Course description',
+    };
+    availableCourses.push(newCourse);
+};
+
+/*
  * Draws the nav list of courses. Will probably require a function
  * to hit the course list endpoint...
  */
 const drawCourseMap = () => {
     document.getElementById('courseMapList').innerHTML = '';
+
+    // Add course list items
     availableCourses.forEach((course) => {
         let listItemTag = document.createElement('li');
         let anchorTag = document.createElement('a');
@@ -637,6 +652,15 @@ const drawCourseMap = () => {
         listItemTag.appendChild(anchorTag);
         document.getElementById('courseMapList').appendChild(listItemTag);
     });
+    
+    // Add create course list item
+    let listItemTag = document.createElement('li');
+    let anchorTag = document.createElement('a');
+    anchorTag.href = '#';
+    anchorTag.innerText = 'Create a new course...';
+    anchorTag.onclick = () => { addCourse(); };
+    listItemTag.appendChild(anchorTag);
+    document.getElementById('courseMapList').appendChild(listItemTag);
 };
 
 /*
