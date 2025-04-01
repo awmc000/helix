@@ -6,6 +6,10 @@ INSERT INTO Author (username, name, authorDescription, emailaddress) VALUES (%s,
 
 INSERT INTO Course (username, name, courseDescription) VALUES (%s, %s, %s);
 
+-- 
+
+UPDATE Course SET (name = %s, courseDescription = %s) WHERE courseID = %s;
+
 -- New Quiz | IMPLEMENTED - createQuiz
 
 INSERT INTO Quiz (courseID, name, availableAsync, label, quizDescription, durationMinutes) VALUES (%s, %s, %s, %s, %s, %s);
@@ -31,11 +35,11 @@ SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Qu
 
 SELECT quizID, quizName FROM Quiz
 
--- Search For Quiz By Name
+-- Search For Quiz By Name | IMPLEMENTED - searchForQuiz
 
 SELECT quizID, quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE quizName SOUNDS LIKE %s;
 
--- Search For Quiz By Label
+-- Search For Quiz By Label | IMPLEMENTED - searchForQuiz
 
 SELECT quizID, quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE label SOUNDS LIKE %s;
 

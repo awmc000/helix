@@ -123,6 +123,7 @@ const setStateElements = () => {
         drawCourseMap();
         fillCourseEditingForm();
         fillCourseQuizzes();
+
     } 
     else if (appState.windowState == EDITING_INSTRUCTOR_PROFILE) {
         showById('instructorprofile');
