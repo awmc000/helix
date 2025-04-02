@@ -1,30 +1,40 @@
 # models.py (WIP)
-# Author: Cassius Galdames
-#
-# Note: Based on the Quiz, Question, & Answer 
-#       Dictionaries by Trevor in the Discord.
+# Author: Cassius Galdames 
+#    
 
 from pydantic import BaseModel
 from typing import List
 
 class Answer(BaseModel):
-    optionNumber: int
-    optDescription: str
-    scoreValue: int
+    optionNumber: int = 0
+    optDescription: str = ""
+    scoreValue: int = 0
 
 class Question(BaseModel):
-    questionID: int
-    prompt: str
-    wasAsked: bool
-    durationMins: int
-    durationSecs: int
-    Answers: List[Answer]
+    questionID: int = 0
+    prompt: str = ""
+    durationMins: int = 0
+    durationSecs: int = 0
+    AnswerKey: List[Answer] = []
 
 class Quiz(BaseModel):
-    quizID: int
-    name: str
-    asynchronous: bool
-    label: str
-    description: str
-    durationMins: int
-    questionList: List[Question]
+    quizID: int = 0
+    courseID: int = 0
+    quizName: str = ""
+    availableAsync: bool = False
+    label: str = ""
+    quizDescription: str = ""
+    durationMins: int = 0
+    questionList: List[Question] = []
+
+class Course(BaseModel):
+    courseID: int = 0
+    username: str
+    courseName: str = ""
+    courseDescription: str = ""
+
+class Author(BaseModel):
+    username: str
+    name: str = ""
+    description: str = ""
+    emailAddress: str = ""
