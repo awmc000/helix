@@ -105,7 +105,7 @@ const goToInstructorProfile = () => {
 const setStateElements = () => {
     if (appState.windowState == TAKING_QUIZ) {
         showManyById(['availableQuizMapDiv', 'question']);
-        hideManyById(['quizmap', 'editquestion', 'coursemap', 'editcourse', 'instructorprofile']);
+        hideManyById(['quizmap', 'editquestion', 'coursemap', 'editcourse', 'instructorLogin', 'instructorprofile']);
         
         // When entering the state, clear any response from before
         clearCheckboxes();
@@ -114,19 +114,19 @@ const setStateElements = () => {
     }
     else if (appState.windowState == CREATING_QUIZ) {
         showManyById(['availableQuizMapDiv', 'quizmap', 'editquestion']);
-        hideManyById(['question', 'coursemap', 'editcourse', 'instructorprofile']);
+        hideManyById(['question', 'coursemap', 'editcourse', 'instructorLogin', 'instructorprofile']);
         drawQuestionMap();
     }
     else if (appState.windowState == CREATING_COURSE) {
         showManyById(['coursemap', 'editcourse']);
-        hideManyById(['availableQuizMapDiv', 'question', 'quizmap', 'editquestion', 'instructorprofile']);
+        hideManyById(['availableQuizMapDiv', 'question', 'quizmap', 'editquestion','instructorLogin',  'instructorprofile']);
         drawCourseMap();
         fillCourseEditingForm();
         fillCourseQuizzes();
 
     } 
     else if (appState.windowState == EDITING_INSTRUCTOR_PROFILE) {
-        showById('instructorprofile');
+        showManyById(['instructorLogin', 'instructorprofile']);
         hideManyById(['availableQuizMapDiv', 'question', 'quizmap', 'editquestion', 'coursemap', 'editcourse']);
     }
 }
