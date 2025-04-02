@@ -5,7 +5,7 @@
 #  
 
 from fastapi import FastAPI, HTTPException, Query
-# from fastapi.middleware.cors import CORSMiddleware // uncomment for UI integration
+from fastapi.middleware.cors import CORSMiddleware # uncomment for UI integration
 from models import Answer, Question, Quiz, Course, Author
 from typing import List, Dict
 # import dbApplication as db_app    // will uncomment for 
@@ -15,13 +15,14 @@ app = FastAPI()
 
 # UI integration
 # CORS configuration for frontend
-# app.add_middleware(
-#    CORSMiddleware,
+app.add_middleware(
+   CORSMiddleware,
 #    allow_origins=["http://localhost:3000"],
-#    allow_credentials=True,
-#    allow_methods=["*"],
-#    allow_headers=["*"],
-# )
+   allow_origins=["*"],
+   allow_credentials=True,
+   allow_methods=["*"],
+   allow_headers=["*"],
+)
 
 # Test values:     // will replace with connection to DB
 quizzes: Dict[int, Quiz] = {}  # Key: quiz id, Value: Quiz object
