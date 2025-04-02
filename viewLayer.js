@@ -16,6 +16,10 @@ const CREATING_QUIZ                 = 1;
 const CREATING_COURSE               = 2;
 const EDITING_INSTRUCTOR_PROFILE    = 3;
 
+// TODO: API address is localhost in dev, 
+// should be address of a cub where api is running in prod
+let apiAddress = "http://127.0.0.1:8000/";
+
 
 var availableQuizzes;
 var availableCourses = [
@@ -54,10 +58,10 @@ let appState = {
  * Entry point called on body load.
  * Sets up global pointer variables, etc.
  */
-const setup = () => {
+const setup = async () => {
     // Load available quizzes
-    availableQuizzes = getAvailableQuizzes();
-
+    availableQuizzes = await getAvailableQuizzes();
+    
     // Create quiz map from the quizzes loaded
     drawQuizMap();
 
@@ -374,6 +378,55 @@ const loadFullQuiz = (id) => {
  * ====================================================================================== */
 
 /*
+ * Wrapper for `fetch()` that makes HTTP requests to the API
+ * Makes requests to the same API address, so does not take address, just endpoint
+ * 
+ * Endpoint: Path to follow URL. 
+ * For 127.0.0.1:800/hello/world This would be "hello/world".
+ * useMethod: All caps method name eg. "GET", "POST", "DELETE".
+ * useBody: Object eg.:
+ *      {
+ *          "courseID": -1, 
+ *          "username": "awmc2000",
+ *          "courseName": "Intro to Textile Arts",
+ *          "courseDescription": "Beginner sewing and embroidery"
+ *      }
+ * useParams: Object eg.:
+ *      { "username": "awmc2000" }
+ */
+const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
+    let url = new URL(apiAddress + endpoint);
+    // Add parameters to URL
+    for (const [k, v] of Object.entries(useParams)) {
+        url.searchParams.append(k, v);
+    }
+
+    // Make request
+    try {
+        const response = await fetch(url,
+            {
+                method: useMethod,
+                body: useBody != null ? JSON.stringify(useBody) : undefined,
+                headers: {
+                  "Content-Type": "application/json",
+                },
+            }
+        );
+        
+        // Handle potential error
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        
+        const json = await response.json();
+
+        return json;
+    } catch (error) {
+        console.error(error.message);
+    }
+};
+
+/*
  * Returns a list of quizzes available to do.
  * The object fetched from the API is a list of partial/abbreviated
  * quiz objects. It is of the form:
@@ -381,22 +434,23 @@ const loadFullQuiz = (id) => {
  *  {'quizID': 1, 'name': 'quiz 1', 'label': 'easy', 'description': 'some kind of quiz'},
  * ]
  */
-const getAvailableQuizzes = () => {
+const getAvailableQuizzes = async () => {
     // TODO: Retrieve from API
     // Currently stubbed out to use test data!
     console.log('(getAvailableQuizzes) TODO: GET request for available quizzes')
-    let re = [];
+    // let re = [];
 
-    for (quiz of quizzes) {
-        re.push({
-            'quizID': quiz.quizID,
-            'name': quiz.name,
-            'label': quiz.label,
-            'description': quiz.description,
-        });
-    }
+    // for (quiz of quizzes) {
+    //     re.push({
+    //         'quizID': quiz.quizID,
+    //         'name': quiz.name,
+    //         'label': quiz.label,
+    //         'description': quiz.description,
+    //     });
+    // }
 
-    return re;
+    // Since this function is async, this will be implicitly wrapped in a Promise
+    return await makeRequest('quizzes', 'GET', null, {'username':'awmc2000'});
 };
 
 /*
@@ -407,8 +461,8 @@ const drawQuizMap = () => {
     availableQuizzes.forEach((quizInfo) => {
         let anchorTag = document.createElement('a');
         anchorTag.href = '#';
-        anchorTag.innerText = quizInfo.name;
-        anchorTag.title = quizInfo.description;
+        anchorTag.innerText = quizInfo.quizName;
+        anchorTag.title = quizInfo.quizDescription;
 
         let lineBreak = document.createElement('br');
 
@@ -763,7 +817,7 @@ const extractQuestionData = () => {
 
 /*
  * Returns an object containing the questionID and checked multi choice options.
- * Return value is of the form : { 'quiz': quizID, 'questionID': questionID }
+ * Return value is of the form : { 'quiz': quizID, 'questionID': questionID, 'choices': 'ABCD' }
  */
 const reportCheckboxes = () => {
     let report = '';
@@ -778,7 +832,7 @@ const reportCheckboxes = () => {
         report += 'D';
 
     // TODO: Change from quiz.label to quiz.quizID!
-    report = { 'quiz': appState.quiz.quizID, 'questionID': appState.question.questionID, choices: report}
+    report = { 'quizID': appState.quiz.quizID, 'questionID': appState.question.questionID, choices: report}
 
     return report;
 };
@@ -839,15 +893,12 @@ document.addEventListener("keydown", handleKeypress);
  * API Access Test - will only work on campus!
  * ====================================================================================== */
 
-// IP address and port of `fastapi run api.py` running on a cub
-let apiAddress = "http://192.168.18.42:8000/";
-
 /*
  * Fetches some kind of data from API root endpoint and displays it in
  * dataplace span element.
  */
 async function fetchData() {
-    const url = apiAddress;
+    const url = 'http://127.0.0.1:8000/quizzes/';
     try {
         const response = await fetch(url);
         if (!response.ok) {

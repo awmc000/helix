@@ -102,13 +102,21 @@ and they are identified by ID.
 - Each time the user hits next or prev, their answer is updated by a POST request
 to the API.
 ## Rest API
-- wishlist from frontend dev:
-    - `GET` request to `/available`: an endpoint that returns all the quizzes that are currently 
-    available to take, as a list of quiz objects like in the python schema below.
-    - `GET` request to `/quiz`: an endpoint that takes a quiz label and returns the entire quiz object.
-    - `POST` request to `/answer`: an endpoint that takes a JSON object having 3 keys: a quiz label, a questionID,
-    and a string of choices, of the form '' for selecting nothing and 'ABC' if user selected A, B,  and C, etc.
-    Let me know if you think a list like [] and ['A', 'B', 'C'] would be better?
+
+### Example Requests
+#### Create Course as curl
+```
+curl -X POST '127.0.0.1:8000/courses/' \
+  --url-query 'username=awmc2000' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "courseID": -1,
+  "username": "awmc2000",
+  "courseName": "Intro to Textile Arts",
+  "courseDescription": "Beginner sewing and embroidery"
+}'
+```
+
 
 ## Data Layer
 - The data layer is implemented as a Python module which the API can use to encapsulate interactions with the database
@@ -186,6 +194,13 @@ const answer = {
     'optDescription': 'Red',
     'scoreValue': -1,
 };
+```
+
+Answers being sent from frontend to API have this form:
+```js
+{ 'quizID': -1, 'questionID': -1, 'choices': '' } // chose nothing
+{ 'quizID': -1, 'questionID': -1, 'choices': 'AB' } // chose A and B
+{ 'quizID': -1, 'questionID': -1, 'choices': 'ABCD' } // chose all
 ```
 
 ## Timers
