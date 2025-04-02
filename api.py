@@ -2,133 +2,213 @@
 # Author: Cassius Galdames
 #
 # Note: Currently set up for individual testing.
-#       Will have to make additions in order to
-#       properly connect and integrate with database.
+#  
 
-from fastapi import FastAPI, HTTPException
-from models import Quiz, Question, Answer
+from fastapi import FastAPI, HTTPException, Query
+# from fastapi.middleware.cors import CORSMiddleware // uncomment for UI integration
+from models import Answer, Question, Quiz, Course, Author
 from typing import List, Dict
-# import dbApplication              // will uncomment for 
+# import dbApplication as db_app    // will uncomment for 
 # import mysql.connector            // DB integration
 
 app = FastAPI()
 
+# UI integration
+# CORS configuration for frontend
+# app.add_middleware(
+#    CORSMiddleware,
+#    allow_origins=["http://localhost:3000"],
+#    allow_credentials=True,
+#    allow_methods=["*"],
+#    allow_headers=["*"],
+# )
+
 # Test values:     // will replace with connection to DB
-quizzes: Dict[str, Quiz] = {}  # Key: quiz name, Value: Quiz object
-courses: Dict[str, List[str]] = {}  # Key: course name, Value: list of quiz names
-
-@app.get("/")
-def read_root():
-    return {"message": "This is Helix API"}
-
+quizzes: Dict[int, Quiz] = {}  # Key: quiz id, Value: Quiz object
+courses: Dict[int, Course] = {}  # Key: course id, Value: list of courses
 
 # Quiz Endpoints:
 
 # Create a quiz
 @app.post("/quizzes/", response_model=Quiz)
-def create_quiz(quiz: Quiz):
-    if any(q.name == quiz.name for q in quizzes.values()):
-        raise HTTPException(status_code=400, detail="Quiz already exists")
-    
+def create_quiz(
+    quiz: Quiz,  # Request body with quiz details from frontend
+    username: str = Query(..., description="Username of the creator")
+):
     # Assign a quizID       // for unit testing - DB will handle
-    max_id = max(quizzes.keys(), default=0) 
+    # Note: quizID defaults to 0, and IDs start at 1 via this method
+    max_id = max(quizzes.keys(), default=0)
     quiz.quizID = max_id + 1
     quizzes[quiz.quizID] = quiz
     return quiz
 
-# Get a quiz by name
-@app.get("/quizzes/{quiz_name}", response_model=Quiz)
-def get_quiz(quiz_name: str):
-    if quiz_name not in quizzes:
+# Get a quiz by ID
+@app.get("/quizzes/{quiz_id}", response_model=Quiz)
+def get_quiz(quiz_id: int):
+    if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
-    return quizzes[quiz_name]
+    return quizzes[quiz_id]
 
-# Delete a quiz by name
-@app.delete("/quizzes/{quiz_name}", response_model=Quiz)
-def delete_quiz(quiz_name: str):
-    if quiz_name not in quizzes:
+# Delete a quiz by ID
+@app.delete("/quizzes/{quiz_id}", response_model=Quiz)
+def delete_quiz(quiz_id: int):
+    if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
-    deleted_quiz = quizzes.pop(quiz_name)
-    
-    # Also delete from courses if present
-    for course_quizzes in courses.values():
-        if quiz_name in course_quizzes:
-            course_quizzes.remove(quiz_name)
+    deleted_quiz = quizzes.pop(quiz_id)
     return deleted_quiz
 
+# Edit a quiz by ID
+@app.put("/quizzes/{quiz_id}", response_model=Quiz)
+def update_quiz(quiz_id: int, quiz: Quiz):
+    if quiz_id not in quizzes:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    quiz.quizID = quiz_id
+    quizzes[quiz_id] = quiz
+    return quiz
 
-# Question/Answer Endpoints:
+# Get all quizzes as a list
+@app.get("/quizzes/", response_model=List[Quiz])
+def get_all_quizzes():
+    return list(quizzes.values())
 
-# Create a question within the quiz "quiz_name"
-@app.post("/quizzes/{quiz_name}/questions/", response_model=Question)
-def create_question(quiz_name: str, question: Question):
-    if quiz_name not in quizzes:
+
+# Question Endpoints:
+
+# Create a question within the quiz "quiz_id"
+@app.post("/quizzes/{quiz_id}/questions/", response_model=Question)
+def create_question(
+    quiz_id: int,
+    question: Question,
+):
+    if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
     
     # Assign a questionID       // for unit testing - DB will handle
-    max_id = max([q.questionID for q in quizzes[quiz_name].questionList], default=0)
-    question.questionID = max_id + 1
-    quizzes[quiz_name].questionList.append(question)
+    max_id = max([q.questionID for q in quizzes[quiz_id].questionList], default=0)
+    question.questionID = max_id + 1  # Modify the input question
+    quizzes[quiz_id].questionList.append(question)
     return question
 
 # Update a question within the quiz "quiz_name"
-@app.put("/quizzes/{quiz_name}/questions/{question_id}", response_model=Question)
-def update_question(quiz_name: str, question_id: int, question: Question):
-    if quiz_name not in quizzes:
+@app.put("/quizzes/{quiz_id}/questions/{question_id}", response_model=Question)
+def update_question(quiz_id: int, question_id: int, question: Question):
+    if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
     
     # Update questionID     // for unit testing
-    for i, q in enumerate(quizzes[quiz_name].questionList):
+    for i, q in enumerate(quizzes[quiz_id].questionList):
         if q.questionID == question_id:
-            question.questionID = question_id
-            quizzes[quiz_name].questionList[i] = question
+            question.questionID = question_id  # Preserve ID
+            quizzes[quiz_id].questionList[i] = question  # Update with provided data
             return question
     raise HTTPException(status_code=404, detail="Question not found")
 
-# Delete a question within the quiz "quiz_name"
-@app.delete("/quizzes/{quiz_name}/questions/{question_id}", response_model=Question)
-def delete_question(quiz_name: str, question_id: int):
-    if quiz_name not in quizzes:
+# Delete a question within the quiz "quiz_id"
+@app.delete("/quizzes/{quiz_id}/questions/{question_id}", response_model=Question)
+def delete_question(quiz_id: int, question_id: int):
+    if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
-    for i, q in enumerate(quizzes[quiz_name].questionList):
+    for i, q in enumerate(quizzes[quiz_id].questionList):
         if q.questionID == question_id:
-            deleted_question = quizzes[quiz_name].questionList.pop(i)
-            return deleted_question
+            return quizzes[quiz_id].questionList.pop(i)
     raise HTTPException(status_code=404, detail="Question not found")
+
+
+
+# Answer Endpoints:
+
 
 
 # Course Endpoints:
 
 # Create a course
-@app.post("/courses/{course_name}")
-def create_course(course_name: str):
-    if course_name in courses:
-        raise HTTPException(status_code=400, detail="Course already exists")
-    courses[course_name] = []
-    return {"message": f"Course {course_name} created"}
+@app.post("/courses/", response_model=Course)
+def create_course(
+    course: Course, 
+    username: str = Query(..., description="Username of the creator")
+):
+    # Assign a quizID       // for unit testing - DB will handle
+    # Note: courseID defaults to 0, and IDs start at 1 via this method
+    max_id = max(courses.keys(), default=0)
+    course.courseID = max_id + 1
+    course.username = username
+    courses[course.courseID] = course
+    return course
 
-# Delete a course by name
-@app.delete("/courses/{course_name}", response_model=Quiz)
-def delete_course(course_name: str):
-    if course_name not in courses:
+# Edit a course by ID
+@app.put("/courses/{course_id}", response_model=Course)
+def update_course(
+    course_id: int, 
+    course: Course,
+    username: str = Query(..., description="Username of the creator")
+):
+    if course_id not in courses:
         raise HTTPException(status_code=404, detail="Course not found")
-    deleted_course = courses.pop(course_name)
-    return deleted_course
+    course.username = username
+    course.courseID = course_id
+    courses[course_id] = course
+    return course
 
-# Add a quiz to the course "course_name"
-@app.post("/courses/{course_name}/quizzes/{quiz_name}")
-def add_quiz_to_course(course_name: str, quiz_name: str):
-    if course_name not in courses:
+# Delete a course by ID
+@app.delete("/courses/{course_id}", response_model=Course)
+def delete_course(course_id: int):
+    if course_id not in courses:
         raise HTTPException(status_code=404, detail="Course not found")
-    if quiz_name not in quizzes:
+    return courses.pop(course_id)
+
+# Add a quiz to a course
+@app.post("/courses/{course_id}/quizzes/{quiz_id}", response_model=Course)
+def add_quiz_to_course(course_id: int, quiz_id: int):
+    if course_id not in courses:
+        raise HTTPException(status_code=404, detail="Course not found")
+    if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
-    if quiz_name not in courses[course_name]:
-        courses[course_name].append(quiz_name)
-    return {"message": f"Quiz {quiz_name} added to {course_name}"}
+    course = courses[course_id]
+    quiz = quizzes[quiz_id]
+    quiz.courseID = course_id
+    return course
 
-# Get quizzes in a course
-@app.get("/courses/{course_name}/quizzes", response_model=List[str])
-def get_course_quizzes(course_name: str):
-    if course_name not in courses:
+# Remove a quiz from a course
+@app.delete("/courses/{course_id}/quizzes/{quiz_id}", response_model=Course)
+def remove_quiz_from_course(course_id: int, quiz_id: int):
+    if course_id not in courses:
         raise HTTPException(status_code=404, detail="Course not found")
-    return courses[course_name]
+    if quiz_id not in quizzes:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    
+    quiz = quizzes[quiz_id]
+    if quiz.courseID != course_id:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Quiz not associated with Course"
+        )
+    
+    quiz.courseID = 0  
+    return courses[course_id]
+
+# Get all quizzes in a course as a list
+@app.get("/courses/{course_id}/quizzes", response_model=List[Quiz])
+def get_course_quizzes(course_id: int):
+    if course_id not in courses:
+        raise HTTPException(status_code=404, detail="Course not found")
+    return [quiz for quiz in quizzes.values() if quiz.courseID == course_id]
+
+# Get link to a course
+@app.get("/courses/{course_id}/link", response_model=Dict[str, str])
+def get_course_link(course_id: int):
+    if course_id not in courses:
+        raise HTTPException(status_code=404, detail="Course not found")
+    return {"link": f"http://localhost:3000/class/{course_id}"}
+
+
+# Author Endpoints:
+
+# Create an author entry
+@app.post("/authors/", response_model=Author)
+def create_author(author: Author):
+    return author
+
+# Delete an author entry
+@app.delete("/authors/{username}", response_model=dict)
+def delete_author(username: str):
+    return {"message": f"Author {username} deleted"}
