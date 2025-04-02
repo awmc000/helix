@@ -659,7 +659,7 @@ const drawCourseMap = () => {
     let anchorTag = document.createElement('a');
     anchorTag.href = '#';
     anchorTag.innerText = 'Create a new course...';
-    anchorTag.onclick = () => { addCourse(); };
+    anchorTag.onclick = () => { addCourse(); drawCourseMap(); };
     listItemTag.appendChild(anchorTag);
     document.getElementById('courseMapList').appendChild(listItemTag);
 };
