@@ -38,6 +38,9 @@ let appState = {
     quiz: null,
     question: null,
     course: availableCourses[0],
+    loggedIn: false,
+    loginUsername: null,
+    loginToken: null,
 };
 
 
@@ -126,7 +129,13 @@ const setStateElements = () => {
 
     } 
     else if (appState.windowState == EDITING_INSTRUCTOR_PROFILE) {
-        showManyById(['instructorLogin', 'instructorprofile']);
+        if (appState.loggedIn == false) {
+            showById('instructorLogin');
+            hideById('instructorprofile');
+        } else {
+            showById('instructorprofile');            
+            hideById('instructorLogin');
+        }
         hideManyById(['availableQuizMapDiv', 'question', 'quizmap', 'editquestion', 'coursemap', 'editcourse']);
     }
 }
