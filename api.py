@@ -115,9 +115,79 @@ def delete_question(quiz_id: int, question_id: int):
     raise HTTPException(status_code=404, detail="Question not found")
 
 
-
 # Answer Endpoints:
 
+# Create an answer within the question "question_id"
+@app.post("/quizzes/{quiz_id}/questions/{question_id}/answers/", response_model=Answer)
+def create_answer(
+    quiz_id: int,
+    question_id: int,
+    answer: Answer
+):
+    if quiz_id not in quizzes:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    
+    quiz = quizzes[quiz_id]
+    question_id_list = [q.questionID for q in quiz.questionList]
+    if question_id not in question_id_list:
+        raise HTTPException(status_code=404, detail="Question not found")
+    
+    question = next(q for q in quiz.questionList if q.questionID == question_id)
+
+    # Assign an optionNumber       // for unit testing - DB will handle
+    max_num = max([q.optionNumber for q in question.AnswerKey], default=0)
+    answer.optionNumber = max_num + 1 
+    question.AnswerKey.append(answer)
+    return answer
+
+# Update an answer within the question "question_id"
+@app.put("/quizzes/{quiz_id}/questions/{question_id}/answers/", response_model=Answer)
+def update_answer(
+    quiz_id: int,
+    question_id: int, 
+    optionNumber: int, 
+    answer: Answer
+):
+    if quiz_id not in quizzes:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    
+    quiz = quizzes[quiz_id]
+    question_id_list = [q.questionID for q in quiz.questionList]
+    if question_id not in question_id_list:
+        raise HTTPException(status_code=404, detail="Question not found")
+    
+    question = next(q for q in quiz.questionList if q.questionID == question_id)
+    
+    # Update optionNumber     // for unit testing
+    for i, q in enumerate(question.AnswerKey):
+        if q.optionNumber == optionNumber:
+            answer.optionNumber = optionNumber 
+            question.AnswerKey[i] = answer  
+            return answer
+    raise HTTPException(status_code=404, detail="Answer not found")
+
+# Delete an answer within the question "question_id"
+@app.delete("/quizzes/{quiz_id}/questions/{question_id}/answers/", response_model=Answer)
+def delete_answer(
+    quiz_id: int,
+    question_id: int, 
+    optionNumber: int
+):
+    if quiz_id not in quizzes:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    
+    quiz = quizzes[quiz_id]
+    question_id_list = [q.questionID for q in quiz.questionList]
+    if question_id not in question_id_list:
+        raise HTTPException(status_code=404, detail="Question not found")
+    
+    question = next(q for q in quiz.questionList if q.questionID == question_id)
+    
+    # Update optionNumber     // for unit testing
+    for i, q in enumerate(question.AnswerKey):
+        if q.optionNumber == optionNumber:
+            return question.AnswerKey.pop(i)
+    raise HTTPException(status_code=404, detail="Answer not found")
 
 
 # Course Endpoints:
