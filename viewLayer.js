@@ -559,6 +559,11 @@ const fillCourseEditingForm = () => {
 
 };
 
+const updateCourseEdit = () => {
+    console.log('(updateCourseEdit) TODO: Send post request to update course ' +
+        appState.course.name);
+}
+
 /*
  * This question created a lot of headaches because of how it has to 
  * replace global variables.
