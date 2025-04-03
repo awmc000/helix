@@ -198,9 +198,9 @@ const answer = {
 
 Answers being sent from frontend to API have this form:
 ```js
-{ 'quizID': -1, 'questionID': -1, 'choices': '' } // chose nothing
-{ 'quizID': -1, 'questionID': -1, 'choices': 'AB' } // chose A and B
-{ 'quizID': -1, 'questionID': -1, 'choices': 'ABCD' } // chose all
+{ 'quizID': -1, 'questionID': -1, 'choices': []} // chose nothing
+{ 'quizID': -1, 'questionID': -1, 'choices': [1, 2] } // chose 1 and 2
+{ 'quizID': -1, 'questionID': -1, 'choices': [1, 2, 3, 4] } // chose all
 ```
 
 ## Timers
