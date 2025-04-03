@@ -71,7 +71,7 @@ def get_quiz(quiz_id: int):
     # DB Connection
     
     quiz = db_app.assembleQuiz([quiz_id], db_connection) # Works
-    breakpoint()
+    # breakpoint()
     return quiz
 
     # Hard Coded
