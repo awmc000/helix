@@ -310,25 +310,25 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
             "prompt": "Sample question",
             "durationMins": 5,
             "durationSecs": 0,
-            "AnswerKey": [
+            "answers": [
               {
                 "optionNumber": 1,
-                "optDescription": "Sample answer 1",
+                "description": "Sample answer 1",
                 "scoreValue": 1
               },
               {
                 "optionNumber": 2,
-                "optDescription": "Sample answer 2",
+                "description": "Sample answer 2",
                 "scoreValue": 0
               },
               {
                 "optionNumber": 3,
-                "optDescription": "Sample answer 3",
+                "description": "Sample answer 3",
                 "scoreValue": 0
               },
               {
                 "optionNumber": 4,
-                "optDescription": "Sample answer 4",
+                "description": "Sample answer 4",
                 "scoreValue": 0
               },
             ]
@@ -397,9 +397,9 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
         document.getElementById("editQuestionPrompt").value = appState.question.prompt;
         
         let letters = ['A', 'B', 'C', 'D'];
-        for (let i = 0; i < appState.question.AnswerKey.length && i < 4; i++) {
-            document.getElementById('choice' + letters[i] + 'Prompt').value = appState.question.AnswerKey[i].optDescription;
-            document.getElementById('choice' + letters[i] + 'Value').value = appState.question.AnswerKey[i].scoreValue;
+        for (let i = 0; i < appState.question.answers.length && i < 4; i++) {
+            document.getElementById('choice' + letters[i] + 'Prompt').value = appState.question.answers[i].description;
+            document.getElementById('choice' + letters[i] + 'Value').value = appState.question.answers[i].scoreValue;
         }
     };
     
@@ -472,22 +472,22 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
             'answers': [
                 {
                     'optionNumber': 1,
-                    'optDescription': editedChoiceA,
+                    'description': editedChoiceA,
                     'scoreValue': editedValueA,
                 },
                 {
                     'optionNumber': 2,
-                    'optDescription': editedChoiceB,
+                    'description': editedChoiceB,
                     'scoreValue': editedValueB,
                 },
                 {
                     'optionNumber': 3,
-                    'optDescription': editedChoiceC,
+                    'description': editedChoiceC,
                     'scoreValue': editedValueC,
                 },
                 {
                     'optionNumber': 4,
-                    'optDescription': editedChoiceD,
+                    'description': editedChoiceD,
                     'scoreValue': editedValueD,
                 },
             ],
@@ -589,6 +589,8 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
     */
     const fetchQuizById = async (targetQuiz) => {
         let fetchedQuiz = await makeRequest('quizzes/' + targetQuiz, 'GET', null, {});
+        console.log('fetchedQuiz:');
+        console.log(fetchedQuiz);
         appState.quiz = fetchedQuiz;
         appState.question = appState.quiz.questionList[0];
         drawQuestionMap();
@@ -629,9 +631,9 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
         hideManyById(buttons);
         
         // Show the ones for which there is an answer
-        for (let i = 0; i < appState.question.AnswerKey.length && i < 4; i++) {
+        for (let i = 0; i < appState.question.answers.length && i < 4; i++) {
             showById(buttons[i]);
-            document.getElementById(buttons[i]).getElementsByTagName('label')[0].innerText = appState.question.AnswerKey[i].optDescription;
+            document.getElementById(buttons[i]).getElementsByTagName('label')[0].innerText = appState.question.answers[i].description;
         }
     };
     
@@ -648,16 +650,16 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
         let report = [];
         
         if (document.getElementById('choicea').checked)
-            report.push(appState.question.AnswerKey[0].optionNumber);
+            report.push(appState.question.answers[0].optionNumber);
 
         if (document.getElementById('choiceb').checked)
-            report.push(appState.question.AnswerKey[1].optionNumber);
+            report.push(appState.question.answers[1].optionNumber);
 
         if (document.getElementById('choicec').checked)
-            report.push(appState.question.AnswerKey[2].optionNumber);
+            report.push(appState.question.answers[2].optionNumber);
 
         if (document.getElementById('choiced').checked)
-            report.push(appState.question.AnswerKey[3].optionNumber);
+            report.push(appState.question.answers[3].optionNumber);
 
         report = { 'quizID': appState.quiz.quizID, 'questionID': appState.question.questionID, 'choices': report}
         

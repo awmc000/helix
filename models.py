@@ -7,7 +7,7 @@ from typing import List
 
 class Answer(BaseModel):
     optionNumber: int = 0
-    optDescription: str = ""
+    description: str = ""
     scoreValue: int = 0
 
 class Question(BaseModel):
@@ -15,7 +15,7 @@ class Question(BaseModel):
     prompt: str = ""
     durationMins: int = 0
     durationSecs: int = 0
-    AnswerKey: List[Answer] = []
+    answers: List[Answer] = []
 
 class Quiz(BaseModel):
     quizID: int = 0
