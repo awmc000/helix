@@ -262,11 +262,26 @@ def create_course(
     return course
 
 #Get a course List
-@app.get("/courses/", response_model=Course)
-def update_course(
-    username: str = Query(..., description="Username of the creator")
-):
-    return db_app.getCourseListFromAuthor(db_connection)
+@app.get("/courses/", response_model=List[Course])
+def get_course_list():
+
+    # This function returns tuples with no keys. 
+    # We will make a dictionary with keys and values compliant with `models.py`
+    # from the tuples.
+    raw_course_list = db_app.getCourseListFromAuthor(db_connection)
+    courses = []
+    for rc in raw_course_list:
+        # see Course class in `models.py` for schema
+        course = {
+            'courseID': rc[0],
+            'username': rc[1],
+            'courseName': rc[2],
+            'courseDescription': rc[3],
+        }
+        courses.append(course) 
+
+    # Returns list of objects
+    return courses
 
 # Edit a course by ID
 @app.put("/courses/{course_id}", response_model=Course)

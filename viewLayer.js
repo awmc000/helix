@@ -23,26 +23,14 @@ let apiAddress = "http://127.0.0.1:8000/";
 
 
 var availableQuizzes;
-var availableCourses = [
-    {
-        'courseID': 1,
-        'name': '(Placeholder Course)',
-        'description': 'A course for quizzes to be part of until creation of courses' +
-        ' is implemented.',
-    },
-    {
-        'courseID': 2,
-        'name': 'Intro to Textile Arts',
-        'description': 'A second placeholder',
-    },
-];
+var availableCourses;
 
 let appState = {
     windowState: TAKING_QUIZ,
     currentQuestionIndex: 0,
     quiz: null,
     question: null,
-    course: availableCourses[0],
+    course: null,
     loggedIn: false,
     loginUsername: null,
     loginToken: null,
@@ -60,6 +48,11 @@ let appState = {
 * Sets up global pointer variables, etc.
 */
 const setup = async () => {
+    // Load available courses
+    availableCourses = await getAvailableCourses();
+
+    appState.course = availableCourses[0];
+
     // Load available quizzes
     availableQuizzes = await getAvailableQuizzes();
     
@@ -275,6 +268,10 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
         return await makeRequest('quizzes', 'GET', null, {'username':'awmc2000'});
     };
     
+const getAvailableCourses = async () => {
+    return await makeRequest('courses', 'get', null, {});
+};
+
     /*
     * Assuming availableQuizzes have already been fetched,
     * draws the drop down list of them. 
@@ -426,14 +423,14 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
     };
     
     const fillCourseEditingForm = () => {
-        document.getElementById('editCourseName').value = appState.course.name;
-        document.getElementById('editCourseDescription').value = appState.course.description;
+        document.getElementById('editCourseName').value = appState.course.courseName;
+        document.getElementById('editCourseDescription').value = appState.course.courseDescription;
         
     };
     
     const updateCourseEdit = () => {
         console.log('(updateCourseEdit) TODO: Send post request to update course ' +
-        appState.course.name);
+        appState.course.courseName);
         // TODO: Make this work by updating local object first then replacing with what we get
         makeRequest('courses/' + appState.course.courseID, 'PUT', appState.course, {'username': appState.loginUsername});
     }
@@ -536,7 +533,7 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
             let listItemTag = document.createElement('li');
             let anchorTag = document.createElement('a');
             anchorTag.href = '#';
-            anchorTag.innerText = course.name;
+            anchorTag.innerText = course.courseName;
             anchorTag.onclick = () => { loadCourse(course.courseID); };
             listItemTag.appendChild(anchorTag);
             document.getElementById('courseMapList').appendChild(listItemTag);
@@ -575,10 +572,10 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
             }
         }
         // Set form values
-        document.getElementById('courseedittitle').innerText = 'Editing ' + appState.course.name 
+        document.getElementById('courseedittitle').innerText = 'Editing ' + appState.course.courseName 
         + ' (' + appState.course.courseID + ')'; 
-        document.getElementById('editCourseName').value = appState.course.name;
-        document.getElementById('editCourseDescription').value = appState.course.description;
+        document.getElementById('editCourseName').value = appState.course.courseName;
+        document.getElementById('editCourseDescription').value = appState.course.courseDescription;
         // appState.course is now set
         // Set quiz to some quiz from that course...?
     };
@@ -861,8 +858,8 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
                 let firstLi = document.getElementById('courseMapList').childNodes[0];
                 firstLi.childNodes[0].click();
                 
-                let namePopulated = document.getElementById('editCourseName').value == appState.course.name; 
-                let descPopulated = document.getElementById('editCourseDescription').value == appState.course.description
+                let namePopulated = document.getElementById('editCourseName').value == appState.course.courseName; 
+                let descPopulated = document.getElementById('editCourseDescription').value == appState.course.courseDescription;
                 return namePopulated && descPopulated;
             },
         },
@@ -899,7 +896,7 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
                 let link = list.childNodes[0].childNodes[0];
                 link.click();
                 
-                return link.innerText == appState.course.name;
+                return link.innerText == appState.course.courseName;
             },
         },
         {
