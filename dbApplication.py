@@ -15,11 +15,11 @@ def connectToDatabase (username, password):
             host= "localhost",
             user= username,
             password= password,
-            database= "csci375team5_quizdb"
+            database= "csci375team5_quizdb",
+            auth_plugin= "mysql_native_password"
         )
     except Error as e:
         raise Exception (e)
-        return None
 
     return database
         
@@ -30,16 +30,13 @@ def connectToDatabase (username, password):
 def disconnectFromDatabase (database):
     if(database is None):
         raise Exception ("Error in disconnectFromDatabase in dbApplication.py. Database is None-type.")
-        return False
 
     if(database.is_connected()==False):
         raise Exception ("Error in disconnectFromDatabase in dbApplication.py. Database was not connected.")
-        return False
     
     database.close()
     if(database.is_connected()):
         raise Exception ("Error in disconnectFromDatabase in dbApplication.py. Database connection did not close.")
-        return False
 
     else:
         return True
@@ -91,6 +88,7 @@ def updateDatabase (sqlQuery, values, database):
 # Creates a quiz dictonary associated with the quizID provided with the following schema:
 #
 # Quiz Dictonary:
+#       "quizID" -> The identifier of the quiz
 #       "name" -> The name of the quiz
 #       "asynchronous" -> a boolean value determining if the quiz can be done asychronously
 #       "label" -> The label attached to this quiz
@@ -149,9 +147,9 @@ def assembleQuiz (quizID, database) :
         return None
     
     for row in results3:
-        quizName, availableAsync, quizLabel, quizDescription, minutes = row
+        quizName , availableAsync , quizLabel , quizDescription , minutes = row
 
-    Quiz = dict(quizName = quizName, availableAsync = availableAsync, label = quizLabel, quizDescription = quizDescription, durationMins = minutes, questionList = questions)
+    Quiz = dict(quizID = quizID[0] , quizName = quizName , availableAsync = availableAsync , label = quizLabel , quizDescription = quizDescription , durationMins = minutes , questionList = questions)
 
     return Quiz
 
@@ -171,20 +169,25 @@ def jsonToPython(someObject):
 
 # Creates a quizList with the follwing schema
 #       "quizID" -> The id of the quiz to retrieve its details
-#       "quizName" -> The name of the quiz
+#       "quizID" -> The identifier of the quiz
+#       "name" -> The name of the quiz
+#       "asynchronous" -> a boolean value determining if the quiz can be done asychronously
+#       "label" -> The label attached to this quiz
+#       "description" -> The description of this quiz
+#       "durationMins" -> the duration in minutes that this quiz will allow
+#       "questionList" -> a list of question disctonaries associated with this quiz (described below)
 #
 # database is the database object to connect to
 # Returns a quizList dictonary
 def getQuizList(database):
     quizList = []
-    results = retrieveFromDatabase("SELECT quizID, quizName FROM Quiz", None, database)
+    results = retrieveFromDatabase("SELECT quizID FROM Quiz", None, database)
     if(not results):
         return None
     
     for row in results:
-        quizID, quizName = row
-        nameIDPair = dict(quizID = quizID, quizName = quizName)
-        quizList.append(nameIDPair)
+        quizID = row
+        quizList.append(assembleQuiz(quizID, database))
     return quizList
 
 
@@ -252,15 +255,16 @@ def createAnswerKey(answerKey, database):
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def createQuestion(question, database):
-    return updateDatabase("INSERT INTO Question (quizID, prompt, durationMinutes, durationSeconds) VALUES (%s, %s, %s, %s)", list(question.values()), database)
-
+    if(updateDatabase("INSERT INTO Question (quizID, prompt, durationMinutes, durationSeconds) VALUES (%s, %s, %s, %s)", list(question.values()), database)):
+        return retrieveFromDatabase("Select questionID from Question ORDER BY questionID DESC LIMIT 1", [], database)
 
 # Takes the quiz object and adds the values of it to the database
 # quiz is the quiz python object that contains the answers you want to upload to the db
 # database is the database connection
-# Returns True if sucessful, otherwise None
+# Returns the QuizID if sucessful, otherwise None
 def createQuiz(quiz, database):
-    return updateDatabase("INSERT INTO Quiz (courseID, quizName, availableAsync, label, quizDescription, durationMinutes) VALUES (%s, %s, %s, %s, %s, %s)", list(quiz.values()), database)
+    if(updateDatabase("INSERT INTO Quiz (courseID, quizName, availableAsync, label, quizDescription, durationMinutes) VALUES (%s, %s, %s, %s, %s, %s)", list(quiz.values()), database)):
+        return retrieveFromDatabase("Select quizID from Quiz ORDER BY quizID DESC LIMIT 1", [], database)
 
 
 # Takes the course object and adds the values of it to the database
@@ -274,7 +278,7 @@ def createCourse(course, database):
 # course is the course python object that contains the answers you want to upload to the db
 # database is the database connection
 # Returns True if sucessful, otherwise None
-def createCourse(course, database):
+def updateCourse(course, database):
     return updateDatabase("UPDATE Course SET courseName = %s, courseDescription = %s WHERE courseID = %s;", list(course.values()), database)
 
 

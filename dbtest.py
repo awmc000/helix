@@ -1,4 +1,5 @@
 import dbApplication as db
+import os
 
 # If you are using this file, please run init.sql first as the tests require the ID's of the data it creates
 
@@ -18,8 +19,10 @@ except:
 
 
 #valid
-username = "4treess"
-password = "MySqlPassword"
+username = os.getenv("DBUSER")
+password = os.getenv("DBPASS")
+
+print(username, " ", password)
 
 database = db.connectToDatabase(username, password)
 
@@ -309,5 +312,5 @@ if(quizList):
 
 #
 values = {"courseName": "name","courseDescription": "desc", "courseID": 1}
-if(db.createCourse(values, database)):
+if(db.updateCourse(values, database)):
     print("\n\nTest27 Passed\n\n")

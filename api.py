@@ -6,12 +6,25 @@
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware # uncomment for UI integration
+from contextlib import asynccontextmanager #This is for ensuring the database connection is opened on startup and closed before shutdown
 from models import Answer, Question, Quiz, Course, Author
 from typing import List, Dict
-# import dbApplication as db_app    // will uncomment for 
+import os
+import dbApplication as db_app
 # import mysql.connector            // DB integration
 
-app = FastAPI()
+db_connection = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global db_connection
+    db_connection = db_app.connectToDatabase(os.getenv("DBUSER"), os.getenv("DBPASS"))
+
+    yield
+
+    db_app.disconnectFromDatabase(db_connection)
+
+app = FastAPI(lifespan=lifespan)
 
 # UI integration
 # CORS configuration for frontend
@@ -36,6 +49,10 @@ def create_quiz(
     quiz: Quiz,  # Request body with quiz details from frontend
     username: str = Query(..., description="Username of the creator")
 ):
+    # DB Connection
+    return db_app.createQuiz(quiz.__dict__, db_connection)
+
+    # hard coded
     # Assign a quizID       // for unit testing - DB will handle
     # Note: quizID defaults to 0, and IDs start at 1 via this method
     max_id = max(quizzes.keys(), default=0)
@@ -46,6 +63,13 @@ def create_quiz(
 # Get a quiz by ID
 @app.get("/quizzes/{quiz_id}", response_model=Quiz)
 def get_quiz(quiz_id: int):
+
+    # DB Connection
+    
+    quiz = Quiz(**db_app.assembleQuiz(quiz_id, db_connection))
+    return quiz
+
+    # Hard Coded
     if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
     return quizzes[quiz_id]
@@ -70,6 +94,12 @@ def update_quiz(quiz_id: int, quiz: Quiz):
 # Get all quizzes as a list
 @app.get("/quizzes/", response_model=List[Quiz])
 def get_all_quizzes():
+    
+    quizList = db_app.getQuizList(db_connection)
+    quizClassList = []
+    for quiz in quizList:
+        quizClassList.append(Quiz(**quiz))
+    return quizClassList
     return list(quizzes.values())
 
 
@@ -81,6 +111,14 @@ def create_question(
     quiz_id: int,
     question: Question,
 ):
+    
+    # DB Connection
+    temp = question
+    temp.questionID = quiz_id # The questionID will be created by the db, but the db needs the quiz ID for the question
+    question.questionID = db_app.createQuestion(temp.__dict__, db_connection)
+    return question
+
+    # Hard Coded
     if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
     
