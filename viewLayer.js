@@ -367,6 +367,24 @@ const loadFullQuiz = (id) => {
     }
 };
 
+const logIn = () => {
+    console.log('Fake logging in: setting username and token to dummy values.');
+    appState.loggedIn = true;
+    appState.loginUsername = 'awmc2000';
+    appState.loginToken = 'FakeToken';
+
+    document.getElementById('instructorUsername').value = appState.loginUsername;
+
+    setStateElements();
+};
+
+const logOut = () => {
+    console.log('Fake logging out: setting username and token to null.');
+    appState.loggedIn = false;
+    appState.loginUsername = null;
+    appState.loginToken = null;
+    setStateElements();
+};
 
 /* ======================================================================================
  * API Interactions - Functions that actually hit endpoints with `fetch()`
