@@ -6,11 +6,12 @@ if __name__ == "__main__":
     correct_password = os.getenv("DBPASS")
 
     ctdUnitTest = connectToDatabase_UT("connectToDatabase", "DbApplication.py")
-    ctdUnitTest.addTestCase("Correct Credentials", "correct_username", correct_password, True)
-    ctdUnitTest.addTestCase("Incorrect username", "fakeusername", "fjamq72f", False)
-    ctdUnitTest.addTestCase("Incorrect password", "csci375team5", "fakepassword", False)
+    ctdUnitTest.addTestCase("Correct Credentials", correct_username, correct_password, True)
+    ctdUnitTest.addTestCase("Reversed Credentials", correct_password, correct_username, False)
+    ctdUnitTest.addTestCase("Incorrect username", "fakeusername", correct_password, False)
+    ctdUnitTest.addTestCase("Incorrect password", correct_username, "fakepassword", False)
     ctdUnitTest.addTestCase("Invalid username format", 5, "fakepassword", False)
-    ctdUnitTest.addTestCase("Invalid password format", "csci375team5", None, False)
+    ctdUnitTest.addTestCase("Invalid password format", correct_username, None, False)
     ctdUnitTest.addTestCase("Wrong username, bad pw format", "fakeusername", 11, False)
     ctdResult = ctdUnitTest.runTestCases(verbose=True)
 
@@ -21,6 +22,3 @@ if __name__ == "__main__":
     dfdUnitTest.addTestCase("Correct Database Object Provided", database2, True)
     dfdUnitTest.addTestCase("Database was not connected", database2, False)
     dfdResult = dfdUnitTest.runTestCases(verbose=True)
-
-    print("RESULT UT CONNECT: ", ctdResult)
-    print("RESULT UT Disconnect: ", dfdResult)
