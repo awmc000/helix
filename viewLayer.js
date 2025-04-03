@@ -452,11 +452,28 @@ const getAvailableCourses = async () => {
         
     };
     
-    const updateCourseEdit = () => {
+    const updateCourseEdit = async () => {
         console.log('(updateCourseEdit) TODO: Send post request to update course ' +
         appState.course.courseName);
         // TODO: Make this work by updating local object first then replacing with what we get
-        makeRequest('courses/' + appState.course.courseID, 'PUT', appState.course, {'username': appState.loginUsername});
+        let newName = document.getElementById('editCourseName').value;
+        let newDescription = document.getElementById('editCourseDescription').value;
+
+        appState.course.courseName = newName;
+        appState.course.courseDescription = newDescription;
+
+        let echo = await makeRequest('courses/' + appState.course.courseID, 'PUT', appState.course, {'username': appState.loginUsername});
+    
+        if (echo == undefined) {
+            console.log('WARNING: PUT request to update course failed, frontend and backend now out of sync');
+            return;
+        }
+
+        appState.course = echo;
+
+        console.log('Successfully updated and retrieved course:');
+        console.log(echo);
+    
     }
     
     /*
