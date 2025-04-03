@@ -11,12 +11,11 @@ def connectToDatabase (username, password):
     database = None
     try:
         database = mysql.connector.connect(
-            #host= "dolphin.csci.viu.ca",
-            host= "localhost",
+            host= "dolphin.csci.viu.ca",
             user= username,
             password= password,
             database= "csci375team5_quizdb",
-            auth_plugin= "mysql_native_password"
+            #auth_plugin= "mysql_native_password"
         )
     except Error as e:
         raise Exception (e)
