@@ -355,14 +355,9 @@ let quiz2 = {
     ]
 };
 
-const quizzes = [
-    quiz1,
-    quiz2,
-];
-
 const loadFullQuiz = (id) => {
     appState.currentQuestionIndex = 0;
-    for (const availableQuiz of quizzes) {
+    for (const availableQuiz of availableQuizzes) {
         if (availableQuiz.quizID == id) {
             // Set global to this quiz, and return it
             appState.quiz = availableQuiz;
@@ -415,19 +410,19 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
                     "Content-Type": "application/json",
                 },
             }
-            );
-            
-            // Handle potential error
-            if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
-            }
-            
-            const json = await response.json();
-            
-            return json;
-        } catch (error) {
-            console.error(error.message);
+        );
+        
+        // Handle potential error
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
         }
+        
+        const json = await response.json();
+
+        return json;
+    } catch (error) {
+        console.error(error.message);
+    }
 };
     
     /*
@@ -582,8 +577,8 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
             let listItemTag = document.createElement('li');
             let anchorTag = document.createElement('a');
             anchorTag.href = '#';
-            anchorTag.innerText = quizInfo.name;
-            anchorTag.title = quizInfo.description;
+            anchorTag.innerText = quizInfo.quizName;
+            anchorTag.title = quizInfo.quizDescription;
             
             // Onclick function for each li is a fetch function for the corresponding quizID
             anchorTag.onclick = () => fetchQuizById(quizInfo.quizID);
@@ -601,6 +596,8 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
     const updateCourseEdit = () => {
         console.log('(updateCourseEdit) TODO: Send post request to update course ' +
         appState.course.name);
+        // TODO: Make this work by updating local object first then replacing with what we get
+        makeRequest('courses/' + appState.course.courseID, 'PUT', appState.course, {'username': appState.loginUsername});
     }
     
     /*
@@ -776,7 +773,7 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
     */
     const extractQuestionData = () => {
         // Set prompt and title
-        document.getElementById('pagetitle').innerText = appState.quiz.name;
+        document.getElementById('pagetitle').innerText = appState.quiz.quizName;
         document.getElementById('questionprompt').innerText = appState.question.prompt;
         document.getElementById('questiontitle').innerText = 'Question #' + appState.question.questionID;
         
@@ -805,19 +802,21 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
     * Return value is of the form : { 'quiz': quizID, 'questionID': questionID, 'choices': 'ABCD' }
     */
     const reportCheckboxes = () => {
-        let report = '';
+        let report = [];
         
         if (document.getElementById('choicea').checked)
-        report += 'A';
+            report.push(appState.question.AnswerKey[0].optionNumber);
+
         if (document.getElementById('choiceb').checked)
-        report += 'B';
+            report.push(appState.question.AnswerKey[1].optionNumber);
+
         if (document.getElementById('choicec').checked)
-        report += 'C';
+            report.push(appState.question.AnswerKey[2].optionNumber);
+
         if (document.getElementById('choiced').checked)
-        report += 'D';
-        
-        // TODO: Change from quiz.label to quiz.quizID!
-        report = { 'quizID': appState.quiz.quizID, 'questionID': appState.question.questionID, choices: report}
+            report.push(appState.question.AnswerKey[3].optionNumber);
+
+        report = { 'quizID': appState.quiz.quizID, 'questionID': appState.question.questionID, 'choices': report}
         
         return report;
     };
