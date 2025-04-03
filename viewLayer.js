@@ -612,6 +612,12 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
     * Will draw up to 4 choices for question answer.
     */
     const extractQuestionData = () => {
+        
+        // Return null if quiz is null
+        if (appState.quiz == null) {
+            return;
+        }
+        
         // Set prompt and title
         document.getElementById('pagetitle').innerText = appState.quiz.quizName;
         document.getElementById('questionprompt').innerText = appState.question.prompt;
