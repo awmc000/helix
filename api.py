@@ -261,6 +261,13 @@ def create_course(
     courses[course.courseID] = course
     return course
 
+#Get a course List
+@app.get("/courses/", response_model=Course)
+def update_course(
+    username: str = Query(..., description="Username of the creator")
+):
+    return db_app.getCourseListFromAuthor(db_connection)
+
 # Edit a course by ID
 @app.put("/courses/{course_id}", response_model=Course)
 def update_course(

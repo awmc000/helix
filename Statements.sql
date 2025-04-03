@@ -30,6 +30,8 @@ INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s) ON DUPLICATE KEY 
 
 DELETE FROM Quiz WHERE quizID = %s;
 
+
+
 -- Show Quiz Info | IMPLEMENTED - assembleQuiz
 
 SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE quizID = %s;
@@ -61,6 +63,10 @@ SELECT questionID, prompt, durationMinutes, durationSeconds FROM Question WHERE 
 -- Show Answers to the questions | IMPLEMENTED - assembleQuiz
 
 SELECT optionNumber, optionDescription, scoreValue FROM AnswerKey WHERE questionID = %s;
+
+-- All courses a creator made
+
+SELECT * FROM Course WHERE username = %s;
 
 
 -- Get the number of responses | IMPLEMENTED - createAnalytics
