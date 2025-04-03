@@ -317,7 +317,7 @@ const getAvailableCourses = async () => {
     };
 
     const viewAnalytics = () => {
-        document.getElementById('analyticsTitle').innerText = 'Analytics of quiz ' + appState.quiz.quizName;
+        document.getElementById('analyticsTitle').innerText = 'Analytics of quiz "' + appState.quiz.quizName + '"';
         generateAnalytics();
     };
     
