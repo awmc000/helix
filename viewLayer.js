@@ -15,6 +15,7 @@ const TAKING_QUIZ                   = 0;
 const CREATING_QUIZ                 = 1;
 const CREATING_COURSE               = 2;
 const EDITING_INSTRUCTOR_PROFILE    = 3;
+const LOADING                       = 4;
 
 // TODO: API address is localhost in dev, 
 // should be address of a cub where api is running in prod
@@ -66,9 +67,9 @@ const setup = async () => {
     drawQuizMap();
     
     // Set current quiz to first of them: Demo only
-    appState.quiz = loadFullQuiz(availableQuizzes[0].quizID);
+    // appState.quiz = loadFullQuiz(availableQuizzes[0].quizID);
     
-    appState.question = appState.quiz.questionList[0];
+    // appState.question = appState.quiz.questionList[0];
     
     // Initial state is TAKING_QUIZ
     goToTakingQuiz(); 
@@ -112,21 +113,23 @@ const goToInstructorProfile = () => {
 const setStateElements = () => {
     if (appState.windowState == TAKING_QUIZ) {
         showManyById(['availableQuizMapDiv', 'question']);
-        hideManyById(['quizmap', 'editquestion', 'coursemap', 'editcourse', 'instructorLogin', 'instructorprofile']);
+        hideManyById(['loadingbox', 'quizmap', 'editquestion', 'coursemap', 'editcourse', 'instructorLogin', 'instructorprofile']);
         
         // When entering the state, clear any response from before
         clearCheckboxes();
-        loadFullQuiz(appState.quiz.quizID);
+        if (appState.quiz != null)
+            loadFullQuiz(appState.quiz.quizID);
+        
         extractQuestionData();
     }
     else if (appState.windowState == CREATING_QUIZ) {
         showManyById(['availableQuizMapDiv', 'quizmap', 'editquestion']);
-        hideManyById(['question', 'coursemap', 'editcourse', 'instructorLogin', 'instructorprofile']);
+        hideManyById(['loadingbox', 'question', 'coursemap', 'editcourse', 'instructorLogin', 'instructorprofile']);
         drawQuestionMap();
     }
     else if (appState.windowState == CREATING_COURSE) {
         showManyById(['coursemap', 'editcourse']);
-        hideManyById(['availableQuizMapDiv', 'question', 'quizmap', 'editquestion','instructorLogin',  'instructorprofile']);
+        hideManyById(['loadingbox', 'availableQuizMapDiv', 'question', 'quizmap', 'editquestion','instructorLogin',  'instructorprofile']);
         drawCourseMap();
         fillCourseEditingForm();
         fillCourseQuizzes();
@@ -637,6 +640,11 @@ const makeRequest = async (endpoint, useMethod, useBody, useParams) => {
     * Return value is of the form : { 'quiz': quizID, 'questionID': questionID, 'choices': 'ABCD' }
     */
     const reportCheckboxes = () => {
+
+        if (appState.quiz == null) {
+            return null;
+        }
+
         let report = [];
         
         if (document.getElementById('choicea').checked)
