@@ -231,6 +231,8 @@ def getQuizListFromAuthor(username, database):
         quizList.append(nameIDPair)
     return quizList
 
+def getCourseListFromAuthor (database):
+    return retrieveFromDatabase("SELECT * FROM Course", [], database)
 
 # Takes the answer dictonary from the users response to a quiz question, and adds it to the database
 # answer is the answers python object that contains the answers you want to upload to the db
@@ -263,6 +265,12 @@ def createQuiz(quiz, database):
     if(updateDatabase("INSERT INTO Quiz (courseID, quizName, availableAsync, label, quizDescription, durationMinutes) VALUES (%s, %s, %s, %s, %s, %s)", list(quiz.values()), database)):
         return retrieveFromDatabase("Select quizID from Quiz ORDER BY quizID DESC LIMIT 1", [], database)
 
+# Takes the quiz object and adds the values of it to the database
+# quiz is the quiz python object that contains the answers you want to upload to the db
+# database is the database connection
+# Returns the QuizID if sucessful, otherwise None
+def updateQuiz(quiz, database):
+    return updateDatabase("INSERT INTO Quiz (quizID, courseID, quizName, availableAsync, label, quizDescription, durationMinutes) VALUES (%s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE courseID = VALUES(courseID), quizName = VALUES(quizName), availableAsync = VALUES(availableAsync), label = VALUES(label), quizDescription = VALUES(quizDescription), durationMinutes = VALUES(quizDescription)", list(quiz.values()), database)
 
 # Takes the course object and adds the values of it to the database
 # course is the course python object that contains the answers you want to upload to the db
