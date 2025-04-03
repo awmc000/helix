@@ -313,4 +313,9 @@ if(quizList):
 #
 values = {"courseName": "name","courseDescription": "desc", "courseID": 1}
 if(db.updateCourse(values, database)):
-    print("\n\nTest27 Passed\n\n")
+    print("\n\nTest29 Passed\n\n")
+
+"""
+values = {"courseID": 2,"quizName": "name2","availableAsync": 1,"label": "label","quizDescription": "desc","durationMinutes": 9}
+if(db.createQuiz(values, database)):
+    print("\n\nTest30 Passed\n\n")"""

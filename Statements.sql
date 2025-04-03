@@ -26,6 +26,9 @@ INSERT INTO AnswerKey (questionID, optionNumber, optionDescription, scoreValue) 
 
 INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s) ON DUPLICATE KEY UPDATE optionNumber = VALUES(optionNumber);
 
+-- Delete Quiz | 
+
+DELETE FROM Quiz WHERE quizID = %s;
 
 -- Show Quiz Info | IMPLEMENTED - assembleQuiz
 

@@ -11,6 +11,7 @@ from models import Answer, Question, Quiz, Course, Author
 from typing import List, Dict
 import os
 import dbApplication as db_app
+import pdb
 # import mysql.connector            // DB integration
 
 # global database connection object
@@ -69,9 +70,8 @@ def get_quiz(quiz_id: int):
 
     # DB Connection
     
-    quiz = Quiz(**db_app.assembleQuiz([quiz_id], db_connection)) # Works
-    if(not quiz):
-        raise HTTPException(status_code=404, detail="Quiz not found")
+    quiz = db_app.assembleQuiz([quiz_id], db_connection) # Works
+    breakpoint()
     return quiz
 
     # Hard Coded
