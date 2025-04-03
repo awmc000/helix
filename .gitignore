@@ -1,3 +1,6 @@
 __pycache__
 .venv
+# Ignore people's secrets scripts just in case they accidentally upload them
 env.sh
+temp.sh
+asdf.sh
