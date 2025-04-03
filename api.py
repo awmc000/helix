@@ -65,8 +65,10 @@ def create_quiz(
 def get_quiz(quiz_id: int):
 
     # DB Connection
+
+    print(quiz_id)
     
-    quiz = Quiz(**db_app.assembleQuiz(quiz_id, db_connection))
+    quiz = Quiz(**db_app.assembleQuiz([quiz_id], db_connection))
     return quiz
 
     # Hard Coded
