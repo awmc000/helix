@@ -57,13 +57,17 @@
   
   <!-- Question Window -->
   <div class="questionouter">
-    
+  
+    <div class="question" style="width: 400px; height: 200px;" id="loadingbox">
+      <div style="text-align: center; margin-top: 60px;"><h1>Loading<br><img src="loading.gif"></h1></div>
+    </div>
+
     <!-- Select Quiz Window -->
-    <div class="question" style="width: 200px; height: 300px;" id="availableQuizMapDiv">
+    <div class="question" style="width: 200px; height: 300px; display: none;" id="availableQuizMapDiv">
       <!-- Quiz Map Header -->
       <div class="questionheadingbox" style="display: flex; background-color: blue;">
         <!-- Quiz Map Title -->
-        <h2 style="margin-left: 4px;" id="quizmaptitle">Quizzes</h2>
+        <h2 style="margin-left: 4px;" id="quizmaptitle">Open Quizzes</h2>
       </div>
       <div id="availableQuizMapList">
         <!-- Filled in with <li> tags by markup. -->
@@ -71,18 +75,19 @@
     </div>
   
     <!-- Respond to Question Window -->
-    <div class="question" id="question">
+    <div class="question" id="question" style="display: none;">
       
       <!-- Question Header -->
       <div class="questionheadingbox" style="display: flex;">
         <!-- Question Title -->
-        <h2 style="margin-left: 4px;" id="questiontitle">QuestionTitle</h2>
+        <h2 style="margin-left: 4px;" id="questiontitle">Question Title</h2>
       </div>
       
       <!-- Question Prompt -->
       <div style="height: 115px;">
         <p class="questionprompt" id="questionprompt">
-          Loading...
+          <strong>Welcome to the Helix quiz platform.</strong><br><br>
+          The question prompt will be displayed here, followed by choices.
         </p>
       </div>
       
@@ -133,7 +138,7 @@
     </div>
     
     <!-- Create Quiz - Question Map Window -->
-    <div class="question" style="width: 120px; height: 300px;" id="quizmap">
+    <div class="question" style="width: 120px; height: 300px; display: none;" id="quizmap">
       <!-- Question Map Header -->
       <div class="questionheadingbox" style="display: flex; background-color: rgb(152, 27, 27);">
         <!-- Question Map Title -->
@@ -145,7 +150,7 @@
     </div>
     
     <!-- Create Quiz - Edit Question Window -->
-    <div class="question" style="" id="editquestion">
+    <div class="question" id="editquestion" style="display: none;">
       <!-- Question Map Header -->
       <div class="questionheadingbox" style="display: flex;background-color: rgb(152, 27, 27);">
         <!-- Question Map Title -->
@@ -193,7 +198,7 @@
     </div>
     
     <!-- Courses - Course Map -->
-    <div class="question" style="width: 120px; height: 180px;" id="coursemap">
+    <div class="question" style="width: 120px; height: 180px; display: none;" id="coursemap">
       <!-- Course Map Header -->
       <div class="questionheadingbox" style="display: flex; background-color: rgb(19, 107, 19);">
         <!-- Course Map Title -->
@@ -205,7 +210,7 @@
     </div>
     
     <!-- Courses - Edit Course -->
-    <div class="question" style="" id="editcourse">
+    <div class="question" style="display: none;" id="editcourse">
       <!-- Question Map Header -->
       <div class="questionheadingbox" style="display: flex; background-color: rgb(19, 107, 19);">
         <!-- Question Map Title -->
@@ -241,7 +246,7 @@
     </div>
 
     <!-- Instructor Login -->
-    <div class="question" id="instructorLogin">
+    <div class="question" id="instructorLogin" style="display: none;">
       <!-- Question Map Header -->
       <div class="questionheadingbox" style="display: flex; background-color: rgb(107, 19, 85);">
         <!-- Question Map Title -->
@@ -268,7 +273,7 @@
     </div>
 
     <!-- Instructor Profile -->
-    <div class="question" style="" id="instructorprofile">
+    <div class="question" style="display: none;" id="instructorprofile">
       <!-- Question Map Header -->
       <div class="questionheadingbox" style="display: flex; background-color: rgb(107, 19, 85);">
         <!-- Question Map Title -->
@@ -319,7 +324,7 @@
   
   
   <!-- Development Area - Hide in Prod -->
-  <div class="developmentarea" id="developmentarea">
+  <div class="developmentarea" id="developmentarea" style="display: none;">
     <h2>Dev Area - Hidden in Production</h2>
     <button onclick="fetchData()">Fetch Data Test!</button>
     <span id="dataplace">no data yet</span>
