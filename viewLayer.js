@@ -106,7 +106,7 @@ const goToInstructorProfile = () => {
 const setStateElements = () => {
     if (appState.windowState == TAKING_QUIZ) {
         showManyById(['availableQuizMapDiv', 'question']);
-        hideManyById(['loadingbox', 'quizmap', 'editquestion', 'coursemap', 'editcourse', 'instructorLogin', 'instructorprofile']);
+        hideManyById(['loadingbox', 'quizmap', 'editquestion', 'coursemap', 'editcourse', 'analytics', 'instructorLogin', 'instructorprofile']);
         
         // When entering the state, clear any response from before
         clearCheckboxes();
@@ -116,13 +116,13 @@ const setStateElements = () => {
         extractQuestionData();
     }
     else if (appState.windowState == CREATING_QUIZ) {
-        showManyById(['availableQuizMapDiv', 'quizmap', 'editquestion']);
+        showManyById(['availableQuizMapDiv', 'quizmap', 'editquestion', 'analytics']);
         hideManyById(['loadingbox', 'question', 'coursemap', 'editcourse', 'instructorLogin', 'instructorprofile']);
         drawQuestionMap();
     }
     else if (appState.windowState == CREATING_COURSE) {
         showManyById(['coursemap', 'editcourse']);
-        hideManyById(['loadingbox', 'availableQuizMapDiv', 'question', 'quizmap', 'editquestion','instructorLogin',  'instructorprofile']);
+        hideManyById(['loadingbox', 'availableQuizMapDiv', 'question', 'quizmap', 'editquestion', 'analytics', 'instructorLogin',  'instructorprofile']);
         drawCourseMap();
         fillCourseEditingForm();
         fillCourseQuizzes();
@@ -293,8 +293,32 @@ const getAvailableCourses = async () => {
         });
     };
     
+    const generateAnalytics = async () => {
+        let analytics = await makeRequest('analytics/' + appState.quiz.quizID, 'GET', null, {'username': appState.loginUsername});
+        console.log(analytics);
+
+        let tableObject = document.createElement('table');
+
+        for (const [k, v] of Object.entries(analytics)) {
+            let row = document.createElement('tr');
+            let keyTd = document.createElement('td');
+            let valTd = document.createElement('td');
+
+            keyTd.innerText = k;
+            valTd.innerText = v;
+
+            row.appendChild(keyTd);
+            row.appendChild(valTd);
+            tableObject.appendChild(row);
+        }
+
+        document.getElementById('analyticsBody').innerText = '';
+        document.getElementById('analyticsBody').appendChild(tableObject);
+    };
+
     const viewAnalytics = () => {
-        console.log('(viewAnalytics) TODO: Create and implement analytics window')
+        document.getElementById('analyticsTitle').innerText = 'Analytics of quiz ' + appState.quiz.quizName;
+        generateAnalytics();
     };
     
     /*

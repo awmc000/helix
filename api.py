@@ -7,7 +7,7 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware # uncomment for UI integration
 from contextlib import asynccontextmanager #This is for ensuring the database connection is opened on startup and closed before shutdown
-from models import Answer, Question, Quiz, Course, Author
+from models import Answer, Question, Quiz, Course, Author, Analytics
 from typing import List, Dict
 import os
 import dbApplication as db_app
@@ -384,3 +384,18 @@ def create_author(author: Author):
 @app.delete("/authors/{username}", response_model=dict)
 def delete_author(username: str):
     return {"message": f"Author {username} deleted"}
+
+# Analytics Endpoint
+
+# Get analytics object for quiz id
+@app.get("/analytics/{quizID}", response_model=Analytics)
+def get_analytics(quizID: int, username: str):
+    return {
+        'numOfResponses': 120,
+        'meanScore': [2.5, 1.75, 3.0],
+        'medianScore': [2, 2, 3],
+        'leastCorrect': [('What is the capital of France?', 25)],
+        'mostCorrect': [('2 + 2 equals?', 110)],
+        'homogenous': ['Select the primary color.', 0.5],
+        'heterogenous': ['Which programming language is fastest?', 2.2]
+    }

@@ -160,6 +160,23 @@ quiz = {
 }
 ```
 
+Analytics - schema from `dbApplication.py`
+
+```python
+result = dict(numOfResponses = count[0], meanScore = mean, medianScore = median, leastCorrect = minCorrect, mostCorrect = maxCorrect, homogenous = leastVariance, heterogenous = mostVariance)
+
+{
+    'numOfResponses': 120,
+    'meanScore': [2.5, 1.75, 3.0],
+    'medianScore': [2, 2, 3],
+    'leastCorrect': [('What is the capital of France?', 25)],
+    'mostCorrect': [('2 + 2 equals?', 110)],
+    'homogenous': ['Select the primary color.', 0.5],
+    'heterogenous': ['Which programming language is fastest?', 2.2]
+}
+
+```
+
 ### Javascript and JSON
 
 The following code block outlines how quizzes, questions, and 
