@@ -200,14 +200,13 @@ def getQuizList(database):
 # Returns a quizList dictonary
 def getQuizListFromCourse(courseID, database):
     quizList = []
-    results = retrieveFromDatabase("SELECT quizID, quizName FROM Quiz WHERE courseID = %s", courseID, database)
+    results = retrieveFromDatabase("SELECT quizID FROM Quiz WHERE courseID = %s", courseID, database)
     if(not results):
         return None
     
     for row in results:
-        quizID, quizName = row
-        nameIDPair = dict(quizID = quizID, quizName = quizName)
-        quizList.append(nameIDPair)
+        quizID = row
+        quizList.append(assembleQuiz(quizID, database))
     return quizList
 
 
@@ -249,11 +248,10 @@ def processAnswer(answer, database):
 def createAnswerKey(answerKey, database):
     return updateDatabase("INSERT INTO AnswerKey (questionID, optionNumber, optionDescription, scoreValue) VALUES (%s, %s, %s, %s);", list(answerKey.values()), database)
 
-
 # Takes the question object and adds the values of it to the database
 # question is the question python object that contains the answers you want to upload to the db
 # database is the database connection
-# Returns True if sucessful, otherwise None
+# Returns the questionID if sucessful, otherwise None
 def createQuestion(question, database):
     if(updateDatabase("INSERT INTO Question (quizID, prompt, durationMinutes, durationSeconds) VALUES (%s, %s, %s, %s)", list(question.values()), database)):
         return retrieveFromDatabase("Select questionID from Question ORDER BY questionID DESC LIMIT 1", [], database)

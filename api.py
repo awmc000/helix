@@ -13,8 +13,11 @@ import os
 import dbApplication as db_app
 # import mysql.connector            // DB integration
 
+# global database connection object
 db_connection = None
 
+
+# Allows the database to be connected to and disconnected from only at the start and end of the program respectively
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global db_connection
@@ -50,7 +53,7 @@ def create_quiz(
     username: str = Query(..., description="Username of the creator")
 ):
     # DB Connection
-    return db_app.createQuiz(quiz.__dict__, db_connection)
+    # return db_app.createQuiz(quiz.__dict__, db_connection)              Commented Out as I cant test yet
 
     # hard coded
     # Assign a quizID       // for unit testing - DB will handle
@@ -65,10 +68,10 @@ def create_quiz(
 def get_quiz(quiz_id: int):
 
     # DB Connection
-
-    print(quiz_id)
     
-    quiz = Quiz(**db_app.assembleQuiz([quiz_id], db_connection))
+    quiz = Quiz(**db_app.assembleQuiz([quiz_id], db_connection)) # Works
+    if(not quiz):
+        raise HTTPException(status_code=404, detail="Quiz not found")
     return quiz
 
     # Hard Coded
@@ -97,11 +100,14 @@ def update_quiz(quiz_id: int, quiz: Quiz):
 @app.get("/quizzes/", response_model=List[Quiz])
 def get_all_quizzes():
     
-    quizList = db_app.getQuizList(db_connection)
+    # Database
+    quizList = db_app.getQuizList(db_connection) # Works
     quizClassList = []
     for quiz in quizList:
         quizClassList.append(Quiz(**quiz))
     return quizClassList
+
+    # Hard Coded
     return list(quizzes.values())
 
 
@@ -115,10 +121,13 @@ def create_question(
 ):
     
     # DB Connection
-    temp = question
+    """ temp = question
     temp.questionID = quiz_id # The questionID will be created by the db, but the db needs the quiz ID for the question
-    question.questionID = db_app.createQuestion(temp.__dict__, db_connection)
-    return question
+    result = db_app.createQuestion(temp.__dict__, db_connection)                                            Cant Test yet
+    if(result):
+        question.questionID = result
+        return question
+    raise HTTPException(status_code=404, detail="Quiz not found")"""
 
     # Hard Coded
     if quiz_id not in quizzes:
@@ -164,6 +173,12 @@ def create_answer(
     question_id: int,
     answer: Answer
 ):
+    """answerList = [question_id, answer.optionNumber, answer.optDescription, answer.scoreValue]                  Cant Test yet
+    result = db_app.createAnswerKey(answerList, db_connection)
+    if(result):
+        return result
+    raise HTTPException(status_code=404, detail="Question not found")"""
+
     if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
     
@@ -300,6 +315,15 @@ def remove_quiz_from_course(course_id: int, quiz_id: int):
 # Get all quizzes in a course as a list
 @app.get("/courses/{course_id}/quizzes", response_model=List[Quiz])
 def get_course_quizzes(course_id: int):
+
+    quizList = db_app.getQuizListFromCourse([course_id], db_connection) # Probably Works
+    if(not quizList):
+        raise HTTPException(status_code=404, detail="Course not found")
+    quizClassList = []
+    for quiz in quizList:
+        quizClassList.append(Quiz(**quiz))
+    return quizClassList
+
     if course_id not in courses:
         raise HTTPException(status_code=404, detail="Course not found")
     return [quiz for quiz in quizzes.values() if quiz.courseID == course_id]
@@ -307,6 +331,12 @@ def get_course_quizzes(course_id: int):
 # Get link to a course
 @app.get("/courses/{course_id}/link", response_model=Dict[str, str])
 def get_course_link(course_id: int):
+    # Database
+    if(db_app.retrieveFromDatabase("SELECT courseName FROM Quiz WHERE courseID = %s", [course_id], db_connection)):
+        return {"link": f"http://localhost:3000/class/{course_id}"}
+    raise HTTPException(status_code=404, detail="Course not found")
+
+    # Hard coded
     if course_id not in courses:
         raise HTTPException(status_code=404, detail="Course not found")
     return {"link": f"http://localhost:3000/class/{course_id}"}

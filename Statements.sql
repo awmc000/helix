@@ -33,7 +33,7 @@ SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Qu
 
 -- Show a list of all Quizzes | IMPLEMENTED - getQuizList
 
-SELECT quizID, quizName FROM Quiz
+SELECT quizID FROM Quiz
 
 -- Search For Quiz By Name | IMPLEMENTED - searchForQuiz
 
