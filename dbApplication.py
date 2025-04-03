@@ -257,6 +257,13 @@ def createQuestion(question, database):
     if(updateDatabase("INSERT INTO Question (quizID, prompt, durationMinutes, durationSeconds) VALUES (%s, %s, %s, %s)", list(question.values()), database)):
         return retrieveFromDatabase("Select questionID from Question ORDER BY questionID DESC LIMIT 1", [], database)
 
+# Takes the question object and updates the values of it to the database
+# question is the question python object that contains the answers you want to upload to the db
+# database is the database connection
+# Returns the questionID if sucessful, otherwise None
+def updateQuestion(question, database):
+    return updateDatabase("UPDATE Question SET quizID = %s, prompt = %s, durationMinutes = %s, durationSeconds = %s WHERE questionID = %s", list(question.values()), database)
+
 # Takes the quiz object and adds the values of it to the database
 # quiz is the quiz python object that contains the answers you want to upload to the db
 # database is the database connection
@@ -270,7 +277,7 @@ def createQuiz(quiz, database):
 # database is the database connection
 # Returns the QuizID if sucessful, otherwise None
 def updateQuiz(quiz, database):
-    return updateDatabase("INSERT INTO Quiz (quizID, courseID, quizName, availableAsync, label, quizDescription, durationMinutes) VALUES (%s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE courseID = VALUES(courseID), quizName = VALUES(quizName), availableAsync = VALUES(availableAsync), label = VALUES(label), quizDescription = VALUES(quizDescription), durationMinutes = VALUES(quizDescription)", list(quiz.values()), database)
+    return updateDatabase("UPDATE Quiz SET courseID = %s, quizName = %s, availableAsync = %s, label = %s, quizDescription = %s, durationMinutes = %s WHERE quizID = %s", list(quiz.values()), database)
 
 # Takes the course object and adds the values of it to the database
 # course is the course python object that contains the answers you want to upload to the db

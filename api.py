@@ -90,6 +90,8 @@ def delete_quiz(quiz_id: int):
 # Edit a quiz by ID
 @app.put("/quizzes/{quiz_id}", response_model=Quiz)
 def update_quiz(quiz_id: int, quiz: Quiz):
+    updateStatus = db_app.updateQuiz([quiz.courseID, quiz.quizName, quiz.availableAsync, ])
+
     if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
     quiz.quizID = quiz_id
@@ -142,6 +144,13 @@ def create_question(
 # Update a question within the quiz "quiz_name"
 @app.put("/quizzes/{quiz_id}/questions/{question_id}", response_model=Question)
 def update_question(quiz_id: int, question_id: int, question: Question):
+    # Database
+    updateStatus = db_app.updateQuestion([quiz_id, question.prompt, question.durationMins, question.durationSecs, question_id])
+    if(not updateStatus):
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    return updateStatus
+
+    # Hard Coded
     if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
     
