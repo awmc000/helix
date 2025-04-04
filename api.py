@@ -63,14 +63,6 @@ def create_quiz(
     # breakpoint()
     return quiz
 
-    # hard coded
-    # Assign a quizID       // for unit testing - DB will handle
-    # Note: quizID defaults to 0, and IDs start at 1 via this method
-    max_id = max(quizzes.keys(), default=0)
-    quiz.quizID = max_id + 1
-    quizzes[quiz.quizID] = quiz
-    return quiz
-
 # Get a quiz by ID
 @app.get("/quizzes/{quiz_id}", response_model=Quiz)
 def get_quiz(quiz_id: int):
@@ -79,11 +71,6 @@ def get_quiz(quiz_id: int):
     
     quiz = db_app.assembleQuiz([quiz_id], db_connection) # Works
     return quiz
-
-    # Hard Coded
-    if quiz_id not in quizzes:
-        raise HTTPException(status_code=404, detail="Quiz not found")
-    return quizzes[quiz_id]
 
 # Delete a quiz by ID | Deletion has been moved to a stretch feature
 @app.delete("/quizzes/{quiz_id}", response_model=Quiz)
@@ -102,13 +89,6 @@ def update_quiz(quiz_id: int, quiz: Quiz):
         raise HTTPException(status_code=404, detail="Quiz not found")
     return updateStatus
 
-    # Hard Coded
-    if quiz_id not in quizzes:
-        raise HTTPException(status_code=404, detail="Quiz not found")
-    quiz.quizID = quiz_id
-    quizzes[quiz_id] = quiz
-    return quiz
-
 # Get all quizzes as a list
 @app.get("/quizzes/", response_model=List[Quiz])
 def get_all_quizzes():
@@ -120,9 +100,6 @@ def get_all_quizzes():
         if quiz:
             quizClassList.append(Quiz(**quiz))
     return quizClassList
-
-    # Hard Coded
-    return list(quizzes.values())
 
 
 # Question Endpoints:
@@ -141,17 +118,6 @@ def create_question(
     if(result):
         question.questionID = result
         return question
-    raise HTTPException(status_code=404, detail="Quiz not found")
-
-    # Hard Coded
-    if quiz_id not in quizzes:
-        raise HTTPException(status_code=404, detail="Quiz not found")
-    
-    # Assign a questionID       // for unit testing - DB will handle
-    max_id = max([q.questionID for q in quizzes[quiz_id].questionList], default=0)
-    question.questionID = max_id + 1  # Modify the input question
-    quizzes[quiz_id].questionList.append(question)
-    return question
 
 # Update a question within the quiz "quiz_name"
 @app.put("/quizzes/{quiz_id}/questions/{question_id}", response_model=Question)
@@ -161,18 +127,6 @@ def update_question(quiz_id: int, question_id: int, question: Question):
     if(not updateStatus):
         raise HTTPException(status_code=404, detail="Quiz not found")
     return updateStatus
-
-    # Hard Coded
-    if quiz_id not in quizzes:
-        raise HTTPException(status_code=404, detail="Quiz not found")
-    
-    # Update questionID     // for unit testing
-    for i, q in enumerate(quizzes[quiz_id].questionList):
-        if q.questionID == question_id:
-            question.questionID = question_id  # Preserve ID
-            quizzes[quiz_id].questionList[i] = question  # Update with provided data
-            return question
-    raise HTTPException(status_code=404, detail="Question not found")
 
 # Delete a question within the quiz "quiz_id"
 @app.delete("/quizzes/{quiz_id}/questions/{question_id}", response_model=Question)
@@ -200,21 +154,6 @@ def create_answer(
         return result
     raise HTTPException(status_code=404, detail="Question not found")
 
-    if quiz_id not in quizzes:
-        raise HTTPException(status_code=404, detail="Quiz not found")
-    
-    quiz = quizzes[quiz_id]
-    question_id_list = [q.questionID for q in quiz.questionList]
-    if question_id not in question_id_list:
-        raise HTTPException(status_code=404, detail="Question not found")
-    
-    question = next(q for q in quiz.questionList if q.questionID == question_id)
-
-    # Assign an optionNumber       // for unit testing - DB will handle
-    max_num = max([q.optionNumber for q in question.AnswerKey], default=0)
-    answer.optionNumber = max_num + 1 
-    question.AnswerKey.append(answer)
-    return answer
 
 # Update an answer within the question "question_id"
 @app.put("/quizzes/{quiz_id}/questions/{question_id}/answers/", response_model=Answer) # Waiting on Team members response to proceed
@@ -229,25 +168,6 @@ def update_answer(
     if(result):
         return result
     raise HTTPException(status_code=404, detail="Question not found")
-
-    # Hard Coded
-    if quiz_id not in quizzes:
-        raise HTTPException(status_code=404, detail="Quiz not found")
-    
-    quiz = quizzes[quiz_id]
-    question_id_list = [q.questionID for q in quiz.questionList]
-    if question_id not in question_id_list:
-        raise HTTPException(status_code=404, detail="Question not found")
-    
-    question = next(q for q in quiz.questionList if q.questionID == question_id)
-    
-    # Update optionNumber     // for unit testing
-    for i, q in enumerate(question.AnswerKey):
-        if q.optionNumber == optionNumber:
-            answer.optionNumber = optionNumber 
-            question.AnswerKey[i] = answer  
-            return answer
-    raise HTTPException(status_code=404, detail="Answer not found")
 
 # Delete an answer within the question "question_id" | deleting data is a stretch feature. Keep your secrets out of the quizzes for now
 @app.delete("/quizzes/{quiz_id}/questions/{question_id}/answers/", response_model=Answer)
@@ -287,15 +207,6 @@ def create_course(
         raise HTTPException(status_code=500, detail="Couldn't Create a Course")
     return status
 
-    # Hard Coded
-    # Assign a quizID       // for unit testing - DB will handle
-    # Note: courseID defaults to 0, and IDs start at 1 via this method
-    max_id = max(courses.keys(), default=0)
-    course.courseID = max_id + 1
-    course.username = username
-    courses[course.courseID] = course
-    return course
-
 #Get a course List
 @app.get("/courses/", response_model=List[Course])
 def get_course_list():
@@ -330,14 +241,6 @@ def update_course(
     if(not status):
         raise HTTPException(status_code=404, detail="Course not found")
     return db_app.getCourse([course_id], db_connection)
-    
-    # Hard Coded
-    if course_id not in courses:
-        raise HTTPException(status_code=404, detail="Course not found")
-    course.username = username
-    course.courseID = course_id
-    courses[course_id] = course
-    return course
 
 # Delete a course by ID | Deleting data is a stretch feature
 @app.delete("/courses/{course_id}", response_model=Course)
@@ -354,16 +257,6 @@ def add_quiz_to_course(course_id: int, quiz_id: int):
     if(not status):
         raise HTTPException(status_code=404, detail="Course or Quiz not found")
     return status
-
-    # Hard Coded
-    if course_id not in courses:
-        raise HTTPException(status_code=404, detail="Course not found")
-    if quiz_id not in quizzes:
-        raise HTTPException(status_code=404, detail="Quiz not found")
-    course = courses[course_id]
-    quiz = quizzes[quiz_id]
-    quiz.courseID = course_id
-    return course
 
 # Remove a quiz from a course | deleting is a stretch feature. Also this violates a FK constraint
 @app.delete("/courses/{course_id}/quizzes/{quiz_id}", response_model=Course)
@@ -396,11 +289,6 @@ def get_course_quizzes(course_id: int):
         quizClassList.append(Quiz(**quiz))
     return quizClassList
 
-    # Hard coded
-    if course_id not in courses:
-        raise HTTPException(status_code=404, detail="Course not found")
-    return [quiz for quiz in quizzes.values() if quiz.courseID == course_id]
-
 # Get link to a course
 @app.get("/courses/{course_id}/link", response_model=Dict[str, str])
 def get_course_link(course_id: int):
@@ -408,11 +296,6 @@ def get_course_link(course_id: int):
     if(db_app.retrieveFromDatabase("SELECT courseName FROM Quiz WHERE courseID = %s", [course_id], db_connection)):
         return {"link": f"http://localhost:3000/class/{course_id}"}
     raise HTTPException(status_code=404, detail="Course not found")
-
-    # Hard coded
-    if course_id not in courses:
-        raise HTTPException(status_code=404, detail="Course not found")
-    return {"link": f"http://localhost:3000/class/{course_id}"}
 
 
 # Author Endpoints:
@@ -439,15 +322,15 @@ def get_analytics(quizID: int, username: str):
         raise HTTPException(status_code=404, detail="Quiz not found or no analytics to create for said quiz")
     return results
 
-    return {
-        'numOfResponses': 120,
-        'meanScore': [2.5, 1.75, 3.0],
-        'medianScore': [2, 2, 3],
-        'leastCorrect': [('What is the capital of France?', 25)],
-        'mostCorrect': [('2 + 2 equals?', 110)],
-        'homogenous': ['Select the primary color.', 0.5],
-        'heterogenous': ['Which programming language is fastest?', 2.2]
-    }
+    # return {
+    #     'numOfResponses': 120,
+    #     'meanScore': [2.5, 1.75, 3.0],
+    #     'medianScore': [2, 2, 3],
+    #     'leastCorrect': [('What is the capital of France?', 25)],
+    #     'mostCorrect': [('2 + 2 equals?', 110)],
+    #     'homogenous': ['Select the primary color.', 0.5],
+    #     'heterogenous': ['Which programming language is fastest?', 2.2]
+    # }
 
 
 """ Code for put for the responses to the quiz
