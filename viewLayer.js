@@ -453,10 +453,13 @@ const createNewQuiz = async () => {
     // Then fetch that quiz by ID
     let id = echo.quizID;
 
-    getAvailableQuizzes();
+    // Update global list of quizzes
+    availableQuizzes = await getAvailableQuizzes();
+    
+    // Load this quiz again with the new information
     fetchQuizById(id);
 
-    // Update list
+    // Update list of quizzes in this course
     fillCourseQuizzes();
 };
 
@@ -714,10 +717,15 @@ const createNewQuiz = async () => {
     */
     const extractQuestionData = () => {
         
-        // Return null if quiz is null
+        // Return if quiz is null
         if (appState.quiz == null) {
             return;
         }
+
+        // Return if current question is null
+        if (appState.question == null) {
+            return;
+        } 
         
         // Set prompt and title
         document.getElementById('pagetitle').innerText = appState.quiz.quizName;

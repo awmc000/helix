@@ -54,7 +54,7 @@ def create_quiz(
     username: str = Query(..., description="Username of the creator")
 ):
     # DB Connection
-    breakpoint()
+    # breakpoint()
     createdQuiz = db_app.createQuiz(
         [quiz.courseID, quiz.quizName, 
          quiz.availableAsync, quiz.label, 
