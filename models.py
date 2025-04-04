@@ -38,3 +38,24 @@ class Author(BaseModel):
     name: str = ""
     description: str = ""
     emailAddress: str = ""
+
+'''
+{
+    'numOfResponses': 120,
+    'meanScore': [2.5, 1.75, 3.0],
+    'medianScore': [2, 2, 3],
+    'leastCorrect': [('What is the capital of France?', 25)],
+    'mostCorrect': [('2 + 2 equals?', 110)],
+    'homogenous': ['Select the primary color.', 0.5],
+    'heterogenous': ['Which programming language is fastest?', 2.2]
+}
+
+'''
+class Analytics(BaseModel):
+    quizID: int = 0
+    numOfResponses: int = 0
+    meanScore: List[float] = []
+    leastCorrect: List = []
+    mostCorrect: List = []
+    homogenous: List = []
+    heterogenous: List = []

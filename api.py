@@ -7,7 +7,7 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware # uncomment for UI integration
 from contextlib import asynccontextmanager #This is for ensuring the database connection is opened on startup and closed before shutdown
-from models import Answer, Question, Quiz, Course, Author
+from models import Answer, Question, Quiz, Course, Author, Analytics
 from typing import List, Dict
 import os
 import dbApplication as db_app
@@ -90,8 +90,13 @@ def delete_quiz(quiz_id: int):
 # Edit a quiz by ID
 @app.put("/quizzes/{quiz_id}", response_model=Quiz)
 def update_quiz(quiz_id: int, quiz: Quiz):
-    updateStatus = db_app.updateQuiz([quiz.courseID, quiz.quizName, quiz.availableAsync, ])
+    # Database
+    updateStatus = db_app.updateQuiz([quiz.courseID, quiz.quizName, quiz.availableAsync, quiz.label, quiz.quizDescription, quiz.durationMins, quiz.quizID], db_connection)
+    if(not updateStatus):
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    return updateStatus
 
+    # Hard Coded
     if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
     quiz.quizID = quiz_id
@@ -384,3 +389,18 @@ def create_author(author: Author):
 @app.delete("/authors/{username}", response_model=dict)
 def delete_author(username: str):
     return {"message": f"Author {username} deleted"}
+
+# Analytics Endpoint
+
+# Get analytics object for quiz id
+@app.get("/analytics/{quizID}", response_model=Analytics)
+def get_analytics(quizID: int, username: str):
+    return {
+        'numOfResponses': 120,
+        'meanScore': [2.5, 1.75, 3.0],
+        'medianScore': [2, 2, 3],
+        'leastCorrect': [('What is the capital of France?', 25)],
+        'mostCorrect': [('2 + 2 equals?', 110)],
+        'homogenous': ['Select the primary color.', 0.5],
+        'heterogenous': ['Which programming language is fastest?', 2.2]
+    }

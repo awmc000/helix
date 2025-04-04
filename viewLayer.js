@@ -106,7 +106,7 @@ const goToInstructorProfile = () => {
 const setStateElements = () => {
     if (appState.windowState == TAKING_QUIZ) {
         showManyById(['availableQuizMapDiv', 'question']);
-        hideManyById(['loadingbox', 'quizmap', 'editquestion', 'coursemap', 'editcourse', 'instructorLogin', 'instructorprofile']);
+        hideManyById(['loadingbox', 'quizmap', 'editquestion', 'coursemap', 'editcourse', 'analytics', 'instructorLogin', 'instructorprofile']);
         
         // When entering the state, clear any response from before
         clearCheckboxes();
@@ -116,13 +116,13 @@ const setStateElements = () => {
         extractQuestionData();
     }
     else if (appState.windowState == CREATING_QUIZ) {
-        showManyById(['availableQuizMapDiv', 'quizmap', 'editquestion']);
+        showManyById(['availableQuizMapDiv', 'quizmap', 'editquestion', 'analytics']);
         hideManyById(['loadingbox', 'question', 'coursemap', 'editcourse', 'instructorLogin', 'instructorprofile']);
         drawQuestionMap();
     }
     else if (appState.windowState == CREATING_COURSE) {
         showManyById(['coursemap', 'editcourse']);
-        hideManyById(['loadingbox', 'availableQuizMapDiv', 'question', 'quizmap', 'editquestion','instructorLogin',  'instructorprofile']);
+        hideManyById(['loadingbox', 'availableQuizMapDiv', 'question', 'quizmap', 'editquestion', 'analytics', 'instructorLogin',  'instructorprofile']);
         drawCourseMap();
         fillCourseEditingForm();
         fillCourseQuizzes();
@@ -293,8 +293,32 @@ const getAvailableCourses = async () => {
         });
     };
     
+    const generateAnalytics = async () => {
+        let analytics = await makeRequest('analytics/' + appState.quiz.quizID, 'GET', null, {'username': appState.loginUsername});
+        console.log(analytics);
+
+        let tableObject = document.createElement('table');
+
+        for (const [k, v] of Object.entries(analytics)) {
+            let row = document.createElement('tr');
+            let keyTd = document.createElement('td');
+            let valTd = document.createElement('td');
+
+            keyTd.innerText = k;
+            valTd.innerText = v;
+
+            row.appendChild(keyTd);
+            row.appendChild(valTd);
+            tableObject.appendChild(row);
+        }
+
+        document.getElementById('analyticsBody').innerText = '';
+        document.getElementById('analyticsBody').appendChild(tableObject);
+    };
+
     const viewAnalytics = () => {
-        console.log('(viewAnalytics) TODO: Create and implement analytics window')
+        document.getElementById('analyticsTitle').innerText = 'Analytics of quiz "' + appState.quiz.quizName + '"';
+        generateAnalytics();
     };
     
     /*
@@ -428,11 +452,28 @@ const getAvailableCourses = async () => {
         
     };
     
-    const updateCourseEdit = () => {
+    const updateCourseEdit = async () => {
         console.log('(updateCourseEdit) TODO: Send post request to update course ' +
         appState.course.courseName);
         // TODO: Make this work by updating local object first then replacing with what we get
-        makeRequest('courses/' + appState.course.courseID, 'PUT', appState.course, {'username': appState.loginUsername});
+        let newName = document.getElementById('editCourseName').value;
+        let newDescription = document.getElementById('editCourseDescription').value;
+
+        appState.course.courseName = newName;
+        appState.course.courseDescription = newDescription;
+
+        let echo = await makeRequest('courses/' + appState.course.courseID, 'PUT', appState.course, {'username': appState.loginUsername});
+    
+        if (echo == undefined) {
+            console.log('WARNING: PUT request to update course failed, frontend and backend now out of sync');
+            return;
+        }
+
+        appState.course = echo;
+
+        console.log('Successfully updated and retrieved course:');
+        console.log(echo);
+    
     }
     
     /*
@@ -511,14 +552,28 @@ const getAvailableCourses = async () => {
     /*
     * Create a course with filler data
     */
-    const addCourse = () => {
+    const addCourse = async () => {
         console.log('TODO: Make POST request to create course, getting back ID');
-        let newCourse = {
-            'courseID': availableCourses[availableCourses.length-1].courseID + 1,
-            'name': 'New Course',
-            'description': 'Course description',
+        let newCourseDraft = {
+            'courseID': -1,
+            'username': appState.loginUsername,
+            'courseName': 'New Course',
+            'courseDescription': 'Course description',
         };
-        availableCourses.push(newCourse);
+
+        let echo = await makeRequest('courses', 'POST', newCourseDraft,
+            {'username': appState.loginUsername}
+        );
+
+        if (echo == undefined) {
+            console.log('Failed to create course!');
+            return;
+        }
+
+        availableCourses.push(echo);
+
+        // Refresh course map after it's made
+        drawCourseMap();
     };
     
     /*
