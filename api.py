@@ -225,6 +225,7 @@ def get_course_list():
     # This function returns tuples with no keys. 
     # We will make a dictionary with keys and values compliant with `models.py`
     # from the tuples.
+
     raw_course_list = db_app.getCourseListFromAuthor(db_connection)
     courses = []
     for rc in raw_course_list:
@@ -295,10 +296,7 @@ def get_course_quizzes(course_id: int):
     quizList = db_app.getQuizListFromCourse([course_id], db_connection) # Probably Works
     if(not quizList):
         raise HTTPException(status_code=404, detail="Course not found")
-    quizClassList = []
-    for quiz in quizList:
-        quizClassList.append(Quiz(**quiz))
-    return quizClassList
+    return quizList
 
 # Get link to a course
 @app.get("/courses/{course_id}/link", response_model=Dict[str, str])

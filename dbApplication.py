@@ -11,12 +11,12 @@ def connectToDatabase (username, password):
     database = None
     try:
         database = mysql.connector.connect(
-            host= "localhost",
-            # host= "dolphin.csci.viu.ca",
+            # host= "localhost",
+            host= "dolphin.csci.viu.ca",
             user= username,
             password= password,
             database= "csci375team5_quizdb",
-            auth_plugin= "mysql_native_password"
+            # auth_plugin= "mysql_native_password"
         )
     except Error as e:
         raise Exception (e)
@@ -140,15 +140,15 @@ def assembleQuiz (quizID, database) :
 
         else: return None
         
-    results3 = retrieveFromDatabase("SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE quizID = %s;", quizID, database)
+    results3 = retrieveFromDatabase("SELECT courseID, quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz WHERE quizID = %s;", quizID, database)
     if(not results3):
         print(results3)
         return None
     
     for row in results3:
-        quizName , availableAsync , quizLabel , quizDescription , minutes = row
+        courseID, quizName , availableAsync , quizLabel , quizDescription , minutes = row
 
-    Quiz = dict(quizID = quizID[0] , quizName = quizName , availableAsync = availableAsync , label = quizLabel , quizDescription = quizDescription , durationMins = minutes , questionList = questions)
+    Quiz = dict(quizID = quizID[0] , courseID = courseID, quizName = quizName , availableAsync = availableAsync , label = quizLabel , quizDescription = quizDescription , durationMins = minutes , questionList = questions)
 
     return Quiz
 
@@ -225,13 +225,13 @@ def getQuizListFromCourse(courseID, database):
 # Returns a quizList dictonary
 def getQuizListFromAuthor(username, database):
     quizList = []
-    results = retrieveFromDatabase("SELECT quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz NATURAL JOIN Course WHERE courseID = Course.courseID AND Course.username = %s;", username, database)
+    results = retrieveFromDatabase("SELECT courseID, quizName, availableAsync, label, quizDescription, durationMinutes FROM Quiz NATURAL JOIN Course WHERE courseID = Course.courseID AND Course.username = %s;", username, database)
     if(not results):
         return None
     
     for row in results:
-        quizName, availableAsync, label, quizDescription, durationMinutes = row
-        nameIDPair = dict(quizName = quizName, availableAsync = availableAsync, label = label, quizDescription =  quizDescription, durationMinutes = durationMinutes)
+        courseID, quizName, availableAsync, label, quizDescription, durationMinutes = row
+        nameIDPair = dict(courseID = courseID, quizName = quizName, availableAsync = availableAsync, label = label, quizDescription =  quizDescription, durationMinutes = durationMinutes)
         quizList.append(nameIDPair)
     return quizList
 

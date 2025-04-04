@@ -467,7 +467,10 @@ const createNewQuiz = async () => {
     const fillCourseQuizzes = () => {
         document.getElementById('courseQuizList').innerHTML = '';
         
+        console.log(availableQuizzes)
         availableQuizzes.forEach((quizInfo) => {
+            console.log(quizInfo)
+            console.log(appState.course.courseID)
             if (quizInfo.courseID == appState.course.courseID) {
                 // li tag, with <a> inside
                 let listItemTag = document.createElement('li');
