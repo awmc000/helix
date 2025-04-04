@@ -54,7 +54,7 @@ def create_quiz(
     username: str = Query(..., description="Username of the creator")
 ):
     # DB Connection
-    # return db_app.createQuiz(quiz.__dict__, db_connection)              Commented Out as I cant test yet
+    return db_app.createQuiz([quiz.courseID, quiz.quizName, quiz.availableAsync, quiz.label, quiz.quizDescription, quiz.durationMins], db_connection)
 
     # hard coded
     # Assign a quizID       // for unit testing - DB will handle
@@ -71,7 +71,6 @@ def get_quiz(quiz_id: int):
     # DB Connection
     
     quiz = db_app.assembleQuiz([quiz_id], db_connection) # Works
-    # breakpoint()
     return quiz
 
     # Hard Coded
@@ -79,7 +78,7 @@ def get_quiz(quiz_id: int):
         raise HTTPException(status_code=404, detail="Quiz not found")
     return quizzes[quiz_id]
 
-# Delete a quiz by ID
+# Delete a quiz by ID | Deletion has been moved to a stretch feature
 @app.delete("/quizzes/{quiz_id}", response_model=Quiz)
 def delete_quiz(quiz_id: int):
     if quiz_id not in quizzes:
@@ -128,13 +127,13 @@ def create_question(
 ):
     
     # DB Connection
-    """ temp = question
+    temp = question
     temp.questionID = quiz_id # The questionID will be created by the db, but the db needs the quiz ID for the question
-    result = db_app.createQuestion(temp.__dict__, db_connection)                                            Cant Test yet
+    result = db_app.createQuestion(temp.__dict__, db_connection)
     if(result):
         question.questionID = result
         return question
-    raise HTTPException(status_code=404, detail="Quiz not found")"""
+    raise HTTPException(status_code=404, detail="Quiz not found")
 
     # Hard Coded
     if quiz_id not in quizzes:
@@ -187,11 +186,11 @@ def create_answer(
     question_id: int,
     answer: Answer
 ):
-    """answerList = [question_id, answer.optionNumber, answer.optDescription, answer.scoreValue]                  Cant Test yet
+    answerList = [question_id, answer.optionNumber, answer.optDescription, answer.scoreValue]
     result = db_app.createAnswerKey(answerList, db_connection)
     if(result):
         return result
-    raise HTTPException(status_code=404, detail="Question not found")"""
+    raise HTTPException(status_code=404, detail="Question not found")
 
     if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
@@ -210,13 +209,20 @@ def create_answer(
     return answer
 
 # Update an answer within the question "question_id"
-@app.put("/quizzes/{quiz_id}/questions/{question_id}/answers/", response_model=Answer)
+@app.put("/quizzes/{quiz_id}/questions/{question_id}/answers/", response_model=Answer) # Waiting on Team members response to proceed
 def update_answer(
     quiz_id: int,
     question_id: int, 
     optionNumber: int, 
     answer: Answer
 ):
+    # Database
+    result = db_app.updateAnswerKey([question_id, answer.optionNumber, answer.description, answer.scoreValue], db_connection)
+    if(result):
+        return result
+    raise HTTPException(status_code=404, detail="Question not found")
+
+    # Hard Coded
     if quiz_id not in quizzes:
         raise HTTPException(status_code=404, detail="Quiz not found")
     
@@ -235,7 +241,7 @@ def update_answer(
             return answer
     raise HTTPException(status_code=404, detail="Answer not found")
 
-# Delete an answer within the question "question_id"
+# Delete an answer within the question "question_id" | deleting data is a stretch feature. Keep your secrets out of the quizzes for now
 @app.delete("/quizzes/{quiz_id}/questions/{question_id}/answers/", response_model=Answer)
 def delete_answer(
     quiz_id: int,
@@ -267,6 +273,13 @@ def create_course(
     course: Course, 
     username: str = Query(..., description="Username of the creator")
 ):
+    # Database
+    status = db_app.createCourse([course.username, course.courseName, course.courseDescription], db_connection)
+    if(not status):
+        raise HTTPException(status_code=500, detail="Couldn't Create a Course")
+    return status
+
+    # Hard Coded
     # Assign a quizID       // for unit testing - DB will handle
     # Note: courseID defaults to 0, and IDs start at 1 via this method
     max_id = max(courses.keys(), default=0)
@@ -304,6 +317,13 @@ def update_course(
     course: Course,
     username: str = Query(..., description="Username of the creator")
 ):
+    # Database
+    status = db_app.updateCourse([course_id, username, course.courseName, course.courseDescription], db_connection)
+    if(not status):
+        raise HTTPException(status_code=404, detail="Course not found")
+    return db_app.getCourse([course_id], db_connection)
+    
+    # Hard Coded
     if course_id not in courses:
         raise HTTPException(status_code=404, detail="Course not found")
     course.username = username
@@ -311,7 +331,7 @@ def update_course(
     courses[course_id] = course
     return course
 
-# Delete a course by ID
+# Delete a course by ID | Deleting data is a stretch feature
 @app.delete("/courses/{course_id}", response_model=Course)
 def delete_course(course_id: int):
     if course_id not in courses:
@@ -321,6 +341,13 @@ def delete_course(course_id: int):
 # Add a quiz to a course
 @app.post("/courses/{course_id}/quizzes/{quiz_id}", response_model=Course)
 def add_quiz_to_course(course_id: int, quiz_id: int):
+    # Database
+    status = db_app.addQuizToCourse([course_id, quiz_id], db_connection)
+    if(not status):
+        raise HTTPException(status_code=404, detail="Course or Quiz not found")
+    return status
+
+    # Hard Coded
     if course_id not in courses:
         raise HTTPException(status_code=404, detail="Course not found")
     if quiz_id not in quizzes:
@@ -330,7 +357,7 @@ def add_quiz_to_course(course_id: int, quiz_id: int):
     quiz.courseID = course_id
     return course
 
-# Remove a quiz from a course
+# Remove a quiz from a course | deleting is a stretch feature. Also this violates a FK constraint
 @app.delete("/courses/{course_id}/quizzes/{quiz_id}", response_model=Course)
 def remove_quiz_from_course(course_id: int, quiz_id: int):
     if course_id not in courses:
@@ -352,6 +379,7 @@ def remove_quiz_from_course(course_id: int, quiz_id: int):
 @app.get("/courses/{course_id}/quizzes", response_model=List[Quiz])
 def get_course_quizzes(course_id: int):
 
+    # Database
     quizList = db_app.getQuizListFromCourse([course_id], db_connection) # Probably Works
     if(not quizList):
         raise HTTPException(status_code=404, detail="Course not found")
@@ -360,6 +388,7 @@ def get_course_quizzes(course_id: int):
         quizClassList.append(Quiz(**quiz))
     return quizClassList
 
+    # Hard coded
     if course_id not in courses:
         raise HTTPException(status_code=404, detail="Course not found")
     return [quiz for quiz in quizzes.values() if quiz.courseID == course_id]
@@ -383,9 +412,11 @@ def get_course_link(course_id: int):
 # Create an author entry
 @app.post("/authors/", response_model=Author)
 def create_author(author: Author):
+    if(not db_app.createAuthor([author.username, author.name, author.description, author.emailAddress], db_connection)):
+        raise HTTPException(status_code=500, detail="Could not create a user")
     return author
 
-# Delete an author entry
+# Delete an author entry | delete is a stretch feature
 @app.delete("/authors/{username}", response_model=dict)
 def delete_author(username: str):
     return {"message": f"Author {username} deleted"}
@@ -395,6 +426,11 @@ def delete_author(username: str):
 # Get analytics object for quiz id
 @app.get("/analytics/{quizID}", response_model=Analytics)
 def get_analytics(quizID: int, username: str):
+    results = db_app.createAnalytics([quizID], db_connection)
+    if(not results):
+        raise HTTPException(status_code=404, detail="Quiz not found or no analytics to create for said quiz")
+    return results
+
     return {
         'numOfResponses': 120,
         'meanScore': [2.5, 1.75, 3.0],
@@ -404,3 +440,19 @@ def get_analytics(quizID: int, username: str):
         'homogenous': ['Select the primary color.', 0.5],
         'heterogenous': ['Which programming language is fastest?', 2.2]
     }
+
+
+""" Code for put for the responses to the quiz
+    Technically could also work for post
+
+    if(answer.attemptID == 0):
+        result = db_app.processAnswer([answer.questionID, answer.optionNumber], db_connection)
+        if(result):
+            return result
+        raise HTTPException(status_code=404, detail="Question not found")
+    else:
+        result = db_app.updateAnswer([answer.attemptID, answer.questionID, answer.optionNumber])
+        if(result):
+            return result
+        raise HTTPException(status_code=404, detail="Question not found")
+        """

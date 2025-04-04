@@ -8,7 +8,7 @@ INSERT INTO Course (username, name, courseDescription) VALUES (%s, %s, %s);
 
 -- Update Course | IMPLEMENTED - updateCourse
 
-UPDATE Course SET (name = %s, courseDescription = %s) WHERE courseID = %s;
+UPDATE Course SET name = %s, courseDescription = %s WHERE courseID = %s;
 
 -- New Quiz | IMPLEMENTED - createQuiz
 
@@ -29,6 +29,10 @@ INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s) ON DUPLICATE KEY 
 -- Delete Quiz | 
 
 DELETE FROM Quiz WHERE quizID = %s;
+
+-- Add quiz to course
+
+UPDATE Quiz SET courseID = %s WHERE quizID = %s;
 
 
 
@@ -67,6 +71,10 @@ SELECT optionNumber, optionDescription, scoreValue FROM AnswerKey WHERE question
 -- All courses a creator made
 
 SELECT * FROM Course WHERE username = %s;
+
+-- Get Course from CourseID
+
+SELECT * FROM Course WHERE courseID = %s;
 
 
 -- Get the number of responses | IMPLEMENTED - createAnalytics

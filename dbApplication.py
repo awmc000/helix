@@ -11,11 +11,12 @@ def connectToDatabase (username, password):
     database = None
     try:
         database = mysql.connector.connect(
-            host= "dolphin.csci.viu.ca",
+            host= "localhost",
+            #host= "dolphin.csci.viu.ca",
             user= username,
             password= password,
             database= "csci375team5_quizdb",
-            #auth_plugin= "mysql_native_password"
+            auth_plugin= "mysql_native_password"
         )
     except Error as e:
         raise Exception (e)
@@ -234,12 +235,23 @@ def getQuizListFromAuthor(username, database):
 def getCourseListFromAuthor (database):
     return retrieveFromDatabase("SELECT * FROM Course", [], database)
 
+
+def getCourse(courseIDParam, database):
+    results = retrieveFromDatabase("SELECT * FROM Course WHERE courseID = %s;", courseIDParam, database)
+    if(not results):
+        return None
+    
+    for row in results:
+        courseID, username, courseName, courseDescription = row
+    course = dict(courseID = courseID, username = username, courseName = courseName, courseDescription =  courseDescription)
+    return course
+
 # Takes the answer dictonary from the users response to a quiz question, and adds it to the database
 # answer is the answers python object that contains the answers you want to upload to the db
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def processAnswer(answer, database):
-    return updateDatabase("INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s) ON DUPLICATE KEY UPDATE optionNumber = VALUES(optionNumber);", list(answer.values()), database)
+    return updateDatabase("INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s);", answer, database)
 
 
 # Takes the answerKey object and adds the values of it to the database
@@ -265,41 +277,61 @@ def updateQuestion(question, database):
     return updateDatabase("UPDATE Question SET quizID = %s, prompt = %s, durationMinutes = %s, durationSeconds = %s WHERE questionID = %s", list(question.values()), database)
 
 # Takes the quiz object and adds the values of it to the database
-# quiz is the quiz python object that contains the answers you want to upload to the db
+# quiz is the quiz list that contains the answers you want to upload to the db
 # database is the database connection
 # Returns the QuizID if sucessful, otherwise None
 def createQuiz(quiz, database):
-    if(updateDatabase("INSERT INTO Quiz (courseID, quizName, availableAsync, label, quizDescription, durationMinutes) VALUES (%s, %s, %s, %s, %s, %s)", list(quiz.values()), database)):
+    if(updateDatabase("INSERT INTO Quiz (courseID, quizName, availableAsync, label, quizDescription, durationMinutes) VALUES (%s, %s, %s, %s, %s, %s)", quiz, database)):
         return retrieveFromDatabase("Select quizID from Quiz ORDER BY quizID DESC LIMIT 1", [], database)
 
 # Takes the quiz object and adds the values of it to the database
-# quiz is the quiz python object that contains the answers you want to upload to the db
+# quiz is the quiz list that contains the values you want to upload to the db
 # database is the database connection
 # Returns the QuizID if sucessful, otherwise None
 def updateQuiz(quiz, database):
-    return updateDatabase("UPDATE Quiz SET courseID = %s, quizName = %s, availableAsync = %s, label = %s, quizDescription = %s, durationMinutes = %s WHERE quizID = %s", list(quiz.values()), database)
+    return updateDatabase("UPDATE Quiz SET courseID = %s, quizName = %s, availableAsync = %s, label = %s, quizDescription = %s, durationMinutes = %s WHERE quizID = %s", quiz, database)
 
 # Takes the course object and adds the values of it to the database
-# course is the course python object that contains the answers you want to upload to the db
+# course is the course's list that contains the values you want to upload to the db
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def createCourse(course, database):
-    return updateDatabase("INSERT INTO Course (username, courseName, courseDescription) VALUES (%s, %s, %s)", list(course.values()), database)
+    return updateDatabase("INSERT INTO Course (username, courseName, courseDescription) VALUES (%s, %s, %s);", course, database)
 
 # Updates a course row in the database with the specifed courseID
-# course is the course python object that contains the answers you want to upload to the db
+# course is the course's list that contains the answers you want to upload to the db
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def updateCourse(course, database):
-    return updateDatabase("UPDATE Course SET courseName = %s, courseDescription = %s WHERE courseID = %s;", list(course.values()), database)
+    return updateDatabase("INSERT INTO Course (courseID, username, courseName, courseDescription) VALUES (%s, %s, %s, %s) ON DUPLICATE KEY UPDATE courseName = VALUES(courseName), courseDescription = VALUES(courseDescription);", course, database)
 
+# Updates an answer row in the database with the specifed attemptID
+# answer is the answer's list that contains the values you want to upload to the db
+# database is the database connection
+# Returns True if sucessful, otherwise None
+def updateAnswer(answer, database):
+    return updateDatabase("INSERT INTO Answer (attemptID, questionID, optionNumber) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE optionNumber = VALUES(optionNumber);", answer, database)
+
+# Updates an answer row in the database with the specifed attemptID
+# answer is the answer's list that contains the values you want to upload to the db
+# database is the database connection
+# Returns True if sucessful, otherwise None
+def updateAnswerKey(answerKey, database):
+    return updateDatabase("INSERT INTO Answer (questionID, optionNumber, optionDescription, scoreValue) VALUES (%s, %s, %s, %s) ON DUPLICATE KEY UPDATE optionDescription = VALUES(optionDescription), scoreValue = VALUES(scoreValue);", answerKey, database)
+
+# Adds the quiz in quizID to course in courseID
+# values is a list of the courseID, then the quizID
+# database is the database connection
+# Returns True if sucessful, otherwise None
+def addQuizToCourse(values, database):
+    return updateDatabase("UPDATE Quiz SET courseID = %s WHERE quizID = %s;", values, database)
 
 # Takes the author object and adds the values of it to the database
-# author is the author python object that contains the answers you want to upload to the db
+# author is the author list that contains the answers you want to upload to the db
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def createAuthor(author, database):
-    return updateDatabase("INSERT INTO Author (username, name, authorDescription, emailAddress) VALUES (%s, %s, %s, %s)", list(author.values()), database)
+    return updateDatabase("INSERT INTO Author (username, name, authorDescription, emailAddress) VALUES (%s, %s, %s, %s)", author.values(), database)
 
 
 # Processes specific analytics for the quiz specifed by quizID in the following format:

@@ -63,24 +63,9 @@ CREATE TABLE csci375team5_quizdb.AnswerKey(
 );
 
 CREATE TABLE csci375team5_quizdb.Answers (
-    attemptID int,
+    attemptID int AUTO_INCREMENT,
     questionID int,
     optionNumber integer,
     PRIMARY KEY (questionID, attemptID),
     FOREIGN KEY (questionID, optionNumber) REFERENCES AnswerKey(questionID, optionNumber)
 );
-
-DELIMITER //
-
-CREATE TRIGGER SetAttemptId 
-BEFORE INSERT ON Answers
-FOR EACH ROW
-BEGIN
-    DECLARE attemptCount INT;
-    SELECT COUNT(questionID) into attemptCount FROM Answers WHERE questionID = NEW.questionID;
-    SET NEW.attemptID = attemptCount + 1;
-END;
-
-//
-
-DELIMITER ;
