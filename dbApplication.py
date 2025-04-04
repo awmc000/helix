@@ -255,7 +255,9 @@ def getCourse(courseIDParam, database):
 # Returns True if sucessful, otherwise None
 def processAnswer(answer, database):
     # TODO: Can you please modify this function to somehow return the attemptID which is assigned by DBMS?
-    return updateDatabase("INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s);", answer, database)
+    status = updateDatabase("INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s);", answer, database)
+    if(status):
+        return retrieveFromDatabase("Select attemptID from Answers ORDER BY attemptID DESC LIMIT 1", [], database)
 
 
 # Takes the answerKey object and adds the values of it to the database
