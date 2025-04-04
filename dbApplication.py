@@ -257,7 +257,7 @@ def processAnswer(answer, database):
     # TODO: Can you please modify this function to somehow return the attemptID which is assigned by DBMS?
     status = updateDatabase("INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s);", answer, database)
     if(status):
-        return retrieveFromDatabase("Select attemptID from Answers ORDER BY attemptID DESC LIMIT 1", [], database)
+        return retrieveFromDatabase("Select attemptID from Answers ORDER BY attemptID DESC LIMIT 1;", [], database)
 
 
 # Takes the answerKey object and adds the values of it to the database
@@ -272,8 +272,8 @@ def createAnswerKey(answerKey, database):
 # database is the database connection
 # Returns the questionID if sucessful, otherwise None
 def createQuestion(question, database):
-    if(updateDatabase("INSERT INTO Question (quizID, prompt, durationMinutes, durationSeconds) VALUES (%s, %s, %s, %s)", list(question.values()), database)):
-        return retrieveFromDatabase("Select questionID from Question ORDER BY questionID DESC LIMIT 1", [], database)
+    if(updateDatabase("INSERT INTO Question (quizID, prompt, durationMinutes, durationSeconds) VALUES (%s, %s, %s, %s;", list(question.values()), database)):
+        return retrieveFromDatabase("Select questionID from Question ORDER BY questionID DESC LIMIT 1;", [], database)
 
 # Takes the question object and updates the values of it to the database
 # question is the question python object that contains the answers you want to upload to the db
@@ -287,8 +287,8 @@ def updateQuestion(question, database):
 # database is the database connection
 # Returns the QuizID if sucessful, otherwise None
 def createQuiz(quiz, database):
-    if(updateDatabase("INSERT INTO Quiz (courseID, quizName, availableAsync, label, quizDescription, durationMinutes) VALUES (%s, %s, %s, %s, %s, %s)", quiz, database)):
-        return retrieveFromDatabase("Select quizID from Quiz ORDER BY quizID DESC LIMIT 1", [], database)
+    if(updateDatabase("INSERT INTO Quiz (courseID, quizName, availableAsync, label, quizDescription, durationMinutes) VALUES (%s, %s, %s, %s, %s, %s);", quiz, database)):
+        return retrieveFromDatabase("Select quizID from Quiz ORDER BY quizID DESC LIMIT 1;", [], database)
 
 # Takes the quiz object and adds the values of it to the database
 # quiz is the quiz list that contains the values you want to upload to the db
@@ -317,7 +317,7 @@ def updateCourse(course, database):
 # Returns the updated Answer as a list with a single tuple if sucessful, otherwise None
 def updateAnswer(answer, database):
     updateDatabase("INSERT INTO Answers (attemptID, questionID, optionNumber) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE optionNumber = VALUES(optionNumber);", answer, database)
-    return retrieveFromDatabase("Select attemptID, questionID, optionNumber from Answers WHERE attemptID = %s LIMIT 1", [answer[0]], database)
+    return retrieveFromDatabase("Select attemptID, questionID, optionNumber from Answers WHERE attemptID = %s LIMIT 1;", [answer[0]], database)
 
 # Updates an answer row in the database with the specifed attemptID
 # answer is the answer's list that contains the values you want to upload to the db
@@ -338,7 +338,7 @@ def addQuizToCourse(values, database):
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def createAuthor(author, database):
-    return updateDatabase("INSERT INTO Author (username, name, authorDescription, emailAddress) VALUES (%s, %s, %s, %s)", author, database)
+    return updateDatabase("INSERT INTO Author (username, name, authorDescription, emailAddress) VALUES (%s, %s, %s, %s);", author, database)
 
 
 # Processes specific analytics for the quiz specifed by quizID in the following format:
