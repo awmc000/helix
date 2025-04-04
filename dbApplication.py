@@ -115,13 +115,12 @@ def assembleQuiz (quizID, database) :
 
     questions = []
     results = retrieveFromDatabase("SELECT questionID, prompt, durationMinutes, durationSeconds FROM Question WHERE quizID = %s;", quizID, database)
-    if(not results):
-        return None
     
-    for row in results:
-        ident, desc, mins, secs = row
-        Question = dict(questionID = ident, prompt = desc, durationMins = mins, durationSecs = secs, answers = [])
-        questions.append(Question)
+    if results:
+        for row in results:
+            ident, desc, mins, secs = row
+            Question = dict(questionID = ident, prompt = desc, durationMins = mins, durationSecs = secs, answers = [])
+            questions.append(Question)
 
 
     answer = []
@@ -185,8 +184,12 @@ def getQuizList(database):
     if(not results):
         return None
     
+    # results is a list of tuples with a single element in each
+    # so we need to unwrap it
+    results = [ tup[0] for tup in results ]
+    
     for row in results:
-        quizID = row
+        quizID = tuple([row])
         quizList.append(assembleQuiz(quizID, database))
     return quizList
 
@@ -251,6 +254,7 @@ def getCourse(courseIDParam, database):
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def processAnswer(answer, database):
+    # TODO: Can you please modify this function to somehow return the attemptID which is assigned by DBMS?
     return updateDatabase("INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s);", answer, database)
 
 

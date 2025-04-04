@@ -54,8 +54,11 @@ def create_quiz(
     username: str = Query(..., description="Username of the creator")
 ):
     # DB Connection
+    breakpoint()
     createdQuiz = db_app.createQuiz(
-        [quiz.courseID, quiz.quizName, quiz.availableAsync, quiz.label, quiz.quizDescription, quiz.durationMins], 
+        [quiz.courseID, quiz.quizName, 
+         quiz.availableAsync, quiz.label, 
+         quiz.quizDescription, quiz.durationMins], 
         db_connection)
     # On success, createdQuiz is of the form [(6,)]
     # Put the new ID in the quiz and send that back.
@@ -92,8 +95,6 @@ def update_quiz(quiz_id: int, quiz: Quiz):
 # Get all quizzes as a list
 @app.get("/quizzes/", response_model=List[Quiz])
 def get_all_quizzes():
-    
-    # Database
     quizList = db_app.getQuizList(db_connection) # Works
     quizClassList = []
     for quiz in quizList:
