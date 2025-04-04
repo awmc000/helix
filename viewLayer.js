@@ -277,6 +277,8 @@ const getAvailableCourses = async () => {
     * draws the drop down list of them. 
     */
     const drawQuizMap = () => {
+        document.getElementById('availableQuizMapList').innerText = '';
+
         availableQuizzes.forEach((quizInfo) => {
             let anchorTag = document.createElement('a');
             anchorTag.href = '#';
@@ -429,6 +431,14 @@ const getAvailableCourses = async () => {
         }
     };
     
+    const fillQuizEditingForm = () => {
+        document.getElementById("editQuizName").value = appState.quiz.quizName;
+        document.getElementById("editQuizDescription").value = appState.quiz.quizDescription;
+        document.getElementById("editQuizLabel").value = appState.quiz.label;
+        document.getElementById('editQuizAsynchronous').checked = appState.quiz.availableAsync;
+        document.getElementById("editQuizCourseNumber").innerText = appState.course.courseID;
+    };
+
 // adds a new quiz in Course Edit screen
 const createNewQuiz = async () => {
     
@@ -528,6 +538,37 @@ const createNewQuiz = async () => {
     
     }
     
+    const updateQuizEdit = async () => {
+        /*
+         document.getElementById("editQuizName").value = appState.quiz.quizName;
+        document.getElementById("editQuizDescription").value = appState.quiz.quizDescription;
+        document.getElementById("editQuizLabel").value = appState.quiz.label;
+        document.getElementById('editQuizAsynchronous').checked = appState.quiz.availableAsync;
+        document.getElementById("editQuizCourseNumber").innerText = appState.quiz.courseID;
+        */
+        appState.quiz.quizName = document.getElementById("editQuizName").value;
+        appState.quiz.courseID = document.getElementById("editQuizCourseNumber").innerText;
+        appState.quiz.quizDescription = document.getElementById("editQuizDescription").value;
+        appState.quiz.label = document.getElementById("editQuizLabel").value;
+        appState.quiz.availableAsync = document.getElementById('editQuizAsynchronous').checked;
+
+        let echo = await makeRequest("quizzes/" + appState.quiz.quizID, "PUT", appState.quiz, {'username': appState.loginUsername});
+
+        if (echo == undefined) {
+            console.log('WARNING: PUT request to update quiz failed, frontend and backend now out of sync');
+            return;
+        }
+
+        appState.quiz = echo;
+
+        console.log('Successfully updated and retrieved quiz:');
+        console.log(echo);
+
+        // Reload available quizzes and redraw quiz map to show potentially changed quiz name
+        availableQuizzes = await getAvailableQuizzes();
+        drawQuizMap();
+    };
+
     /*
     * This question created a lot of headaches because of how it has to 
     * replace global variables.
@@ -667,6 +708,7 @@ const createNewQuiz = async () => {
             }
         }
         fillQuestionEditingForm();
+        fillQuizEditingForm();
     };
     
     /*
@@ -698,6 +740,7 @@ const createNewQuiz = async () => {
         appState.quiz = fetchedQuiz;
         appState.question = appState.quiz.questionList[0];
         drawQuestionMap();
+        fillQuizEditingForm();
         extractQuestionData();
     };
     

@@ -155,6 +155,52 @@
       </ul>
     </div>
     
+    <!-- Create Quiz - Edit Quiz Window -->
+    <div class="question" id="editQuiz" xstyle="display: none;">
+      <!-- Question Map Header -->
+      <div class="questionheadingbox" style="display: flex;background-color: rgb(152, 27, 27);">
+        <!-- Question Map Title -->
+        <h2 style="margin-left: 4px;" id="quizEditTitle">Edit Quiz</h2>
+      </div>
+      <form>
+      
+        <!-- Name -->
+        <p>
+          <label for="questionprompt">Name</label>
+          <input type="text" name="questionprompt" id="editQuizName">
+        </p>
+
+        <!-- Course -->
+        <p>
+          <strong>Course ID:</strong> <span id="editQuizCourseNumber"></span><br>
+          <!-- Course name: <span id="editQuizCourseName"></span><br> -->
+        </p>
+
+        <!-- Description -->
+        <p>
+          <label for="questionprompt">Description</label>
+          <input type="text" name="questionprompt" id="editQuizDescription">
+        </p>
+
+        <!-- Label -->
+        <p>
+          <label for="questionprompt">Label</label>
+          <input type="text" name="questionprompt" id="editQuizLabel">
+        </p>
+
+        <!-- Asyncrhonous -->
+        <p>
+          <label for="questionprompt">Can be completed asynchronously?</label>
+          <input type="checkbox" name="questionprompt" id="editQuizAsynchronous">
+        </p>
+        
+        <!-- Submit changes -->
+        <p>
+          <a href="#" onclick="updateQuizEdit();" id="updateQuizButton">Update Quiz</a>
+        </p>
+      </form>
+    </div>
+
     <!-- Create Quiz - Edit Question Window -->
     <div class="question" id="editquestion" style="display: none;">
       <!-- Question Map Header -->

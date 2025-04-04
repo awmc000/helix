@@ -87,10 +87,16 @@ def delete_quiz(quiz_id: int):
 @app.put("/quizzes/{quiz_id}", response_model=Quiz)
 def update_quiz(quiz_id: int, quiz: Quiz):
     # Database
+    # breakpoint()
     updateStatus = db_app.updateQuiz([quiz.courseID, quiz.quizName, quiz.availableAsync, quiz.label, quiz.quizDescription, quiz.durationMins, quiz.quizID], db_connection)
+    
     if(not updateStatus):
         raise HTTPException(status_code=404, detail="Quiz not found")
-    return updateStatus
+    # If we got here, then `quiz` has been sent to the database succesfully
+    # However, this is still kind of bad practice
+    # Really, we should be retrieving it from the DBMS again
+    # That way we would be 100% sure that we avoid having a different value in the API than the DB!
+    return quiz
 
 # Get all quizzes as a list
 @app.get("/quizzes/", response_model=List[Quiz])
