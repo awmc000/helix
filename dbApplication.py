@@ -302,7 +302,7 @@ def updateQuiz(quiz, database):
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def createCourse(course, database):
-    updateDatabase("INSERT INTO Course (username, courseName, courseDescription) VALUES (%s, %s, %s);", course, database)
+    return updateDatabase("INSERT INTO Course (username, courseName, courseDescription) VALUES (%s, %s, %s);", course, database)
 
 # Updates a course row in the database with the specifed courseID
 # course is the course's list that contains the answers you want to upload to the db

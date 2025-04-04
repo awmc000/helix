@@ -468,17 +468,19 @@ const createNewQuiz = async () => {
         document.getElementById('courseQuizList').innerHTML = '';
         
         availableQuizzes.forEach((quizInfo) => {
-            // li tag, with <a> inside
-            let listItemTag = document.createElement('li');
-            let anchorTag = document.createElement('a');
-            anchorTag.href = '#';
-            anchorTag.innerText = quizInfo.quizName;
-            anchorTag.title = quizInfo.quizDescription;
-            
-            // Onclick function for each li is a fetch function for the corresponding quizID
-            anchorTag.onclick = () => fetchQuizById(quizInfo.quizID);
-            listItemTag.appendChild(anchorTag);
-            document.getElementById('courseQuizList').appendChild(listItemTag);
+            if (quizInfo.courseID == appState.course.courseID) {
+                // li tag, with <a> inside
+                let listItemTag = document.createElement('li');
+                let anchorTag = document.createElement('a');
+                anchorTag.href = '#';
+                anchorTag.innerText = quizInfo.quizName;
+                anchorTag.title = quizInfo.quizDescription;
+                
+                // Onclick function for each li is a fetch function for the corresponding quizID
+                anchorTag.onclick = () => fetchQuizById(quizInfo.quizID);
+                listItemTag.appendChild(anchorTag);
+                document.getElementById('courseQuizList').appendChild(listItemTag);
+            }
         });
 
         // <li><a href="#" onclick="goToCreatingQuiz();">Create a new quiz</a></li>
