@@ -552,14 +552,28 @@ const getAvailableCourses = async () => {
     /*
     * Create a course with filler data
     */
-    const addCourse = () => {
+    const addCourse = async () => {
         console.log('TODO: Make POST request to create course, getting back ID');
-        let newCourse = {
-            'courseID': availableCourses[availableCourses.length-1].courseID + 1,
-            'name': 'New Course',
-            'description': 'Course description',
+        let newCourseDraft = {
+            'courseID': -1,
+            'username': appState.loginUsername,
+            'courseName': 'New Course',
+            'courseDescription': 'Course description',
         };
-        availableCourses.push(newCourse);
+
+        let echo = await makeRequest('courses', 'POST', newCourseDraft,
+            {'username': appState.loginUsername}
+        );
+
+        if (echo == undefined) {
+            console.log('Failed to create course!');
+            return;
+        }
+
+        availableCourses.push(echo);
+
+        // Refresh course map after it's made
+        drawCourseMap();
     };
     
     /*
