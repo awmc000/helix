@@ -54,7 +54,14 @@ def create_quiz(
     username: str = Query(..., description="Username of the creator")
 ):
     # DB Connection
-    return db_app.createQuiz([quiz.courseID, quiz.quizName, quiz.availableAsync, quiz.label, quiz.quizDescription, quiz.durationMins], db_connection)
+    createdQuiz = db_app.createQuiz(
+        [quiz.courseID, quiz.quizName, quiz.availableAsync, quiz.label, quiz.quizDescription, quiz.durationMins], 
+        db_connection)
+    # On success, createdQuiz is of the form [(6,)]
+    # Put the new ID in the quiz and send that back.
+    quiz.quizID = createdQuiz[0][0]
+    # breakpoint()
+    return quiz
 
     # hard coded
     # Assign a quizID       // for unit testing - DB will handle
@@ -110,7 +117,8 @@ def get_all_quizzes():
     quizList = db_app.getQuizList(db_connection) # Works
     quizClassList = []
     for quiz in quizList:
-        quizClassList.append(Quiz(**quiz))
+        if quiz:
+            quizClassList.append(Quiz(**quiz))
     return quizClassList
 
     # Hard Coded
