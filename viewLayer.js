@@ -395,6 +395,11 @@ const getAvailableCourses = async () => {
         // Destroy any existing children of .questionMapList
         document.getElementById('questionMapList').innerHTML = '';
         
+        if (appState.quiz == null) {
+            document.getElementById('questionMapList').innerText = 'No quiz selected.';
+            return;
+        }
+
         appState.quiz.questionList.forEach((question) => {
             let listItemTag = document.createElement('li');
             let anchorTag = document.createElement('a');
@@ -424,6 +429,37 @@ const getAvailableCourses = async () => {
         }
     };
     
+// adds a new quiz in Course Edit screen
+const createNewQuiz = async () => {
+    
+    // Create quiz draft
+    let newQuizDraft = {
+        "quizID": -1,
+        "courseID": appState.course.courseID,
+        "quizName": "New Quiz",
+        "availableAsync": true,
+        "label": "",
+        "quizDescription": "Quiz Description",
+        "durationMins": 0,
+        "durationSecs": 0,
+        "questionList": [],
+    }
+
+    // Make request and get back copy with quizID filled
+    let echo = await makeRequest('quizzes', 'POST', newQuizDraft, 
+        {'username': appState.loginUsername}
+    );
+
+    // Then fetch that quiz by ID
+    let id = echo.quizID;
+
+    getAvailableQuizzes();
+    fetchQuizById(id);
+
+    // Update list
+    fillCourseQuizzes();
+};
+
     /*
     * Fills in the list of quizzes that belong to a course.
     * Part of the course editing screen.
@@ -444,6 +480,16 @@ const getAvailableCourses = async () => {
             listItemTag.appendChild(anchorTag);
             document.getElementById('courseQuizList').appendChild(listItemTag);
         });
+
+        // <li><a href="#" onclick="goToCreatingQuiz();">Create a new quiz</a></li>
+        let listItem = document.createElement('li');
+        let anchor = document.createElement('a');
+        anchor.href = '#';
+        anchor.innerText = 'Create a new quiz';
+        anchor.onclick = createNewQuiz;
+
+        listItem.appendChild(anchor);
+        document.getElementById('courseQuizList').appendChild(listItem);
     };
     
     const fillCourseEditingForm = () => {
@@ -473,6 +519,9 @@ const getAvailableCourses = async () => {
 
         console.log('Successfully updated and retrieved course:');
         console.log(echo);
+
+        // refresh course map
+        drawCourseMap();
     
     }
     
