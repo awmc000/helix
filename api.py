@@ -54,7 +54,7 @@ def create_quiz(
     username: str = Query(..., description="Username of the creator")
 ):
     # DB Connection
-    breakpoint()
+    # breakpoint()
     createdQuiz = db_app.createQuiz(
         [quiz.courseID, quiz.quizName, 
          quiz.availableAsync, quiz.label, 
@@ -64,7 +64,16 @@ def create_quiz(
     # Put the new ID in the quiz and send that back.
     quiz.quizID = createdQuiz[0][0]
     # breakpoint()
-    return quiz
+    return {
+        "quizID": quiz.quizID,
+        "courseID": quiz.courseID,
+        "quizName": quiz.quizName,
+        "availableAsync": quiz.availableAsync,
+        "label": quiz.label,
+        "quizDescription": quiz.quizDescription,
+        "durationMins": quiz.durationMins,
+        "questionList": quiz.questionList
+    }
 
 # Get a quiz by ID
 @app.get("/quizzes/{quiz_id}", response_model=Quiz)
