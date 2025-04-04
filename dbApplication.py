@@ -338,7 +338,7 @@ def addQuizToCourse(values, database):
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def createAuthor(author, database):
-    return updateDatabase("INSERT INTO Author (username, name, authorDescription, emailAddress) VALUES (%s, %s, %s, %s)", author.values(), database)
+    return updateDatabase("INSERT INTO Author (username, name, authorDescription, emailAddress) VALUES (%s, %s, %s, %s)", author, database)
 
 
 # Processes specific analytics for the quiz specifed by quizID in the following format:

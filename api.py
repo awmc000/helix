@@ -209,10 +209,10 @@ def create_course(
     username: str = Query(..., description="Username of the creator")
 ):
     # Database
-    status = db_app.createCourse([course.username, course.courseName, course.courseDescription], db_connection)
+    status = db_app.createCourse([username, course.courseName, course.courseDescription], db_connection)
     if(not status):
         raise HTTPException(status_code=500, detail="Couldn't Create a Course")
-    return status
+    return course
 
 #Get a course List
 @app.get("/courses/", response_model=List[Course])
