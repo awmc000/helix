@@ -59,3 +59,8 @@ class Analytics(BaseModel):
     mostCorrect: List = []
     homogenous: List = []
     heterogenous: List = []
+    
+class Response(BaseModel):
+    attemptID: int = 0
+    questionID: int = 0
+    optionNumber: int = 0

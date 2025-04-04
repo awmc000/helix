@@ -7,7 +7,7 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware # uncomment for UI integration
 from contextlib import asynccontextmanager #This is for ensuring the database connection is opened on startup and closed before shutdown
-from models import Answer, Question, Quiz, Course, Author, Analytics
+from models import Answer, Question, Quiz, Course, Author, Analytics, Response
 from typing import List, Dict
 import os
 import dbApplication as db_app
@@ -332,18 +332,34 @@ def get_analytics(quizID: int, username: str):
     #     'heterogenous': ['Which programming language is fastest?', 2.2]
     # }
 
-
-""" Code for put for the responses to the quiz
-    Technically could also work for post
-
-    if(answer.attemptID == 0):
-        result = db_app.processAnswer([answer.questionID, answer.optionNumber], db_connection)
+# Submit a response to a quiz question
+@app.post("/respond", response_model=Response)
+def submit_response(response: Response):
+    if(response.attemptID == -1):
+        result = db_app.processAnswer(
+            [response.questionID, 
+             response.optionNumber], db_connection)
+        result = result[0] # discard the outer list that contains a single tuple
+        breakpoint()
         if(result):
-            return result
+            return {
+                "attemptID": result[0],
+                "questionID": result[1],
+                "optionNumber": result[2],
+            }
         raise HTTPException(status_code=404, detail="Question not found")
     else:
-        result = db_app.updateAnswer([answer.attemptID, answer.questionID, answer.optionNumber])
+        result = db_app.updateAnswer(
+            [response.attemptID, 
+             response.questionID, 
+             response.optionNumber], db_connection)
+        breakpoint()
+        result = result[0] # discard the outer list that contains a single tuple
         if(result):
-            return result
+            # attemptID, questionID, optionNumber
+            return {
+                "attemptID": result[0],
+                "questionID": result[1],
+                "optionNumber": result[2],
+            }
         raise HTTPException(status_code=404, detail="Question not found")
-        """

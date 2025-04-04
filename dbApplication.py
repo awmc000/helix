@@ -11,8 +11,8 @@ def connectToDatabase (username, password):
     database = None
     try:
         database = mysql.connector.connect(
-            host= "localhost",
-            #host= "dolphin.csci.viu.ca",
+            # host= "localhost",
+            host= "dolphin.csci.viu.ca",
             user= username,
             password= password,
             database= "csci375team5_quizdb",
@@ -308,9 +308,10 @@ def updateCourse(course, database):
 # Updates an answer row in the database with the specifed attemptID
 # answer is the answer's list that contains the values you want to upload to the db
 # database is the database connection
-# Returns True if sucessful, otherwise None
+# Returns the updated Answer as a list with a single tuple if sucessful, otherwise None
 def updateAnswer(answer, database):
-    return updateDatabase("INSERT INTO Answer (attemptID, questionID, optionNumber) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE optionNumber = VALUES(optionNumber);", answer, database)
+    updateDatabase("INSERT INTO Answers (attemptID, questionID, optionNumber) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE optionNumber = VALUES(optionNumber);", answer, database)
+    return retrieveFromDatabase("Select attemptID, questionID, optionNumber from Answers WHERE attemptID = %s LIMIT 1", [answer[0]], database)
 
 # Updates an answer row in the database with the specifed attemptID
 # answer is the answer's list that contains the values you want to upload to the db
@@ -327,7 +328,7 @@ def addQuizToCourse(values, database):
     return updateDatabase("UPDATE Quiz SET courseID = %s WHERE quizID = %s;", values, database)
 
 # Takes the author object and adds the values of it to the database
-# author is the author list that contains the answers you want to upload to the db
+# author is the author list that contains the author attributes(?) you want to upload to the db
 # database is the database connection
 # Returns True if sucessful, otherwise None
 def createAuthor(author, database):
