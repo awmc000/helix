@@ -130,19 +130,30 @@ def create_question(
     
     # DB Connection
     # breakpoint()
-    temp = question
-    temp.questionID = quiz_id # The questionID will be created by the db, but the db needs the quiz ID for the question
-    result = db_app.createQuestion(temp.__dict__, db_connection)
+    if(question.questionID == -1):
+        result = db_app.createQuestion([quiz_id, question.prompt, question.durationMins, question.durationSecs], db_connection)
+        question.questionID = result
+    else:
+        result = db_app.updateQuestion([quiz_id, question.prompt, question.durationMins, question.durationSecs, question.questionID], db_connection)
+
     if(result):
-        # Need to unwrap questionID or it will not conform to the response model
-        question.questionID = result[0][0]
-        return {
+        updatedAnswerKey = []
+        for row in question.answers:
+            answer = db_app.createAnswerKey([question.questionID, row.optionNumber, row.description, row.scoreValue], db_connection)[0]
+            updatedAnswerKey.append(dict(questionID = answer[0], optionNumber = answer[1],  optionDescription = answer[2], scoreValue = answer[3]))
+
+        question.answers = updatedAnswerKey
+        questionData = {
             'questionID': question.questionID,
             'prompt': question.prompt,
             'durationMins': question.durationMins,
             'durationSecs': question.durationSecs,
             'answers': question.answers,
         }
+
+        return questionData
+
+
 
 # Update a question within the quiz "quiz_name"
 @app.put("/quizzes/{quiz_id}/questions/{question_id}", response_model=Question)
@@ -173,7 +184,7 @@ def create_answer(
     question_id: int,
     answer: Answer
 ):
-    answerList = [question_id, answer.optionNumber, answer.optDescription, answer.scoreValue]
+    answerList = [question_id, answer.optionNumber, answer.description, answer.scoreValue]
     result = db_app.createAnswerKey(answerList, db_connection)
     if(result):
         return result

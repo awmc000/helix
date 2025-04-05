@@ -11,12 +11,12 @@ def connectToDatabase (username, password):
     database = None
     try:
         database = mysql.connector.connect(
-            # host= "localhost",
-            host= "dolphin.csci.viu.ca",
+            host= "localhost",
+            #host= "dolphin.csci.viu.ca",
             user= username,
             password= password,
             database= "csci375team5_quizdb",
-            # auth_plugin= "mysql_native_password"
+            auth_plugin= "mysql_native_password"
         )
     except Error as e:
         raise Exception (e)
@@ -181,15 +181,14 @@ def jsonToPython(someObject):
 def getQuizList(database):
     quizList = []
     results = retrieveFromDatabase("SELECT quizID FROM Quiz", None, database)
+    # breakpoint()
     if(not results):
         return None
     
     # results is a list of tuples with a single element in each
     # so we need to unwrap it
-    results = [ tup[0] for tup in results ]
-    
     for row in results:
-        quizID = tuple([row])
+        quizID = [row[0]]
         quizList.append(assembleQuiz(quizID, database))
     return quizList
 
@@ -263,24 +262,31 @@ def processAnswer(answer, database):
 # Takes the answerKey object and adds the values of it to the database
 # answerKey is the answerKey python object that contains the answers you want to upload to the db
 # database is the database connection
-# Returns True if sucessful, otherwise None
+# Returns the updated answerKey if sucessful, otherwise None
 def createAnswerKey(answerKey, database):
-    return updateDatabase("INSERT INTO AnswerKey (questionID, optionNumber, optionDescription, scoreValue) VALUES (%s, %s, %s, %s);", list(answerKey.values()), database)
+    if(updateDatabase("INSERT INTO AnswerKey (questionID, optionNumber, optionDescription, scoreValue) VALUES (%s, %s, %s, %s) ON DUPLICATE KEY UPDATE optionDescription = VALUES(optionDescription), scoreValue = VALUES(scoreValue);", answerKey, database)):
+        results = retrieveFromDatabase("SELECT * FROM AnswerKey WHERE questionID = %s AND optionNumber = %s;", [answerKey[0], answerKey[1]], database)
+        # Need to unwrap results or it will not conform to the response model
+        returnList = []
+        for row in results:
+            returnList.append(row)
+        return returnList
 
 # Takes the question object and adds the values of it to the database
-# question is the question python object that contains the answers you want to upload to the db
+# question is the question list that contains the data of the question you want to upload to the db
 # database is the database connection
 # Returns the questionID if sucessful, otherwise None
 def createQuestion(question, database):
-    if(updateDatabase("INSERT INTO Question (quizID, prompt, durationMinutes, durationSeconds) VALUES (%s, %s, %s, %s);", list(question.values())[:4], database)):
-        return retrieveFromDatabase("Select questionID from Question ORDER BY questionID DESC LIMIT 1;", [], database)
+    if(updateDatabase("INSERT INTO Question (quizID, prompt, durationMinutes, durationSeconds) VALUES (%s, %s, %s, %s);", question, database)):
+        # Need to unwrap questionID or it will not conform to the response model
+        return retrieveFromDatabase("Select questionID from Question ORDER BY questionID DESC LIMIT 1;", [], database)[0][0]
 
 # Takes the question object and updates the values of it to the database
-# question is the question python object that contains the answers you want to upload to the db
+# question is the question list that contains the answers you want to upload to the db
 # database is the database connection
-# Returns the questionID if sucessful, otherwise None
+# Returns the True if sucessful, otherwise None
 def updateQuestion(question, database):
-    return updateDatabase("UPDATE Question SET quizID = %s, prompt = %s, durationMinutes = %s, durationSeconds = %s WHERE questionID = %s", list(question.values()), database)
+    return updateDatabase("UPDATE Question SET quizID = %s, prompt = %s, durationMinutes = %s, durationSeconds = %s WHERE questionID = %s", question, database)
 
 # Takes the quiz object and adds the values of it to the database
 # quiz is the quiz list that contains the answers you want to upload to the db

@@ -11,7 +11,7 @@ class Answer(BaseModel):
     scoreValue: int = 0
 
 class Question(BaseModel):
-    questionID: int = 0
+    questionID: int = -1
     prompt: str = ""
     durationMins: int = 0
     durationSecs: int = 0

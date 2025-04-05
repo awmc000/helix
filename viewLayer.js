@@ -312,6 +312,8 @@ const drawQuizMap = () => {
   document.getElementById("availableQuizMapList").innerText = "";
 
   availableQuizzes.forEach((quizInfo) => {
+    console.log("something")
+    console.log(quizInfo)
     let anchorTag = document.createElement("a");
     anchorTag.href = "#";
     anchorTag.innerText = quizInfo.quizName;
