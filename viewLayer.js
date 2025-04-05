@@ -527,7 +527,8 @@ const createNewQuiz = async () => {
 const fillCourseQuizzes = () => {
   document.getElementById("courseQuizList").innerHTML = "";
 
-  console.log(availableQuizzes);
+
+  
   availableQuizzes.forEach((quizInfo) => {
     console.log(quizInfo);
     console.log(appState.course.courseID);
@@ -643,14 +644,7 @@ const updateQuizEdit = async () => {
 };
 
 /*
- * This question created a lot of headaches because of how it has to
- * replace global variables.
- * This pertains to the quiz editing or Create Quiz screen.
- * Its mission is to execute an update of a question. This is called
- * by a button press when the user has finished entering new values for
- * a quiz. Its job is to...
- * BEFORE API MIGRATION: Modify the quiz and question global variables
- * AFTER API MIGRATION: Hit an API endpoint to modify the question,
+ * Hit an API endpoint to modify the question,
  * then retrieve the quiz again so the new modified quiz is seen in
  * the frontend.
  */
@@ -754,6 +748,8 @@ const drawCourseMap = () => {
     anchorTag.innerText = course.courseName;
     anchorTag.onclick = () => {
       loadCourse(course.courseID);
+      fillCourseQuizzes();
+      console.log('Should have just updated course quizzes');
     };
     listItemTag.appendChild(anchorTag);
     document.getElementById("courseMapList").appendChild(listItemTag);
@@ -791,12 +787,15 @@ const goToEditQuestion = (id) => {
 /*
  * Set current course to given ID.
  */
-const loadCourse = (id) => {
+const loadCourse = async (id) => {
   for (const course of availableCourses) {
     if (course.courseID == id) {
       appState.course = course;
     }
   }
+
+  availableQuizzes = await getAvailableQuizzes();
+
   // Set form values
   document.getElementById("courseedittitle").innerText =
     "Editing " +
@@ -807,8 +806,8 @@ const loadCourse = (id) => {
   document.getElementById("editCourseName").value = appState.course.courseName;
   document.getElementById("editCourseDescription").value =
     appState.course.courseDescription;
-  // appState.course is now set
-  // Set quiz to some quiz from that course...?
+
+  fillCourseQuizzes();
 };
 
 /*
