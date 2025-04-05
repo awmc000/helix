@@ -81,7 +81,7 @@ def get_quiz(quiz_id: int):
 
     # DB Connection
     
-    breakpoint()
+    # breakpoint()
     quiz = db_app.assembleQuiz([quiz_id], db_connection) # Works
     return quiz
 
@@ -228,10 +228,16 @@ def create_course(
 ):
     # Database
     # breakpoint()
-    status = db_app.createCourse([username, course.courseName, course.courseDescription], db_connection)
-    if(not status):
+    newID = db_app.createCourse([username, course.courseName, course.courseDescription], db_connection)
+    if(not newID):
         raise HTTPException(status_code=500, detail="Couldn't Create a Course")
-    return course
+    course.courseID = newID[0][0]
+    return {
+            'courseID': course.courseID,
+            'username': course.username,
+            'courseName': course.courseName,
+            'courseDescription': course.courseDescription,
+        }
 
 #Get a course List
 @app.get("/courses/", response_model=List[Course])
