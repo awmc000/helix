@@ -404,15 +404,21 @@ def createAnalytics(quizID, database):
     minCorrect = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID) SELECT MIN(correct) AS minCorrect, prompt FROM (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question NATURAL JOIN correctAnswers JOIN Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) AS counts GROUP BY prompt ORDER BY correct ASC LIMIT 1;", quizID, database)
     maxCorrect = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID) SELECT MAX(correct) AS maxCorrect, prompt FROM (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question NATURAL JOIN correctAnswers JOIN Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) AS counts GROUP BY prompt ORDER BY correct DESC LIMIT 1;", quizID, database)
 
-    minVariance = min(variance)
-    prompt = quiz["questionList"][variance.index(minVariance)]["prompt"]
+    minVariance = min(variance) if variance else 0
+    prompt = quiz["questionList"][variance.index(minVariance)]["prompt"] if variance else 'n/a'
     leastVariance = [prompt, minVariance]
     
-    maxVariance = max(variance)
-    prompt = quiz["questionList"][variance.index(maxVariance)]["prompt"]
+    maxVariance = max(variance) if variance else 0
+    prompt = quiz["questionList"][variance.index(maxVariance)]["prompt"] if variance else 'n/a'
     mostVariance = [prompt, maxVariance]
 
-    result = dict(numOfResponses = count[0], meanScore = mean, medianScore = median, leastCorrect = minCorrect, mostCorrect = maxCorrect, homogenous = leastVariance, heterogenous = mostVariance)
+    result = dict(numOfResponses = count[0] if count[0] and count[0] > 0 else 0, 
+                  meanScore = mean, 
+                  medianScore = median, 
+                  leastCorrect = minCorrect if minCorrect else [], 
+                  mostCorrect = maxCorrect if maxCorrect else [], 
+                  homogenous = leastVariance, 
+                  heterogenous = mostVariance)
     return result
 
 # Fixes some obscure problem I had where data was coming back from the sql statements in one element tuples

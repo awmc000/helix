@@ -52,7 +52,7 @@ class Author(BaseModel):
 
 '''
 class Analytics(BaseModel):
-    quizID: int = 0
+    quizID: List[int] = []
     numOfResponses: int = 0
     meanScore: List[float] = []
     leastCorrect: List = []
