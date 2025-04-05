@@ -395,8 +395,8 @@ const getAvailableCourses = async () => {
         // Destroy any existing children of .questionMapList
         document.getElementById('questionMapList').innerHTML = '';
         
-        if (appState.quiz == null) {
-            document.getElementById('questionMapList').innerText = 'No quiz selected.';
+        if (appState.quiz == null || appState.question == null) {
+            document.getElementById('questionMapList').innerText = 'No quiz selected or no questions in quiz.';
             return;
         }
 
@@ -656,6 +656,8 @@ const createNewQuiz = async () => {
         anchorTag.onclick = () => { addCourse(); drawCourseMap(); };
         listItemTag.appendChild(anchorTag);
         document.getElementById('courseMapList').appendChild(listItemTag);
+
+        fillCourseQuizzes();
     };
     
     /*
@@ -721,6 +723,10 @@ const createNewQuiz = async () => {
         
         // Return null if quiz is null
         if (appState.quiz == null) {
+            return;
+        }
+
+        if (appState.question == null) {
             return;
         }
         
