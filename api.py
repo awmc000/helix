@@ -81,6 +81,7 @@ def get_quiz(quiz_id: int):
 
     # DB Connection
     
+    breakpoint()
     quiz = db_app.assembleQuiz([quiz_id], db_connection) # Works
     return quiz
 
@@ -128,12 +129,20 @@ def create_question(
 ):
     
     # DB Connection
+    # breakpoint()
     temp = question
     temp.questionID = quiz_id # The questionID will be created by the db, but the db needs the quiz ID for the question
     result = db_app.createQuestion(temp.__dict__, db_connection)
     if(result):
-        question.questionID = result
-        return question
+        # Need to unwrap questionID or it will not conform to the response model
+        question.questionID = result[0][0]
+        return {
+            'questionID': question.questionID,
+            'prompt': question.prompt,
+            'durationMins': question.durationMins,
+            'durationSecs': question.durationSecs,
+            'answers': question.answers,
+        }
 
 # Update a question within the quiz "quiz_name"
 @app.put("/quizzes/{quiz_id}/questions/{question_id}", response_model=Question)

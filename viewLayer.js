@@ -397,8 +397,8 @@ const getAvailableCourses = async () => {
         // Destroy any existing children of .questionMapList
         document.getElementById('questionMapList').innerHTML = '';
         
-        if (appState.quiz == null || appState.question == null) {
-            document.getElementById('questionMapList').innerText = 'No quiz selected or no questions in quiz.';
+        if (appState.quiz == null) {
+            document.getElementById('questionMapList').innerText = 'No quiz selected.';
             return;
         }
 
@@ -586,8 +586,7 @@ const createNewQuiz = async () => {
     * then retrieve the quiz again so the new modified quiz is seen in
     * the frontend. 
     */
-    const updateQuestionEdit = () => {
-        console.log('(updateQuestionEdit) TODO: Send POST request with updated question ' + appState.question.questionID);
+    const updateQuestionEdit = async () => {
         let editedPrompt = document.getElementById('editQuestionPrompt').value;
         
         let editedChoiceA = document.getElementById('choiceAPrompt').value;
@@ -629,17 +628,11 @@ const createNewQuiz = async () => {
             ],
         }
         
-        // TODO: Set global question variable to newQuestion so
-        // that we can create questions locally before implementing API interactions
-        // DeepSeek generated the next two statements 
-        const questionIndex = appState.quiz.questionList.findIndex(q => q.questionID === appState.question.questionID);
-        
-        if (questionIndex !== -1) {
-            appState.quiz.questionList[questionIndex] = newQuestion;
-        }
+        let echo = await makeRequest('quizzes/' + appState.quiz.quizID + '/questions', 'POST', newQuestion, {});
+
         
         // console.log('(updateQuestionEdit) Fetching quiz again after making change');
-        // fetchQuizById(quiz.quizID);
+        fetchQuizById(quiz.quizID);
         drawQuestionMap();
         loadFullQuiz();    
         extractQuestionData();

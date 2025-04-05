@@ -272,7 +272,7 @@ def createAnswerKey(answerKey, database):
 # database is the database connection
 # Returns the questionID if sucessful, otherwise None
 def createQuestion(question, database):
-    if(updateDatabase("INSERT INTO Question (quizID, prompt, durationMinutes, durationSeconds) VALUES (%s, %s, %s, %s;", list(question.values()), database)):
+    if(updateDatabase("INSERT INTO Question (quizID, prompt, durationMinutes, durationSeconds) VALUES (%s, %s, %s, %s);", list(question.values())[:4], database)):
         return retrieveFromDatabase("Select questionID from Question ORDER BY questionID DESC LIMIT 1;", [], database)
 
 # Takes the question object and updates the values of it to the database
