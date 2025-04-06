@@ -17,6 +17,9 @@ import pdb
 # global database connection object
 db_connection = None
 
+# Global object that tracks which quizzes are currently open.
+# Set of IDs.
+open_quizzes = set()
 
 # Allows the database to be connected to and disconnected from only at the start and end of the program respectively
 @asynccontextmanager
@@ -406,3 +409,30 @@ def submit_response(response: Response):
     
     # Now return the response as it is
     return response
+
+# Check if a quiz is open.
+# Always true if quiz is async.
+# True if quiz is sync and open.
+# False if sync and not open.
+@app.options("/isopen/{quizID}")
+def check_if_quiz_open(quizID: int):
+    return {
+        "quizID": quizID,
+        "open": (quizID in open_quizzes) or (not db_app.quiz_is_async(quizID, db_connection)),
+    }
+
+@app.options("/openquiz/{quizID}")
+def open_quiz(quizID: int):
+    open_quizzes.add(quizID)
+    return {
+        "quizID": quizID,
+        "open": (quizID in open_quizzes) or (not db_app.quiz_is_async(quizID, db_connection)),
+    }
+
+@app.options("/closequiz/{quizID}")
+def close_quiz(quizID: int):
+    open_quizzes.discard(quizID)
+    return {
+        "quizID": quizID,
+        "open": (quizID in open_quizzes) or (not db_app.quiz_is_async(quizID, db_connection)),
+    }

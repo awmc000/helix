@@ -589,4 +589,15 @@ def searchForQuiz (string, database):
     
     return quizList
 
-
+# Returns True if quiz with given ID is async, False if not
+def quiz_is_async(quizID, database):
+    results = retrieveFromDatabase(
+        '''
+            SELECT IFNULL(
+                (SELECT availableAsync FROM Quiz WHERE quizID = %s LIMIT 1),
+                0
+            ) AS availableAsync;
+        ''',
+        [quizID],
+        database)
+    return results[0][0]

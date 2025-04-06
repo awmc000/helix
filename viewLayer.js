@@ -832,6 +832,15 @@ const loadCourse = async (id) => {
  * selected in the dropdown menu.
  */
 const fetchQuizById = async (targetQuiz) => {
+  // First, check if it is open
+  let quizIsOpen = await makeRequest("isopen/" + targetQuiz, "OPTIONS", null, {});
+  quizIsOpen = quizIsOpen.open;
+
+  if (!quizIsOpen) {
+    alert('That quiz is not open. Try again when the instructor has opened it to responses.');
+    return;
+  }
+  
   let fetchedQuiz = await makeRequest("quizzes/" + targetQuiz, "GET", null, {});
   // A new attempt is starting, so get a new attemptID
   let newAttemptObject = await makeRequest("startattempt", "GET", null, {});
