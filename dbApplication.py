@@ -1,3 +1,4 @@
+from typing import List
 import mysql.connector
 from mysql.connector import Error
 import statistics
@@ -403,44 +404,122 @@ def createAnalytics(quizID, database):
         return None
     
 
-    count = []
-    answers = []
-    scorePerQuestion = []
-    scorePerResponse = []
+    # Number of responses by question.
+    count: List[int] = []
+    
+    # List of lists: Number of responses that chose each option for that question.
+    answers: List[List[int]] = []
+    
+    # Sum of scores for each question in the quiz. 
+    scorePerQuestion: List[int] = []
+    
+    # Score that each response to each question got.
+    scorePerResponse: List[List[int]] = []
 
     for question in quiz["questionList"]:
         questionID = [question["questionID"]]
-        count.append(retrieveFromDatabase("SELECT COUNT(*) FROM Answers WHERE questionID = %s;", questionID, database))
-        answers.append(retrieveFromDatabase("SELECT COUNT(optionNumber) FROM Answers WHERE questionID = %s GROUP BY optionNumber;", questionID, database))
-        scorePerQuestion.append(retrieveFromDatabase("SELECT SUM(scoreValue) FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", questionID, database))
-        scorePerResponse.append(retrieveFromDatabase("SELECT scoreValue FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", questionID, database))
+        
+        # Part 1 - Number of answers to this question
+        # Answers to this question
+        answersToThis = retrieveFromDatabase("SELECT COUNT(*) FROM Answers WHERE questionID = %s;", questionID, database)
+        
+        # Unwrap list containing single tuple
+        answersToThis = answersToThis[0][0]
+        
+        count.append(answersToThis)
+        
+        # Part 2 - Number of answers with each option
+        answersByOption = retrieveFromDatabase("SELECT COUNT(optionNumber) FROM Answers WHERE questionID = %s GROUP BY optionNumber;", questionID, database)
+        
+        # Unwrap list containing tuples with a single value
+        answersByOption = [ x[0] for x in answersByOption ]
+        
+        answers.append(answersByOption)
+        
+        # Part 3 - Score per question? Sum of all scores
+        thisSpq = retrieveFromDatabase("SELECT SUM(scoreValue) FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", questionID, database)
+        thisSpq = int(thisSpq[0][0])
+        scorePerQuestion.append(thisSpq)
+        
+        # Part 4 - Score per response?
+        thisSpr = retrieveFromDatabase("SELECT scoreValue FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", questionID, database)
+        thisSpr = [ x[0] for x in thisSpr ]
+        scorePerResponse.append(thisSpr)
 
-    mean = []
-    median = []
 
-    i = 0
-    scorePerResponse = fixData(scorePerResponse)
-    answers = fixData(answers)
+    # scorePerResponse = fixData(scorePerResponse)
+    # answers = fixData(answers)
     
+    # Pad the answers to each question to 4.
     for row in answers:
         while(len(row) < 4):
             row.append(0)
 
     print(answers)
     i = 0
+
+    mean = []
+    median = []
     variance = []
+
     for question in quiz["questionList"]:
-        # For some reason this is returned as a list of 1 object lists, of tuples where the second value is None
-        mean.append(scorePerQuestion[i][0][0] / count[i][0][0])
+        mean.append(scorePerQuestion[i] / count[i])
         median.append(statistics.median(scorePerResponse[i]))
         variance.append(statistics.variance(answers[i]))
         i = i+1
     
-    count = fixData(count)
-    count = fixData([count])
+    minCorrectQuery = '''
+        WITH correctAnswers AS (
+            SELECT attemptID
+            FROM Answers
+            NATURAL JOIN AnswerKey
+            WHERE scoreValue > 0
+            GROUP BY attemptID
+        )
 
-    minCorrect = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID) SELECT MIN(correct) AS minCorrect, prompt FROM (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question NATURAL JOIN correctAnswers JOIN Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) AS counts GROUP BY prompt ORDER BY correct ASC LIMIT 1;", quizID, database)
-    maxCorrect = retrieveFromDatabase("WITH correctAnswers AS (SELECT attemptID FROM Answers NATURAL JOIN AnswerKey WHERE scoreValue > 0 GROUP BY attemptID) SELECT MAX(correct) AS maxCorrect, prompt FROM (SELECT prompt, COUNT(DISTINCT correctAnswers.attemptID) AS correct FROM Answers NATURAL JOIN Question NATURAL JOIN correctAnswers JOIN Quiz ON Quiz.quizID = Question.quizID WHERE Quiz.quizID = %s GROUP BY prompt) AS counts GROUP BY prompt ORDER BY correct DESC LIMIT 1;", quizID, database)
+        SELECT MIN(correct) AS minCorrect, prompt
+        FROM (
+            SELECT prompt,
+                COUNT(DISTINCT correctAnswers.attemptID) AS correct
+            FROM Answers
+            NATURAL JOIN Question
+            NATURAL JOIN correctAnswers
+            JOIN Quiz ON Quiz.quizID = Question.quizID
+            WHERE Quiz.quizID = %s
+            GROUP BY prompt
+        ) AS counts
+        GROUP BY prompt
+        ORDER BY correct ASC
+        LIMIT 1;
+    '''
+    
+    minCorrect = retrieveFromDatabase(minCorrectQuery, quizID, database)
+    
+    maxCorrectQuery = '''
+        WITH correctAnswers AS (
+            SELECT attemptID
+            FROM Answers
+            NATURAL JOIN AnswerKey
+            WHERE scoreValue > 0
+            GROUP BY attemptID
+        )
+
+        SELECT MAX(correct) AS maxCorrect, prompt
+        FROM (
+            SELECT prompt,
+                COUNT(DISTINCT correctAnswers.attemptID) AS correct
+            FROM Answers
+            NATURAL JOIN Question
+            NATURAL JOIN correctAnswers
+            JOIN Quiz ON Quiz.quizID = Question.quizID
+            WHERE Quiz.quizID = %s
+            GROUP BY prompt
+        ) AS counts
+        GROUP BY prompt
+        ORDER BY correct DESC
+        LIMIT 1;
+    '''
+    maxCorrect = retrieveFromDatabase(maxCorrectQuery, quizID, database)
 
     minVariance = min(variance) if variance else 0
     prompt = quiz["questionList"][variance.index(minVariance)]["prompt"] if variance else 'n/a'
@@ -450,13 +529,16 @@ def createAnalytics(quizID, database):
     prompt = quiz["questionList"][variance.index(maxVariance)]["prompt"] if variance else 'n/a'
     mostVariance = [prompt, maxVariance]
 
-    result = dict(numOfResponses = count[0] if count[0] and count[0] > 0 else 0, 
-                  meanScore = mean, 
-                  medianScore = median, 
-                  leastCorrect = minCorrect if minCorrect else [], 
-                  mostCorrect = maxCorrect if maxCorrect else [], 
-                  homogenous = leastVariance, 
-                  heterogenous = mostVariance)
+    result = {
+        'numOfResponses': count[0] if count[0] and count[0] > 0 else 0,
+        'meanScore': mean,
+        'medianScore': median,
+        'leastCorrect': minCorrect if minCorrect else [],
+        'mostCorrect': maxCorrect if maxCorrect else [],
+        'homogenous': leastVariance,
+        'heterogenous': mostVariance
+    }
+
     return result
 
 # Fixes some obscure problem I had where data was coming back from the sql statements in one element tuples

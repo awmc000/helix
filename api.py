@@ -358,6 +358,7 @@ def delete_author(username: str):
 # Get analytics object for quiz id
 @app.get("/analytics/{quizID}", response_model=Analytics)
 def get_analytics(quizID: int, username: str):
+    # breakpoint()
     results = db_app.createAnalytics([quizID], db_connection)
     if(not results):
         raise HTTPException(status_code=404, detail="Quiz not found or no analytics to create for said quiz")
