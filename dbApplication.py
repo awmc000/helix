@@ -417,45 +417,13 @@ def createAnalytics(quizID, database):
     scorePerResponse: List[List[int]] = []
 
     for question in quiz["questionList"]:
-        questionID = [question["questionID"]]
-        
-        # Part 1 - Number of answers to this question
-        # Answers to this question
-        answersToThis = retrieveFromDatabase("SELECT COUNT(*) FROM Answers WHERE questionID = %s;", questionID, database)
-        
-        # Unwrap list containing single tuple
-        answersToThis = answersToThis[0][0]
-        
-        count.append(answersToThis)
-        
-        # Part 2 - Number of answers with each option
-        answersByOption = retrieveFromDatabase("SELECT COUNT(optionNumber) FROM Answers WHERE questionID = %s GROUP BY optionNumber;", questionID, database)
-        
-        # Unwrap list containing tuples with a single value
-        answersByOption = [ x[0] for x in answersByOption ]
-        
-        answers.append(answersByOption)
-        
-        # Part 3 - Score per question? Sum of all scores
-        thisSpq = retrieveFromDatabase("SELECT SUM(scoreValue) FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", questionID, database)
-        thisSpq = int(thisSpq[0][0])
-        scorePerQuestion.append(thisSpq)
-        
-        # Part 4 - Score per response?
-        thisSpr = retrieveFromDatabase("SELECT scoreValue FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", questionID, database)
-        thisSpr = [ x[0] for x in thisSpr ]
-        scorePerResponse.append(thisSpr)
+        takeQuestionMetrics(database, count, answers, scorePerQuestion, scorePerResponse, question)
 
-
-    # scorePerResponse = fixData(scorePerResponse)
-    # answers = fixData(answers)
-    
     # Pad the answers to each question to 4.
     for row in answers:
         while(len(row) < 4):
             row.append(0)
 
-    print(answers)
     i = 0
 
     mean = []
@@ -468,33 +436,64 @@ def createAnalytics(quizID, database):
         variance.append(statistics.variance(answers[i]))
         i = i+1
     
-    minCorrectQuery = '''
-        WITH correctAnswers AS (
-            SELECT attemptID
-            FROM Answers
-            NATURAL JOIN AnswerKey
-            WHERE scoreValue > 0
-            GROUP BY attemptID
-        )
+    minCorrect = findMinCorrect(quizID, database)
+    
+    maxCorrect = findMaxCorrect(quizID, database)
 
-        SELECT MIN(correct) AS minCorrect, prompt
-        FROM (
-            SELECT prompt,
-                COUNT(DISTINCT correctAnswers.attemptID) AS correct
-            FROM Answers
-            NATURAL JOIN Question
-            NATURAL JOIN correctAnswers
-            JOIN Quiz ON Quiz.quizID = Question.quizID
-            WHERE Quiz.quizID = %s
-            GROUP BY prompt
-        ) AS counts
-        GROUP BY prompt
-        ORDER BY correct ASC
-        LIMIT 1;
-    '''
+    minVariance = min(variance) if variance else 0
+    prompt = quiz["questionList"][variance.index(minVariance)]["prompt"] if variance else 'n/a'
+    leastVariance = [prompt, minVariance]
     
-    minCorrect = retrieveFromDatabase(minCorrectQuery, quizID, database)
-    
+    maxVariance = max(variance) if variance else 0
+    prompt = quiz["questionList"][variance.index(maxVariance)]["prompt"] if variance else 'n/a'
+    mostVariance = [prompt, maxVariance]
+
+    result = {
+        'quizID': quizID,
+        'numOfResponses': count[0] if count[0] and count[0] > 0 else 0,
+        'meanScore': mean,
+        'medianScore': median,
+        'leastCorrect': minCorrect if minCorrect else [],
+        'mostCorrect': maxCorrect if maxCorrect else [],
+        'homogenous': leastVariance,
+        'heterogenous': mostVariance
+    }
+
+    return result
+
+# Helper to createAnalytics
+def takeQuestionMetrics(database, count, answers, scorePerQuestion, scorePerResponse, question):
+    questionID = [question["questionID"]]
+        
+    # Part 1 - Number of answers to this question
+    # Answers to this question
+    answersToThis = retrieveFromDatabase("SELECT COUNT(*) FROM Answers WHERE questionID = %s;", questionID, database)
+        
+    # Unwrap list containing single tuple
+    answersToThis = answersToThis[0][0]
+        
+    count.append(answersToThis)
+        
+    # Part 2 - Number of answers with each option
+    answersByOption = retrieveFromDatabase("SELECT COUNT(optionNumber) FROM Answers WHERE questionID = %s GROUP BY optionNumber;", questionID, database)
+        
+    # Unwrap list containing tuples with a single value
+    answersByOption = [ x[0] for x in answersByOption ]
+        
+    answers.append(answersByOption)
+        
+    # Part 3 - Score per question? Sum of all scores
+    thisSpq = retrieveFromDatabase("SELECT SUM(scoreValue) FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", questionID, database)
+    thisSpq = int(thisSpq[0][0])
+    scorePerQuestion.append(thisSpq)
+        
+    # Part 4 - Score per response?
+    thisSpr = retrieveFromDatabase("SELECT scoreValue FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", questionID, database)
+    thisSpr = [ x[0] for x in thisSpr ]
+    scorePerResponse.append(thisSpr)
+
+# Helper to createAnalytics
+def findMaxCorrect(quizID, database):
     maxCorrectQuery = '''
         WITH correctAnswers AS (
             SELECT attemptID
@@ -503,7 +502,6 @@ def createAnalytics(quizID, database):
             WHERE scoreValue > 0
             GROUP BY attemptID
         )
-
         SELECT MAX(correct) AS maxCorrect, prompt
         FROM (
             SELECT prompt,
@@ -520,26 +518,35 @@ def createAnalytics(quizID, database):
         LIMIT 1;
     '''
     maxCorrect = retrieveFromDatabase(maxCorrectQuery, quizID, database)
+    return maxCorrect
 
-    minVariance = min(variance) if variance else 0
-    prompt = quiz["questionList"][variance.index(minVariance)]["prompt"] if variance else 'n/a'
-    leastVariance = [prompt, minVariance]
-    
-    maxVariance = max(variance) if variance else 0
-    prompt = quiz["questionList"][variance.index(maxVariance)]["prompt"] if variance else 'n/a'
-    mostVariance = [prompt, maxVariance]
-
-    result = {
-        'numOfResponses': count[0] if count[0] and count[0] > 0 else 0,
-        'meanScore': mean,
-        'medianScore': median,
-        'leastCorrect': minCorrect if minCorrect else [],
-        'mostCorrect': maxCorrect if maxCorrect else [],
-        'homogenous': leastVariance,
-        'heterogenous': mostVariance
-    }
-
-    return result
+# Helper to createAnalytics
+def findMinCorrect(quizID, database):
+    minCorrectQuery = '''
+        WITH correctAnswers AS (
+            SELECT attemptID
+            FROM Answers
+            NATURAL JOIN AnswerKey
+            WHERE scoreValue > 0
+            GROUP BY attemptID
+        )
+        SELECT MIN(correct) AS minCorrect, prompt
+        FROM (
+            SELECT prompt,
+                COUNT(DISTINCT correctAnswers.attemptID) AS correct
+            FROM Answers
+            NATURAL JOIN Question
+            NATURAL JOIN correctAnswers
+            JOIN Quiz ON Quiz.quizID = Question.quizID
+            WHERE Quiz.quizID = %s
+            GROUP BY prompt
+        ) AS counts
+        GROUP BY prompt
+        ORDER BY correct ASC
+        LIMIT 1;
+    '''
+    minCorrect = retrieveFromDatabase(minCorrectQuery, quizID, database)
+    return minCorrect
 
 # Fixes some obscure problem I had where data was coming back from the sql statements in one element tuples
 # list is the list to be fixed
