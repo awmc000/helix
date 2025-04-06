@@ -373,6 +373,22 @@ def get_analytics(quizID: int, username: str):
     #     'heterogenous': ['Which programming language is fastest?', 2.2]
     # }
 
+# Get the next available attemptID
+@app.get("/startattempt")
+def get_next_attempt_id():
+    breakpoint()
+    nextID = db_app.getMaxAttempt(db_connection)
+    
+    if not nextID:
+        return {
+            "attemptID": -1,
+        }
+    
+    if nextID:
+        return {
+            "attemptID": nextID + 1
+        }
+
 # Submit a response to a quiz question
 @app.post("/respond", response_model=Response)
 def submit_response(response: Response):
@@ -381,12 +397,12 @@ def submit_response(response: Response):
             [response.questionID, 
              response.optionNumber], db_connection)
         result = result[0] # discard the outer list that contains a single tuple
-        breakpoint()
+        # breakpoint()
         if(result):
             return {
                 "attemptID": result[0],
-                "questionID": result[1],
-                "optionNumber": result[2],
+                "questionID": response.questionID,
+                "optionNumber": response.optionNumber,
             }
         raise HTTPException(status_code=404, detail="Question not found")
     else:
@@ -394,13 +410,13 @@ def submit_response(response: Response):
             [response.attemptID, 
              response.questionID, 
              response.optionNumber], db_connection)
-        breakpoint()
+        # breakpoint()
         result = result[0] # discard the outer list that contains a single tuple
         if(result):
             # attemptID, questionID, optionNumber
             return {
                 "attemptID": result[0],
-                "questionID": result[1],
-                "optionNumber": result[2],
+                "questionID": response.questionID,
+                "optionNumber": response.optionNumber,
             }
         raise HTTPException(status_code=404, detail="Question not found")

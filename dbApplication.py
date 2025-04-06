@@ -248,6 +248,18 @@ def getCourse(courseIDParam, database):
     course = dict(courseID = courseID, username = username, courseName = courseName, courseDescription =  courseDescription)
     return course
 
+# Gets max attempt ID
+# API will add 1 to this and send to frontend
+# Frontend will use that value as attemptID for all answers to questions in a certain quiz
+# Frontend gets a new attemptID every time a quiz is started.
+def getMaxAttempt(database):
+    results = retrieveFromDatabase("SELECT MAX(attemptID) FROM Answers;", [], database)
+    if not results:
+        return None
+    
+    # Should be a list with a single tuple in it
+    return results[0][0]
+
 # Takes the answer dictonary from the users response to a quiz question, and adds it to the database
 # answer is the answers python object that contains the answers you want to upload to the db
 # database is the database connection

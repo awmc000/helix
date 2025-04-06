@@ -1,6 +1,6 @@
 CREATE DATABASE csci375team5_quizdb;
 
-USE csci375team5_quizdb
+USE csci375team5_quizdb;
 
 DROP TABLE IF EXISTS csci375team5_quizdb.Answers;
 DROP TABLE IF EXISTS csci375team5_quizdb.AnswerKey;
@@ -63,9 +63,9 @@ CREATE TABLE csci375team5_quizdb.AnswerKey(
 );
 
 CREATE TABLE csci375team5_quizdb.Answers (
-    attemptID int AUTO_INCREMENT,
+    attemptID int,
     questionID int,
     optionNumber integer,
-    PRIMARY KEY (questionID, attemptID),
+    PRIMARY KEY (attemptID, questionID),
     FOREIGN KEY (questionID, optionNumber) REFERENCES AnswerKey(questionID, optionNumber)
 );
