@@ -431,9 +431,14 @@ def createAnalytics(quizID, database):
     variance = []
 
     for question in quiz["questionList"]:
-        mean.append(scorePerQuestion[i] / count[i])
-        median.append(statistics.median(scorePerResponse[i]))
-        variance.append(statistics.variance(answers[i]))
+        if count[i] > 0:
+            mean.append(scorePerQuestion[i] / count[i])
+            median.append(statistics.median(scorePerResponse[i]))
+            variance.append(statistics.variance(answers[i]))
+        else:
+            mean.append(0)
+            median.append(0)
+            variance.append(0)
         i = i+1
     
     minCorrect = findMinCorrect(quizID, database)
@@ -484,7 +489,7 @@ def takeQuestionMetrics(database, count, answers, scorePerQuestion, scorePerResp
         
     # Part 3 - Score per question? Sum of all scores
     thisSpq = retrieveFromDatabase("SELECT SUM(scoreValue) FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", questionID, database)
-    if thisSpq:
+    if thisSpq and thisSpq[0] and thisSpq[0][0]:
         thisSpq = int(thisSpq[0][0])
     else:
         thisSpq = 0
