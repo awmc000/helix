@@ -282,6 +282,7 @@ def submitAnswer(answer, database):
 # answer is the answers python object that contains the answers you want to upload to the db
 # database is the database connection
 # Returns True if sucessful, otherwise None
+# !! Deprecated by submitAnswer !!
 def processAnswer(answer, database):
     # TODO: Can you please modify this function to somehow return the attemptID which is assigned by DBMS?
     status = updateDatabase("INSERT INTO Answers (questionID, optionNumber) VALUES (%s, %s);", answer, database)
@@ -355,6 +356,7 @@ def updateCourse(course, database):
 # answer is the answer's list that contains the values you want to upload to the db
 # database is the database connection
 # Returns the updated Answer as a list with a single tuple if sucessful, otherwise None
+# !! Deprecated by submitAnswer !!
 def updateAnswer(answer, database):
     updateDatabase("INSERT INTO Answers (attemptID, questionID, optionNumber) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE optionNumber = VALUES(optionNumber);", answer, database)
     return retrieveFromDatabase("Select attemptID, questionID, optionNumber from Answers WHERE attemptID = %s LIMIT 1;", [answer[0]], database)
