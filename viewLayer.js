@@ -72,6 +72,10 @@ const goToTakingQuiz = () => {
  * Function for changing screen to creating quiz
  */
 const goToCreatingQuiz = () => {
+  if (appState.loginUsername == null) {
+    alert('You need to log in first before accessing instructor menus.');
+    return;
+  }
   appState.windowState = CREATING_QUIZ;
   setStateElements();
 };
@@ -80,6 +84,10 @@ const goToCreatingQuiz = () => {
  * Function for changing screen to creating course
  */
 const goToCreatingCourse = () => {
+  if (appState.loginUsername == null) {
+    alert('You need to log in first before accessing instructor menus.');
+    return;
+  }
   appState.windowState = CREATING_COURSE;
   setStateElements();
 };
@@ -209,6 +217,12 @@ const loadFullQuiz = (id) => {
 };
 
 const logIn = () => {
+
+  if (document.getElementById('instructorLoginUsername').value == "") {
+    alert('Please at least pretend to log in man');
+    return;
+  }
+
   console.log("Fake logging in: setting username and token to dummy values.");
   appState.loggedIn = true;
   appState.loginUsername = "awmc2000";
