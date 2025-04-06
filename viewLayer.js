@@ -955,8 +955,9 @@ const clearCheckboxes = () => {
  * Move to next question in current quiz, looping back to zero if at end.
  */
 const nextQuestion = () => {
-  reportCheckboxes();
-  submitQuestionAnswer();
+  if (reportCheckboxes().choice != null) {
+    submitQuestionAnswer();
+  }
   clearCheckboxes();
   appState.currentQuestionIndex =
     (appState.currentQuestionIndex + 1) % appState.quiz.questionList.length;
