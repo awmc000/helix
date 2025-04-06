@@ -32,6 +32,7 @@ let appState = {
   loggedIn: false,
   loginUsername: null,
   loginToken: null,
+  currentAttempt: null,
 };
 
 /* ======================================================================================
@@ -818,6 +819,11 @@ const loadCourse = async (id) => {
  */
 const fetchQuizById = async (targetQuiz) => {
   let fetchedQuiz = await makeRequest("quizzes/" + targetQuiz, "GET", null, {});
+  // A new attempt is starting, so get a new attemptID
+  let newAttemptObject = await makeRequest("startattempt", "GET", null, {});
+  appState.currentAttempt = newAttemptObject.attemptID;
+  console.log('New attempt, ID: ' + appState.currentAttempt + ' has started.');
+
   console.log("fetchedQuiz:");
   console.log(fetchedQuiz);
   appState.quiz = fetchedQuiz;
@@ -831,16 +837,33 @@ const fetchQuizById = async (targetQuiz) => {
  * Submits the answer to a question with a POST request. Overwrites any
  * previous submitted answer, allowing changing of responses.
  */
-const submitQuestionAnswer = () => {
+const submitQuestionAnswer = async () => {
   let report = reportCheckboxes();
   console.log(
     '(submitQuestionAnswer) TODO: POST request with answer "' +
-      report.choices +
+      report.choice +
       '" on "' +
       report.questionID +
       '" on quiz ' +
       appState.quiz.quizID,
   );
+
+  /*
+   class Response(BaseModel):
+    attemptID: int = 0
+    questionID: int = 0
+    optionNumber: int = 0
+    */
+  let thisResponse = {
+    attemptID: appState.currentAttempt,
+    questionID: appState.question.questionID,
+    optionNumber: report.choice,
+  };
+
+  let echo = await makeRequest("respond", "POST", thisResponse, []);
+
+  console.log("Response echoed:");
+  console.log(echo);
 };
 
 /*
@@ -897,24 +920,24 @@ const reportCheckboxes = () => {
     return null;
   }
 
-  let report = [];
+  let report = null;
 
   if (document.getElementById("choicea").checked)
-    report.push(appState.question.answers[0].optionNumber);
+    report = appState.question.answers[0].optionNumber;
 
   if (document.getElementById("choiceb").checked)
-    report.push(appState.question.answers[1].optionNumber);
+    report = appState.question.answers[1].optionNumber;
 
   if (document.getElementById("choicec").checked)
-    report.push(appState.question.answers[2].optionNumber);
+    report = appState.question.answers[2].optionNumber;
 
   if (document.getElementById("choiced").checked)
-    report.push(appState.question.answers[3].optionNumber);
+    report = appState.question.answers[3].optionNumber;
 
   report = {
     quizID: appState.quiz.quizID,
     questionID: appState.question.questionID,
-    choices: report,
+    choice: report,
   };
 
   return report;
