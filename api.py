@@ -376,7 +376,7 @@ def get_analytics(quizID: int, username: str):
 # Get the next available attemptID
 @app.get("/startattempt")
 def get_next_attempt_id():
-    breakpoint()
+    # breakpoint()
     nextID = db_app.getMaxAttempt(db_connection)
     
     if not nextID:
@@ -392,31 +392,16 @@ def get_next_attempt_id():
 # Submit a response to a quiz question
 @app.post("/respond", response_model=Response)
 def submit_response(response: Response):
+    
+    # First, get a new attemptID if needed.
+    # The frontend will be waiting to grab this back
+    # and use it for subequent responses to all questions 
+    # in the same quiz in the same attempt.
     if(response.attemptID == -1):
-        result = db_app.processAnswer(
-            [response.questionID, 
-             response.optionNumber], db_connection)
-        result = result[0] # discard the outer list that contains a single tuple
-        # breakpoint()
-        if(result):
-            return {
-                "attemptID": result[0],
-                "questionID": response.questionID,
-                "optionNumber": response.optionNumber,
-            }
-        raise HTTPException(status_code=404, detail="Question not found")
-    else:
-        result = db_app.updateAnswer(
-            [response.attemptID, 
-             response.questionID, 
-             response.optionNumber], db_connection)
-        # breakpoint()
-        result = result[0] # discard the outer list that contains a single tuple
-        if(result):
-            # attemptID, questionID, optionNumber
-            return {
-                "attemptID": result[0],
-                "questionID": response.questionID,
-                "optionNumber": response.optionNumber,
-            }
-        raise HTTPException(status_code=404, detail="Question not found")
+        response.attemptID = get_next_attempt_id()["attemptID"]
+        
+    # Insert ANSWER or update if it exists
+    db_app.submitAnswer([response.attemptID, response.questionID, response.optionNumber], db_connection)
+    
+    # Now return the response as it is
+    return response

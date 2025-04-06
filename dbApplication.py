@@ -260,6 +260,24 @@ def getMaxAttempt(database):
     # Should be a list with a single tuple in it
     return results[0][0]
 
+# Answer is a list of the form [attemptID, questionID, optionNumber]
+# database is the database connection
+# Returns True if sucessful, otherwise None
+def submitAnswer(answer, database):
+    sqlQuery = '''
+        INSERT INTO Answers (attemptID, questionID, optionNumber)
+        VALUES (%s, %s, %s)
+        ON DUPLICATE KEY UPDATE
+        optionNumber = VALUES(optionNumber);
+    '''
+    status = updateDatabase(sqlQuery, answer, database)
+    
+    # Return success or failure
+    if status:
+        return True
+    else:
+        return False
+
 # Takes the answer dictonary from the users response to a quiz question, and adds it to the database
 # answer is the answers python object that contains the answers you want to upload to the db
 # database is the database connection
