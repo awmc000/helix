@@ -620,11 +620,11 @@ const toggleQuizOpen = async () => {
   let status = document.getElementById('editQuizToggleStatus').innerText;
 
   if (status == "Closed") {
-    await makeRequest("openquiz/" + appState.course.courseID, "OPTIONS", {}, []);
+    await makeRequest("openquiz/" + appState.quiz.quizID, "OPTIONS", {}, []);
     document.getElementById('editQuizToggleStatus').innerText = "Open";
   }
   if (status == "Open") {
-    await makeRequest("closequiz/" + appState.course.courseID, "OPTIONS", {}, []);
+    await makeRequest("closequiz/" + appState.quiz.quizID, "OPTIONS", {}, []);
     document.getElementById('editQuizToggleStatus').innerText = "Closed";
   }
 };

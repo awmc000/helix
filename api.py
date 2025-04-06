@@ -416,6 +416,7 @@ def submit_response(response: Response):
 # False if sync and not open.
 @app.options("/isopen/{quizID}")
 def check_if_quiz_open(quizID: int):
+    print(f'State of open_quizzes: {open_quizzes}, {len(open_quizzes)}, {quizID}, {quizID in open_quizzes}')
     return {
         "quizID": quizID,
         "open": (quizID in open_quizzes) or (db_app.quiz_is_async(quizID, db_connection)),
