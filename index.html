@@ -194,6 +194,12 @@
           <input type="checkbox" name="questionprompt" id="editQuizAsynchronous">
         </p>
         
+        <!-- Currently Open? -->
+        <p>
+          <strong>Open or closed? (synchronous only): </strong><span id="editQuizToggleStatus">Closed</span>
+          <input type="button" value="Open/Close Quiz" onclick="toggleQuizOpen();" id="editQuizToggleButton">
+        </p>
+
         <!-- Submit changes -->
         <p>
           <a href="#" onclick="updateQuizEdit();" id="updateQuizButton">Update Quiz</a>

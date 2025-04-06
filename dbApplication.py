@@ -484,7 +484,10 @@ def takeQuestionMetrics(database, count, answers, scorePerQuestion, scorePerResp
         
     # Part 3 - Score per question? Sum of all scores
     thisSpq = retrieveFromDatabase("SELECT SUM(scoreValue) FROM AnswerKey NATURAL JOIN Answers WHERE questionID = %s;", questionID, database)
-    thisSpq = int(thisSpq[0][0])
+    if thisSpq:
+        thisSpq = int(thisSpq[0][0])
+    else:
+        thisSpq = 0
     scorePerQuestion.append(thisSpq)
         
     # Part 4 - Score per response?
@@ -600,4 +603,4 @@ def quiz_is_async(quizID, database):
         ''',
         [quizID],
         database)
-    return results[0][0]
+    return results[0][0] == 1

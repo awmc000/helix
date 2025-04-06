@@ -418,7 +418,7 @@ def submit_response(response: Response):
 def check_if_quiz_open(quizID: int):
     return {
         "quizID": quizID,
-        "open": (quizID in open_quizzes) or (not db_app.quiz_is_async(quizID, db_connection)),
+        "open": (quizID in open_quizzes) or (db_app.quiz_is_async(quizID, db_connection)),
     }
 
 @app.options("/openquiz/{quizID}")
@@ -426,7 +426,7 @@ def open_quiz(quizID: int):
     open_quizzes.add(quizID)
     return {
         "quizID": quizID,
-        "open": (quizID in open_quizzes) or (not db_app.quiz_is_async(quizID, db_connection)),
+        "open": (quizID in open_quizzes) or (db_app.quiz_is_async(quizID, db_connection)),
     }
 
 @app.options("/closequiz/{quizID}")
@@ -434,5 +434,5 @@ def close_quiz(quizID: int):
     open_quizzes.discard(quizID)
     return {
         "quizID": quizID,
-        "open": (quizID in open_quizzes) or (not db_app.quiz_is_async(quizID, db_connection)),
+        "open": (quizID in open_quizzes) or (db_app.quiz_is_async(quizID, db_connection)),
     }

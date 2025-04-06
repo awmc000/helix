@@ -616,6 +616,19 @@ const updateCourseEdit = async () => {
   drawCourseMap();
 };
 
+const toggleQuizOpen = async () => {
+  let status = document.getElementById('editQuizToggleStatus').innerText;
+
+  if (status == "Closed") {
+    await makeRequest("openquiz/" + appState.course.courseID, "OPTIONS", {}, []);
+    document.getElementById('editQuizToggleStatus').innerText = "Open";
+  }
+  if (status == "Open") {
+    await makeRequest("closequiz/" + appState.course.courseID, "OPTIONS", {}, []);
+    document.getElementById('editQuizToggleStatus').innerText = "Closed";
+  }
+};
+
 const updateQuizEdit = async () => {
   /*
          document.getElementById("editQuizName").value = appState.quiz.quizName;
@@ -836,7 +849,7 @@ const fetchQuizById = async (targetQuiz) => {
   let quizIsOpen = await makeRequest("isopen/" + targetQuiz, "OPTIONS", null, {});
   quizIsOpen = quizIsOpen.open;
 
-  if (!quizIsOpen) {
+  if ((!quizIsOpen) && (appState.windowState != CREATING_QUIZ)) {
     alert('That quiz is not open. Try again when the instructor has opened it to responses.');
     return;
   }
