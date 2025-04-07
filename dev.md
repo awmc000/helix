@@ -120,12 +120,6 @@ curl -X POST '127.0.0.1:8000/courses/' \
 
 ## Data Layer
 - The data layer is implemented as a Python module which the API can use to encapsulate interactions with the database
-## Security & Encryption
-- Passwords are sent to the API already unreadable.
-- Encrypt with a public key, decrypt with private key
-- We will backburner password encryption for now
-- **Don't look at me like that, huge corporations store
-passwords in plaintext!!!!**
 ## Information Passing Schemas
 
 ### Python

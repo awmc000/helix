@@ -7,11 +7,11 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware # uncomment for UI integration
 from contextlib import asynccontextmanager #This is for ensuring the database connection is opened on startup and closed before shutdown
-from models import Answer, Question, Quiz, Course, Author, Analytics, Response
+from api.models import Answer, Question, Quiz, Course, Author, Analytics, Response
 from typing import List, Dict
 import os
-import dbApplication as db_app
-import pdb
+from data import dbApplication as db_app
+
 # import mysql.connector            // DB integration
 
 # global database connection object

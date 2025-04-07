@@ -1,4 +1,5 @@
-import dbApplication as db
+from data import dbApplication as db
+
 
 class unitTest:
     def __init__(self, testName, file):

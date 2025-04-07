@@ -13,12 +13,13 @@ A base unitTest class is defined and then extended upon for each unit test. Wher
 
 # Necessary to obtain system username/password and to include files from parent directory.
 import sys
-import os 
+
 sys.path.append("..")
 
-import dbApplication as db
-from models import *
-# Base unitTest class. Typically not used directly. 
+from data import dbApplication as db
+
+
+# Base unitTest class. Typically not used directly.
 class unitTest:
 
     # Called to initialize unitTest object. 
