@@ -1,4 +1,4 @@
-from data import dbApplication as db
+import dbApplication as db
 import os
 
 # If you are using this file, please run init.sql first as the tests require the ID's of the data it creates

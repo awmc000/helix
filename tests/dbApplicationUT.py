@@ -1,5 +1,12 @@
 # File name: dbApplicationUT.py
 # Last edited by Glen on April 3rd, 2025
+# Last edited by Alex on April 7th, 2025 to add import
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from api.models import *
 
 # Brief: Contains a test suite for functions in dbApplication.py
 
